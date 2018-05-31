@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 class DateTimeHelper{
     
     DateTime _time;
@@ -21,9 +23,9 @@ class DateTimeHelper{
         } else if (offset >= 86400 && offset< 604800){
             return this.getOffset().inDays.toString() + this.plurialize(this.getOffset().inDays, "hour");
         } else if (offset>= 604800 && offset< 31104000 ){
-            return _time.toString();
+            return DateFormat("EEE, MMM d 'at' h:mm a").format(_time.toLocal());
         } else {
-            return _time.toString();
+            return DateFormat("EEE, MMM d yyyy 'at' h:mm a").format(_time.toLocal());
         }
     }
 

@@ -97,7 +97,8 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
             ),
             floatingActionButton: FloatingActionButton(
                 onPressed: (){},
-                child: Icon(Icons.add, color: Colors.white)
+                child: Icon(Icons.add, color: Colors.white),
+                backgroundColor: Color(0xFFCC8400),
             ),
         );
     } 

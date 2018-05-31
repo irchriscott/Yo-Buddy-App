@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/item.dart';
 import '../providers/app.dart';
+import 'package:intl/intl.dart';
 
 class ItemPage extends StatefulWidget{
     const ItemPage({Key key, @required this.item}): super(key:key);
@@ -23,20 +24,22 @@ class _ItemPageState extends State<ItemPage>{
     Widget build(BuildContext context){
         return Stack(
             children: <Widget>[
-                InkWell(
-                    onDoubleTap: (){},
-                    onLongPress: (){},
-                    onTap: (){},
-                    child: Card(
-                        child: Container(
-                            child: Column(
-                                children: <Widget>[
-                                    Container(
-                                        child: Image.network(AppProvider().baseURL + this.item.images[0].image.path),
-                                    )
-                                ],
-                            ),
-                        )
+                Container(
+                    child: InkWell(
+                        onDoubleTap: (){},
+                        onLongPress: (){},
+                        onTap: (){},
+                        child: Card(
+                            child: Container(
+                                child: Column(
+                                    children: <Widget>[
+                                        Container(
+                                            child: Image.network(AppProvider().baseURL + this.item.images[0].image.path),
+                                        )
+                                    ],
+                                ),
+                            )
+                        ),
                     ),
                 ),
                 Positioned(
@@ -56,8 +59,14 @@ class _ItemPageState extends State<ItemPage>{
                                     Icons.local_offer,
                                     color: Colors.white
                                 ),
-                                Text(this.item.price.toString(), style: TextStyle(color: Colors.white)),
-                                Text("/ " + this.item.per, style: TextStyle(color: Colors.white))
+                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                Text(NumberFormat.compact().format(this.item.price), style: TextStyle(color: Colors.white)),
+                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                Text(this.item.currency),
+                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                Text("/", style: TextStyle(color: Colors.white)),
+                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                Text(this.item.per, style: TextStyle(color: Colors.white))
                             ],
                         )
                     ),

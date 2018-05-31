@@ -53,6 +53,9 @@ flutter:
     - family: ionicon
       fonts:
         - asset: assets/fonts/ionicons.ttf
+    - family: didact
+      fonts:
+          - asset: assets/fonts/DidactGothic-Regular.ttf
   #
   # For details regarding fonts from package dependencies, 
   # see https://flutter.io/custom-fonts/#from-packages
