@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import '../providers/yobuddy.dart';
 import '../models/item.dart';
 import 'dart:async';
-import '../providers/app.dart';
 import '../UI/item.dart';
 
 class HomePage extends StatefulWidget {
@@ -49,10 +48,14 @@ class _HomePageState extends State<HomePage> {
                     return ItemPage(item: this.items[i]);
                 },
             ) : Center(
-                child: CircularProgressIndicator(
-                    backgroundColor: Color(0xFFCC8400),
-                    strokeWidth: 2.0,
-                ),
+                child: Container(
+                    width: 25.0,
+                    height: 25.0,
+                    child: CircularProgressIndicator(
+                        backgroundColor: Color(0xFFCC8400),
+                        strokeWidth: 2.0,
+                    ),
+                )
             )
         )
     );

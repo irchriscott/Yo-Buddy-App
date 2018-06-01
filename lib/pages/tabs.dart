@@ -19,15 +19,15 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
     TabController _tabController;
 
     @override
-    void initState(){
-        super.initState();
-        _tabController = new TabController(length: 4, vsync: this); 
+    void dispose(){
+        super.dispose();
+        _tabController.dispose(); 
     }
 
     @override
-    void dispose(){
-        _tabController.dispose();
-        super.dispose(); 
+    void initState(){
+        super.initState();
+        _tabController = new TabController(length: 4, vsync: this); 
     }
 
     @override
@@ -60,46 +60,51 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
                 ],
                 controller: _tabController,
             ),
-            bottomNavigationBar: Material(
-                color: Color(0xFFCC8400),
-                child: TabBar(
-                    indicatorColor: Color(0xFFFFFF),
-                    controller: _tabController,
-                    labelColor: Color(0xFFFFFFFF),
-                    unselectedLabelColor: Colors.black54,
-                    tabs: <Widget>[
-                        Tab(
-                            icon: Icon(
-                                Icons.home,
-                                size: 28.0
+            bottomNavigationBar: BottomAppBar(
+                hasNotch: true,
+                child: Material(
+                    color: Color(0xFFCC8400),
+                    child: TabBar(
+                        indicatorColor: Color(0xFFFFFF),
+                        controller: _tabController,
+                        labelColor: Color(0xFFFFFFFF),
+                        unselectedLabelColor: Colors.black54,
+                        tabs: <Widget>[
+                            Tab(
+                                icon: Icon(
+                                    Icons.home,
+                                    size: 28.0
+                                )
+                            ),
+                            Tab(
+                                icon: Icon(
+                                    Icons.library_books,
+                                    size: 28.0
+                                )
+                            ),
+                            Tab(
+                                icon: Icon(
+                                    Icons.notifications,
+                                    size: 28.0
+                                )
+                            ),
+                            Tab(
+                                icon: Icon(
+                                    Icons.person,
+                                    size: 28.0
+                                )
                             )
-                        ),
-                        Tab(
-                            icon: Icon(
-                                Icons.library_books,
-                                size: 28.0
-                            )
-                        ),
-                        Tab(
-                            icon: Icon(
-                                Icons.notifications,
-                                size: 28.0
-                            )
-                        ),
-                        Tab(
-                            icon: Icon(
-                                Icons.person,
-                                size: 28.0
-                            )
-                        )
-                    ],
+                        ],
+                    ),
                 ),
             ),
             floatingActionButton: FloatingActionButton(
                 onPressed: (){},
                 child: Icon(Icons.add, color: Colors.white),
                 backgroundColor: Color(0xFFCC8400),
+                notchMargin: 3.0,
             ),
+            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
         );
     } 
 }

@@ -10,7 +10,7 @@ class DateTimeHelper{
     String get datetime => this.getDateTime();
 
     Duration getOffset(){
-        return  _now.difference(_time.toLocal());;
+        return  _now.difference(_time.toLocal());
     }
 
     String getDateTime(){
