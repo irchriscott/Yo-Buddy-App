@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
-class SessionPage extends StatefulWidget {
-    SessionPage({Key key, this.title}) : super(key: key);
+class SearchPage extends StatefulWidget {
+    SearchPage({Key key, this.title}) : super(key: key);
 
     final String title;
 
     @override
-    _SessionPageState createState() => new _SessionPageState();
+    _SearchPageState createState() => new _SearchPageState();
 }
 
-class _SessionPageState extends State<SessionPage> {
+class _SearchPageState extends State<SearchPage> {
     
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class _SessionPageState extends State<SessionPage> {
     return new Scaffold(
         body: Center(
             child: Text(
-                "Session",
+                "Search",
                 style: TextStyle(
                     fontSize: 30.0
                 ),

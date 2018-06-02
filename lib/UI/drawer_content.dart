@@ -77,10 +77,10 @@ class _DrawerContentState extends State<DrawerContent>{
                     ),
                     onDetailsPressed: (){}, 
                 ),
-                _listTimeItem(Icons.shopping_cart, "Items", this.user.items.toString(), (){
+                _listTimeItem(IconData(0xf454, fontFamily: 'ionicon'), "Items", this.user.items.toString(), (){
 
                 }),
-                _listTimeItem(Icons.play_for_work, "Borrows", this.user.borrow.toString(), (){
+                _listTimeItem(IconData(0xf3f8, fontFamily: 'ionicon'), "Borrows", this.user.borrow.toString(), (){
 
                 }),
                 _listTimeItem(Icons.star_border, "Favourites", this.user.favourites.toString(), (){
@@ -89,10 +89,10 @@ class _DrawerContentState extends State<DrawerContent>{
                 _listTimeItem(Icons.people, "Followers", this.user.followers.toString(), (){
 
                 }),
-                _listTimeItem(Icons.people_outline, "Following", this.user.following.toString(), (){
+                _listTimeItem(IconData(0xf212, fontFamily: 'ionicon'), "Following", this.user.following.toString(), (){
 
                 }),
-                _listTimeItem(Icons.arrow_forward, "Requests", this.user.followers.toString(), (){
+                _listTimeItem(IconData(0xf13a, fontFamily: 'ionicon'), "Requests", this.user.followers.toString(), (){
 
                 }),
                 Divider(),

@@ -155,7 +155,7 @@ class _ItemPageState extends State<ItemPage>{
                                                 Container(
                                                     child: IconButton(
                                                         onPressed: () => this.likeItem(),
-                                                        icon: (this.isLiked == true) ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_border),
+                                                        icon: (this.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon')),
                                                         iconSize: 35.0,
                                                         color: Color(0xFF333333),
                                                     )

@@ -3,7 +3,7 @@ import '../UI/drawer_content.dart';
 import 'home.dart';
 import 'categories.dart';
 import 'notifications.dart';
-import 'session.dart';
+import 'search.dart';
 
 class TabsPage extends StatefulWidget{
 
@@ -56,7 +56,7 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
                     HomePage(title: this.title),
                     CategoriesPage(title: this.title),
                     NotificationPage(title: this.title),
-                    SessionPage(title: this.title)
+                    SearchPage(title: this.title)
                 ],
                 controller: _tabController,
             ),
@@ -72,25 +72,25 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
                         tabs: <Widget>[
                             Tab(
                                 icon: Icon(
-                                    Icons.home,
+                                    IconData(0xf448, fontFamily: 'ionicon'),
                                     size: 28.0
                                 )
                             ),
                             Tab(
                                 icon: Icon(
-                                    Icons.library_books,
+                                    IconData(0xf482, fontFamily: 'ionicon'),
                                     size: 28.0
                                 )
                             ),
                             Tab(
                                 icon: Icon(
-                                    Icons.notifications,
+                                    IconData(0xf3e2, fontFamily: 'ionicon'),
                                     size: 28.0
                                 )
                             ),
                             Tab(
                                 icon: Icon(
-                                    Icons.person,
+                                    IconData(0xf4a4, fontFamily: 'ionicon'),
                                     size: 28.0
                                 )
                             )
