@@ -16,7 +16,7 @@ class NetworkUtil {
           final int statusCode = response.statusCode;
 
           if (statusCode < 200 || statusCode > 400 || json == null) {
-              throw new Exception("Error while fetching data");
+              return _decoder.convert('{"type":"error", "text":"An error has occured, Sorry!"}');
           }
           return _decoder.convert(_response);
       });
@@ -31,7 +31,7 @@ class NetworkUtil {
           final int statusCode = response.statusCode;
 
           if (statusCode < 200 || statusCode > 400 || json == null) {
-              throw new Exception("Error while fetching data");
+              return _decoder.convert('{"type":"error", "text":"An error has occured, Sorry!"}');
           }
           return _decoder.convert(_response);
       });

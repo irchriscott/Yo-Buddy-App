@@ -83,6 +83,9 @@ class _DrawerContentState extends State<DrawerContent>{
                 _listTimeItem(Icons.play_for_work, "Borrows", this.user.borrow.toString(), (){
 
                 }),
+                _listTimeItem(Icons.star_border, "Favourites", this.user.favourites.toString(), (){
+
+                }),
                 _listTimeItem(Icons.people, "Followers", this.user.followers.toString(), (){
 
                 }),

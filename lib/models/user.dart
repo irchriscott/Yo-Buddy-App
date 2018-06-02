@@ -15,10 +15,11 @@ class User{
     int items;
     int request;
     int borrow;
+    int favourites;
     List<dynamic> followersList;
     List<dynamic> followingList;
 
-    User({this.id, this.name, this.username, this.email, this.country, this.town, this.image, this.gender, this.followers, this.following, this.url, this.items, this.request, this.borrow, this.followersList, this.followingList});
+    User({this.id, this.name, this.username, this.email, this.country, this.town, this.image, this.gender, this.followers, this.following, this.url, this.items, this.request, this.borrow, this.followersList, this.followingList, this.favourites});
 
     factory User.fromJson(Map<String, dynamic> json){
         return new User(
@@ -37,7 +38,8 @@ class User{
             request: json['requests'],
             borrow: json['borrow'],
             followersList: json['followers_list'],
-            followingList: json['following_list']
+            followingList: json['following_list'],
+            favourites: json['favourites']
         );
     }
 
@@ -56,6 +58,7 @@ class User{
         this.items = json['items'];
         this.request = json['requests'];
         this.borrow = json['borrow'];
+        this.favourites = json['favourites'];
     }
 
     Map<String, dynamic> toMap() {
@@ -74,6 +77,7 @@ class User{
         map['items'] = items;
         map['requests'] = request;
         map['borrow'] = borrow;
+        map['favourites'] = favourites;
         return map;
     }
 
@@ -92,6 +96,7 @@ class User{
         items = map['items'];
         request = map['requests'];
         borrow = map['borrow'];
+        favourites = map['favourites'];
     }
 
     String get getImageURL => AppProvider().baseURL + this.image;
