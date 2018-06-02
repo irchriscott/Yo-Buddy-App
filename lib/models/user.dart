@@ -15,8 +15,10 @@ class User{
     int items;
     int request;
     int borrow;
+    List<dynamic> followersList;
+    List<dynamic> followingList;
 
-    User({this.id, this.name, this.username, this.email, this.country, this.town, this.image, this.gender, this.followers, this.following, this.url, this.items, this.request, this.borrow});
+    User({this.id, this.name, this.username, this.email, this.country, this.town, this.image, this.gender, this.followers, this.following, this.url, this.items, this.request, this.borrow, this.followersList, this.followingList});
 
     factory User.fromJson(Map<String, dynamic> json){
         return new User(
@@ -33,7 +35,9 @@ class User{
             url: json['url'],
             items: json['items'],
             request: json['requests'],
-            borrow: json['borrow']
+            borrow: json['borrow'],
+            followersList: json['followers_list'],
+            followingList: json['following_list']
         );
     }
 

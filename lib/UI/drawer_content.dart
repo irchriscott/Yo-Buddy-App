@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
-import '../providers/session.dart';
-import 'dart:async';
 import '../providers/auth.dart';
 
 class DrawerContent extends StatefulWidget{
@@ -17,19 +15,7 @@ class _DrawerContentState extends State<DrawerContent>{
     @override
     void initState(){
         super.initState();  
-        this.getUserData();
         this._getUserData();
-        Timer(Duration(seconds: 3), (){
-            setState(() {
-                this.canShowData = true;         
-            });
-        });
-    }
-
-    void getUserData(){
-        DatabaseHelper().userData().then((data){
-            this.user = data;
-        });
     }
 
     void _setValue(User user){
@@ -91,28 +77,38 @@ class _DrawerContentState extends State<DrawerContent>{
                     ),
                     onDetailsPressed: (){}, 
                 ),
-                _listTimeItem(Icons.grid_on, "Items", this.user.items.toString(), (){
+                _listTimeItem(Icons.shopping_cart, "Items", this.user.items.toString(), (){
 
                 }),
-                _listTimeItem(Icons.shopping_cart, "Borrows", this.user.borrow.toString(), (){
+                _listTimeItem(Icons.play_for_work, "Borrows", this.user.borrow.toString(), (){
 
                 }),
                 _listTimeItem(Icons.people, "Followers", this.user.followers.toString(), (){
 
                 }),
-                _listTimeItem(Icons.people, "Following", this.user.following.toString(), (){
+                _listTimeItem(Icons.people_outline, "Following", this.user.following.toString(), (){
 
                 }),
-                _listTimeItem(Icons.list, "Requests", this.user.followers.toString(), (){
+                _listTimeItem(Icons.arrow_forward, "Requests", this.user.followers.toString(), (){
 
                 }),
+                Divider(),
+                ListTile(
+                    leading: Icon(Icons.add_shopping_cart),
+                    title: Text("Add Item"),
+                    onTap: (){},            
+                ),
+                ListTile(
+                    leading: Icon(Icons.add),
+                    title: Text("Add Request"),
+                    onTap: (){},            
+                ),
                 Divider(),
                 ListTile(
                     leading: Icon(Icons.settings),
                     title: Text("Settings"),
                     onTap: (){},            
                 ),
-                Divider(),
                 ListTile(
                     leading: Icon(Icons.help_outline),
                     title: Text("Help"),
@@ -120,8 +116,8 @@ class _DrawerContentState extends State<DrawerContent>{
                 ),
                 Divider(),
                 ListTile(
-                    leading: Icon(Icons.exit_to_app),
-                    title: Text("Logout"),
+                    leading: Icon(Icons.exit_to_app, color: Color(0xFFFF9494)),
+                    title: Text("Logout", style: TextStyle(color: Color(0xFFFF9494))),
                     onTap: (){},            
                 )
             ],

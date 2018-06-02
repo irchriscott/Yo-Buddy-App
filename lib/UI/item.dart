@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import '../models/item.dart';
 import '../providers/app.dart';
 import '../UI/item_action_sheet.dart';
+import '../providers/auth.dart';
+import '../pages/single_item.dart';
 
 class ItemPage extends StatefulWidget{
     const ItemPage({Key key, @required this.item}): super(key:key);
@@ -13,11 +15,17 @@ class ItemPage extends StatefulWidget{
 class _ItemPageState extends State<ItemPage>{
 
     Item item;
+    int userID;
+    bool isLiked = false;
 
     @override
     void initState(){
         super.initState();
         this.item = widget.item;
+        this.getUserData();
+        setState((){
+            this.checkUserLike();
+        });
     }
 
     void _showBottomSheet(){
@@ -26,6 +34,40 @@ class _ItemPageState extends State<ItemPage>{
             builder: (builder){
                 return ItemActionSheet(item: this.item);
             }
+        );
+    }
+
+    void checkUserLike(){
+        if(this.item.likes.likers.contains(this.userID)){
+            this.isLiked = true;
+        }
+        this.isLiked = false;
+    }
+
+    void likeItem(){
+        setState((){
+            if(this.isLiked){
+                this.isLiked = false;
+                Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Disiked !!!"));
+            } else {
+                this.isLiked = true;
+                Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Liked !!!"));
+            }
+        });
+    }
+
+    void _setUserID(int id){
+        this.userID = id;
+    }
+
+    void getUserData(){
+        Authentication().getSessionUser().then((value) => _setUserID(value.id));
+    }
+
+    void navigateSingleItem(){
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => SingleItemPage(item:  this.item, isOwner: (this.item.user.id == this.userID)))
         );
     }
 
@@ -39,13 +81,9 @@ class _ItemPageState extends State<ItemPage>{
                             child: Column(
                                 children: <Widget>[
                                     InkWell(
-                                        onDoubleTap: (){
-                                            print("Double Taped");
-                                        },
+                                        onDoubleTap: () => this.likeItem(),
                                         onLongPress: () => this._showBottomSheet(),
-                                        onTap: (){
-                                            print("Taped");
-                                        },
+                                        onTap: () => this.navigateSingleItem(),
                                         child: Container(
                                             child: Image.network(AppProvider().baseURL + this.item.images[0].image.path),
                                         ),
@@ -116,10 +154,8 @@ class _ItemPageState extends State<ItemPage>{
                                                 ),
                                                 Container(
                                                     child: IconButton(
-                                                        onPressed: (){
-                                                            Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Liked !!!"));
-                                                        },
-                                                        icon: Icon(Icons.favorite_border),
+                                                        onPressed: () => this.likeItem(),
+                                                        icon: (this.isLiked == true) ? Icon(Icons.favorite, color: Colors.red) : Icon(Icons.favorite_border),
                                                         iconSize: 35.0,
                                                         color: Color(0xFF333333),
                                                     )

@@ -66,7 +66,7 @@ class DatabaseHelper {
         var dbClient = await db;
         return await dbClient.update(tableName, user.toMap(),
             where: "id = ?", whereArgs: [user.id]);
-    }
+    }    
 
     Future close() async {
         var dbClient = await db;

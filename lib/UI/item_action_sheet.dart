@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/item.dart';
 import 'package:flutter/foundation.dart';
 import '../providers/app.dart';
+import '../providers/auth.dart';
 
 class ItemActionSheet extends StatefulWidget{
     const ItemActionSheet({Key key, @required this.item}):super(key: key);
@@ -12,11 +13,21 @@ class ItemActionSheet extends StatefulWidget{
 class _ItemActionSheetState extends State<ItemActionSheet>{
     
     Item item;
+    int userID;
 
     @override
     void initState(){
         super.initState();
         this.item = widget.item;
+        this.getUserData();
+    }
+
+    void _setUserID(int id){
+        this.userID = id;
+    }
+
+    void getUserData(){
+        Authentication().getSessionUser().then((value) => _setUserID(value.id));
     }
 
     void editItem(){
@@ -61,11 +72,13 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
                     ListTile(
                         leading: Icon(Icons.edit),
                         title: Text("Edit"),
+                        enabled: (this.item.user.id == this.userID),
                         onTap: (){},
                     ),
                     ListTile(
                         leading: Icon(Icons.delete),
                         title: Text("Delete"),
+                        enabled: (this.item.user.id == this.userID),
                         onTap: (){},
                     ),
                     ListTile(
@@ -76,6 +89,7 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
                     ListTile(
                         leading: Icon(Icons.add),
                         title: Text("Borrow"),
+                        enabled: (this.item.user.id != this.userID),
                         onTap: (){},
                     ),
                     ListTile(
