@@ -11,7 +11,7 @@ class AppProvider{
             barrierDismissible: false, // user must tap button!
             builder: (BuildContext context) {
                 return new AlertDialog(
-                    title: new Text(type),
+                    title: new Text(type, style: TextStyle(fontWeight: FontWeight.bold)),
                     content: new SingleChildScrollView(
                         child: new ListBody(
                             children: <Widget>[
@@ -21,7 +21,8 @@ class AppProvider{
                     ),
                     actions: <Widget>[
                         new FlatButton(
-                            child: new Text("OK", 
+                            child: new Text(
+                                "OK", 
                                 style: TextStyle(
                                     color: Color(0xFFCC8400)
                                 )

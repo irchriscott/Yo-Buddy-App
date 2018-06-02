@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'login.dart';
+import '../providers/session.dart';
+import 'tabs.dart';
 
 class SplashScreenPage extends StatefulWidget{
     @override
@@ -10,6 +12,7 @@ class SplashScreenPage extends StatefulWidget{
 class _SplashScreenState extends State<SplashScreenPage> with SingleTickerProviderStateMixin{
     
     final String title = "yo boddy";
+    bool isLoggedIn;
 
     Animation<double> _fontAnimation;
     AnimationController _fontAnimationController;
@@ -22,12 +25,16 @@ class _SplashScreenState extends State<SplashScreenPage> with SingleTickerProvid
         _fontAnimation.addListener(() => setState((){}));
         _fontAnimationController.forward();
         Timer(Duration(seconds: 5), (){ _onTap(); });
+        
+        DatabaseHelper().isLoggedIn().then((value){
+            this.isLoggedIn = value;
+        });
     }
 
     void _onTap(){ 
         Navigator.push(
             context, 
-            new MaterialPageRoute(builder: (BuildContext context) => LoginPage())
+            new MaterialPageRoute(builder: (BuildContext context) => this.isLoggedIn ? TabsPage() : LoginPage())
         );
     }
 

@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 class DatabaseHelper {
     static final DatabaseHelper _instance = new DatabaseHelper.internal();
     factory DatabaseHelper() => _instance;
+    String tableName = "User";
 
     static Database _db;
 
@@ -29,26 +30,46 @@ class DatabaseHelper {
     
 
     void _onCreate(Database db, int version) async {
-        await db.execute("CREATE TABLE User (id INTEGER PRIMARY KEY, name TEXT, username TEXT, email TEXT, country TEXT, town TEXT, image TEXT, gender TEXT, followers INTEGER, following INTEGER, url TEXT, items INTEGER, requests INTEGER, borrow INTEGER)");
+        await db.execute("CREATE TABLE $tableName (id INTEGER PRIMARY KEY, name TEXT, username TEXT, email TEXT, country TEXT, town TEXT, image TEXT, gender TEXT, followers INTEGER, following INTEGER, url TEXT, items INTEGER, requests INTEGER, borrow INTEGER)");
         print("Created tables");
     }
 
     Future<int> saveUser(User user) async {
         var dbClient = await db;
-        int res = await dbClient.insert("User", user.toMap());
+        int res = await dbClient.insert(tableName, user.toMap());
         return res;
     }
 
     Future<int> deleteUsers() async {
         var dbClient = await db;
-        int res = await dbClient.delete("User");
+        int res = await dbClient.delete(tableName);
         return res;
     }
 
     Future<bool> isLoggedIn() async {
         var dbClient = await db;
-        var res = await dbClient.query("User");
+        var res = await dbClient.query(tableName);
         return res.length > 0 ? true : false;
     }
 
+    Future<User> userData() async {
+        var dbClient = await db;
+        return await dbClient.query(tableName, limit: 1).then((result){
+            if(result.length > 0){
+                return User.fromMap(result.first);
+            }
+            return null;
+        });
+    }
+
+    Future<int> update(User user) async {
+        var dbClient = await db;
+        return await dbClient.update(tableName, user.toMap(),
+            where: "id = ?", whereArgs: [user.id]);
+    }
+
+    Future close() async {
+        var dbClient = await db;
+        dbClient.close();
+    }
 }

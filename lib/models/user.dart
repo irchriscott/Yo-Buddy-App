@@ -73,6 +73,23 @@ class User{
         return map;
     }
 
+    User.fromMap(Map map){
+        id = map['id'];
+        name = map['name'];
+        username = map['username'];
+        email = map['email'];
+        country = map['country'];
+        town = map['town'];
+        image = map['image'];
+        gender = map['gender'];
+        followers = map['followers'];
+        following = map['following'];
+        url = map['url'];
+        items = map['items'];
+        request = map['requests'];
+        borrow = map['borrow'];
+    }
+
     String get getImageURL => AppProvider().baseURL + this.image;
     
     List<User> getUsersList(dynamic json){
