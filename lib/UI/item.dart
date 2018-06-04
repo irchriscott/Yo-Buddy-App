@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 import '../models/item.dart';
 import '../providers/app.dart';
 import '../UI/item_action_sheet.dart';
@@ -85,7 +86,10 @@ class _ItemPageState extends State<ItemPage>{
                                         onLongPress: () => this._showBottomSheet(),
                                         onTap: () => this.navigateSingleItem(),
                                         child: Container(
-                                            child: Image.network(AppProvider().baseURL + this.item.images[0].image.path),
+                                            child: FadeInImage.memoryNetwork(
+                                                image: AppProvider().baseURL + this.item.images[0].image.path,
+                                                placeholder: kTransparentImage,
+                                            )
                                         ),
                                     ),
                                     Container(

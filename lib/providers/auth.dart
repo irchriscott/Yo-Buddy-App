@@ -25,7 +25,8 @@ class Authentication{
         }).then((dynamic response){
             if(response["type"] == "success"){
                 return DatabaseHelper().saveUser(User.fromJson(response["user"])).then((result){
-                    this._saveUserData(json.encode(response["user"]));
+                    netUtils.saveDataInPreferences("session", json.encode(response["user"]));
+                    netUtils.saveDataInPreferences("token", response["token"]);
                     if(result == 1){
                         return ResponseService.fromJson(response);
                     } else {
@@ -35,12 +36,6 @@ class Authentication{
             }
             return ResponseService.fromJson(response);
         });
-    }
-
-    void _saveUserData(String user) async{
-        prefs = await SharedPreferences.getInstance();
-        await prefs.setString("session", user);
-        print("User Saved");
     }
 
     Future<User> getSessionUser() async{

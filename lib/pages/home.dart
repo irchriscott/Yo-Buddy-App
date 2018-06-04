@@ -22,11 +22,25 @@ class _HomePageState extends State<HomePage> {
   void initState(){
       super.initState();
       this.loadHomeItems();
+      this._loadHomeItems();
       Timer(Duration(seconds: 5), (){
           setState(() {
               this.canShowItems = true;            
           });
       });
+  }
+
+  void _setItems(List<Item> _items){
+      setState((){
+          this.items = _items.toList();
+          if(this.items.isNotEmpty || this.items != null) {
+              this.canShowItems = true;
+          }
+      });
+  }
+
+  void _loadHomeItems(){
+      YoBuddyService().getSharedHomeItems().then((value) => this._setItems(value));
   }
 
   Future<String> loadHomeItems() async{

@@ -19,6 +19,9 @@ dependencies:
   flutter_radial_menu: "^0.0.1"
   sticky_headers: "^0.1.4"
   flutter_html_view: "^0.3.1"
+  flutter_advanced_networkimage: "^0.2.6"
+  socket_io: "^0.8.0"
+  transparent_image: "^0.1.0"
 
 dev_dependencies:
   build_runner: ^0.7.6

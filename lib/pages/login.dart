@@ -1,19 +1,41 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../providers/app.dart';
 import '../providers/auth.dart';
 import '../UI/popup.dart';
 import '../pages/tabs.dart';
+import '../animations/sign_in_animation.dart';
 
 class LoginPage extends StatefulWidget{
     @override
     _LoginPageState createState() => new _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage>{
+class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
+
+    AnimationController _loginButtonController;
+    var animationStatus = 0;
 
     @override
     void initState(){
         super.initState();
+        _loginButtonController = new AnimationController(duration: new Duration(milliseconds: 3000), vsync: this);
+    }
+
+    @override
+    void dispose() {
+        _loginButtonController.dispose();
+        super.dispose();
+    }
+
+    Future<Null> _playAnimation() async {
+        setState(() {
+            animationStatus = 1;
+        });
+        try {
+            await _loginButtonController.forward();
+            await _loginButtonController.reverse();
+        } on TickerCanceled {}
     }
 
     final String title = "yo buddy";
@@ -25,10 +47,14 @@ class _LoginPageState extends State<LoginPage>{
     TextEditingController password = new TextEditingController();
     
     void authenticateUser()  {
+        _playAnimation();
         var auth = Authentication().authenticate(email.text, password.text);
         auth.then((value){
             if(value.type == "error"){
                 AppProvider().alert(context, "Error", value.text);
+                this.setState((){
+                    animationStatus = 0;
+                });
             } else {
                 this.setState((){
                     this._message = value.text;
@@ -106,29 +132,30 @@ class _LoginPageState extends State<LoginPage>{
                                     ),
                                 ),
                                 SizedBox(height: 10.0),
-                                Padding(
-                                    padding: EdgeInsets.symmetric(vertical: 20.0),
-                                    child: Material(
-                                        borderRadius: BorderRadius.circular(4.0),
-                                        shadowColor: Color(0x66666666),
-                                        elevation: 5.0,
-                                        child: MaterialButton(
-                                            color: Color(0xFFCC8400),
-                                            child: Text(
-                                                'Log In'.toUpperCase(), 
-                                                style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 18.0
+                                (animationStatus == 0) ? InkWell(
+                                    child: Padding(
+                                        padding: EdgeInsets.symmetric(vertical: 20.0),
+                                        child: Material(
+                                            borderRadius: BorderRadius.circular(10.0),
+                                            shadowColor: Color(0x66666666),
+                                            elevation: 5.0,
+                                            child: Container(
+                                                color: Color(0xFFCC8400),
+                                                child: Center(
+                                                    child: Text(
+                                                        'Log In'.toUpperCase(),
+                                                        style: TextStyle(
+                                                            color: Colors.white,
+                                                            fontSize: 18.0
+                                                        ),
+                                                    ),
                                                 ),
+                                                height: 45.0
                                             ),
-                                            minWidth: 200.0,
-                                            height: 45.0,
-                                            onPressed: (){
-                                                authenticateUser();
-                                            },
                                         ),
                                     ),
-                                ),
+                                    onTap: () => authenticateUser(),
+                                ) : StaggerAnimation(buttonController: this._loginButtonController),
                                 FlatButton(
                                     child: Text(
                                         'Forgot your password ?',
@@ -142,7 +169,7 @@ class _LoginPageState extends State<LoginPage>{
                                 Padding(
                                     padding: EdgeInsets.symmetric(vertical: 20.0),
                                     child: Material(
-                                        borderRadius: BorderRadius.circular(4.0),
+                                        borderRadius: BorderRadius.circular(0.0),
                                         elevation: 5.0,
                                         child: OutlineButton(
                                             color: Colors.white,

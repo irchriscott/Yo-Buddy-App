@@ -63,6 +63,12 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
     @override
     Widget build(BuildContext context){
         return Container(
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(8.0),
+                    topRight: Radius.circular(8.0)
+                )
+            ),
             child: Column(
                 children: <Widget>[
                     Container(

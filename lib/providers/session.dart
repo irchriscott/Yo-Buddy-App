@@ -31,7 +31,6 @@ class DatabaseHelper {
 
     void _onCreate(Database db, int version) async {
         await db.execute("CREATE TABLE $tableName (id INTEGER PRIMARY KEY, name TEXT, username TEXT, email TEXT, country TEXT, town TEXT, image TEXT, gender TEXT, followers INTEGER, following INTEGER, url TEXT, items INTEGER, requests INTEGER, borrow INTEGER, favourites INTEGER)");
-        print("Created tables");
     }
 
     Future<int> saveUser(User user) async {
