@@ -24,6 +24,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
 
     Item item;
     int userID;
+    String userToken;
     static const bool isOwner = false;
     bool isFollowed = false;
     int itemLikes;
@@ -62,12 +63,15 @@ class _SingleItemPageState extends State<SingleItemPage>{
     }
 
     void followUser(){
-        setState((){
-            if(this.isFollowed){
-                this.isFollowed = false;
-            } else {
-                this.isFollowed = true;
-            }
+        YoBuddyService().followUser(this.item.user.id, userID, userToken).then((response){
+            setState((){
+                if(response.type == "followed"){
+                  this.isFollowed = true;
+                } else if(response.type == "unfollowed") {
+                  this.isFollowed = false;
+                }
+            });
+            AppProvider().showSnackBar(response.text);
         });
     }
 
@@ -75,8 +79,13 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this.userID = id;
     }
 
+    void _setUserToken(String token){
+        this.userToken = token;
+    }
+
     void getUserData(){
         Authentication().getSessionUser().then((value) => _setUserID(value.id));
+        Authentication().getUserToken().then((value) => _setUserToken(value));
     }
 
     static const String editVal = "Edit";
@@ -109,10 +118,16 @@ class _SingleItemPageState extends State<SingleItemPage>{
     void getSingleItem(){
         YoBuddyService().getSingleItem(this.item.id).then((value){
             setState((){
-                this.item = value;
-                this.checkIsFavourited();
-                this.checkIsLiked();
-                this.checkIsFollowed();
+                if(value != null) {
+                    this.item = value;
+                    this.checkIsFavourited();
+                    this.checkIsLiked();
+                    this.checkIsFollowed();
+                } else {
+                    AppProvider().alert(context, "Error", "This item might be deleted !!!").then((_){
+                        Navigator.of(context).pop();
+                    });
+                }
             });
         });
     }
@@ -400,7 +415,6 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                             left: 0.0,
                                             right: 0.0,
                                             child: Container(
-                                                height: 65.0,
                                                 decoration: BoxDecoration(
                                                     border: Border(top: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD)))
                                                 ),
@@ -424,6 +438,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                                             borderRadius: BorderRadius.circular(20.0)
                                                                         )
                                                                     ),
+                                                                    maxLines: null,
+                                                                    keyboardType: TextInputType.multiline,
                                                                 )
                                                             ),
                                                         ),
@@ -439,7 +455,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                             ),
                                         ),
                                         Positioned(
-                                            bottom: 10.0,
+                                            bottom: 12.0,
                                             left: 10.0,
                                             child: Container(
                                                 width: 45.0,

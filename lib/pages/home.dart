@@ -25,15 +25,15 @@ class _HomePageState extends State<HomePage> {
       this._loadHomeItems();
       Timer(Duration(seconds: 5), (){
           setState(() {
-              this.canShowItems = true;            
+              this.canShowItems = true;
           });
       });
   }
 
   void _setItems(List<Item> _items){
       setState((){
-          this.items = _items.toList();
-          if(this.items.isNotEmpty || this.items != null) {
+          if(_items != null || this.items != null) {
+              this.items = _items.toList();
               this.canShowItems = true;
           }
       });
@@ -54,24 +54,24 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     
-    return new Scaffold(
-        body: Container(
-            child: this.canShowItems == true ? ListView.builder(
-                itemCount: this.items.length,
-                itemBuilder: (BuildContext context, int i){
-                    return ItemPage(item: this.items[i]);
-                },
-            ) : Center(
-                child: Container(
-                    width: 25.0,
-                    height: 25.0,
-                    child: CircularProgressIndicator(
-                        backgroundColor: Color(0xFFCC8400),
-                        strokeWidth: 2.0,
-                    ),
-                )
-            )
-        )
-    );
+      return new Scaffold(
+          body: Container(
+              child: this.canShowItems == true ? ListView.builder(
+                  itemCount: this.items.length,
+                  itemBuilder: (BuildContext context, int i){
+                      return ItemPage(item: this.items[i]);
+                  },
+              ) : Center(
+                  child: Container(
+                      width: 25.0,
+                      height: 25.0,
+                      child: CircularProgressIndicator(
+                          backgroundColor: Color(0xFFCC8400),
+                          strokeWidth: 2.0,
+                      ),
+                  )
+              )
+          )
+      );
   }
 }

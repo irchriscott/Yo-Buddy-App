@@ -42,7 +42,7 @@ class _PopupOverlayState extends State<PopupOverlay> with SingleTickerProviderSt
         return new Material(
             color: Color.fromRGBO(0,0,0,0.7),
             child: InkWell(
-                onTap: widget.onTap,
+                onTap:() => widget.onTap(),
                 child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[

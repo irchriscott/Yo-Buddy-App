@@ -4,7 +4,6 @@ import '../providers/app.dart';
 import '../providers/auth.dart';
 import '../UI/popup.dart';
 import '../pages/tabs.dart';
-import '../animations/sign_in_animation.dart';
 
 class LoginPage extends StatefulWidget{
     @override
@@ -60,6 +59,7 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
                     this._message = value.text;
                     this._type = value.type;
                     this.isOverlayVisible = true;
+                    animationStatus = 0;
                 });
             }
         });
@@ -155,7 +155,29 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
                                         ),
                                     ),
                                     onTap: () => authenticateUser(),
-                                ) : StaggerAnimation(buttonController: this._loginButtonController),
+                                ) : Padding(
+                                    padding: EdgeInsets.symmetric(vertical: 20.0),
+                                    child: Center(
+                                        child: Material(
+                                            elevation: 5.0,
+                                            shadowColor: Color(0xFF666666),
+                                            borderRadius: BorderRadius.circular(22.5),
+                                            child: Container(
+                                                padding: EdgeInsets.all(8.0),
+                                                height: 37.0,
+                                                width: 37.0,
+                                                decoration: BoxDecoration(
+                                                    color: Color(0xFFCC8400),
+                                                    shape: BoxShape.circle
+                                                ),
+                                                child: CircularProgressIndicator(
+                                                    backgroundColor: Color(0xFFFFFFFF),
+                                                    strokeWidth: 1.0
+                                                ),
+                                            ),
+                                        )
+                                    ),
+                                ),
                                 FlatButton(
                                     child: Text(
                                         'Forgot your password ?',
