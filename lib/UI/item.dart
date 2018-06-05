@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 import '../models/item.dart';
+import '../models/user.dart';
 import '../providers/app.dart';
 import '../UI/item_action_sheet.dart';
 import '../providers/auth.dart';
+import '../providers/yobuddy.dart';
 import '../pages/single_item.dart';
 
 class ItemPage extends StatefulWidget{
@@ -16,17 +19,18 @@ class ItemPage extends StatefulWidget{
 class _ItemPageState extends State<ItemPage>{
 
     Item item;
+    User sessionUser;
     int userID;
     bool isLiked = false;
+    String sessionToken;
 
     @override
     void initState(){
         super.initState();
         this.item = widget.item;
         this.getUserData();
-        setState((){
-            this.checkUserLike();
-        });
+        this.checkUserLike();
+        this.getSingleItem();
     }
 
     void _showBottomSheet(){
@@ -39,30 +43,59 @@ class _ItemPageState extends State<ItemPage>{
     }
 
     void checkUserLike(){
-        if(this.item.likes.likers.contains(this.userID)){
-            this.isLiked = true;
-        }
-        this.isLiked = false;
+        setState((){
+            if(this.item.likes.likers.contains(this.userID)){
+                this.isLiked = true;
+            } else {
+                this.isLiked = false;
+            }
+        });
     }
 
     void likeItem(){
-        setState((){
-            if(this.isLiked){
-                this.isLiked = false;
-                Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Disiked !!!"));
-            } else {
-                this.isLiked = true;
-                Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Liked !!!"));
-            }
+        YoBuddyService().likeItem(this.item, this.sessionUser, this.sessionToken).then((response){
+            setState((){
+                if(response.type == "dislike"){
+                    this.isLiked = false;
+                    Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Disiked !!!"));
+                } else if(response.type == "like") {
+                    this.isLiked = true;
+                    Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Liked !!!"));
+                } else {
+                    Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Oops... Something happend !!!"));
+                }
+            });
         });
+    }
+
+    void _setUser(User user){
+        this.sessionUser = user;
     }
 
     void _setUserID(int id){
         this.userID = id;
     }
 
+    void _setSessionToken(String token){
+        this.sessionToken = token;
+    }
+
     void getUserData(){
         Authentication().getSessionUser().then((value) => _setUserID(value.id));
+        Authentication().getSessionUser().then((value) => _setUser(value));
+        Authentication().getUserToken().then((value) => _setSessionToken(value));
+    }
+
+    Future<Null> getSingleItem() async{
+        YoBuddyService().getSingleItem(this.item.id).then((value){
+            setState((){
+                if(value != null) {
+                    this.item = value;
+                    this.checkUserLike();
+                }
+            });
+        });
+        return null;
     }
 
     void navigateSingleItem(){

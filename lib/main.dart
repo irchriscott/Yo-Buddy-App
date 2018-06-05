@@ -8,6 +8,7 @@ class MyApp extends StatelessWidget {
     @override
     Widget build(BuildContext context) {
         return new MaterialApp(
+            debugShowCheckedModeBanner: false,
             title: 'YO BUDDY',
             theme: new ThemeData(
                 primaryColor: Color(0xFFCC8400),

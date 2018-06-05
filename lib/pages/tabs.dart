@@ -3,7 +3,7 @@ import '../UI/drawer_content.dart';
 import 'home.dart';
 import 'categories.dart';
 import 'notifications.dart';
-import 'search.dart';
+import 'requests.dart';
 
 class TabsPage extends StatefulWidget{
 
@@ -56,7 +56,7 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
                     HomePage(title: this.title),
                     CategoriesPage(title: this.title),
                     NotificationPage(title: this.title),
-                    SearchPage(title: this.title)
+                    RequestsPage(title: this.title)
                 ],
                 controller: _tabController,
             ),
@@ -90,7 +90,7 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
                             ),
                             Tab(
                                 icon: Icon(
-                                    IconData(0xf4a4, fontFamily: 'ionicon'),
+                                    IconData(0xf454, fontFamily: 'ionicon'),
                                     size: 28.0
                                 )
                             )

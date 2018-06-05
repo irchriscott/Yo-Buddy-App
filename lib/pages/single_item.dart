@@ -1,11 +1,16 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_html_view/flutter_html_view.dart';
 import '../models/item.dart';
+import '../models/user.dart';
+import '../models/comment.dart';
 import '../providers/app.dart';
 import '../providers/auth.dart';
 import '../providers/yobuddy.dart';
 import '../UI/image_viewer.dart';
+import '../UI/comment.dart';
 
 class SingleItemPage extends StatefulWidget{
     
@@ -23,14 +28,21 @@ class _SingleItemPageState extends State<SingleItemPage>{
     _SingleItemPageState({@required isOwner});
 
     Item item;
+    User sessionUser;
     int userID;
-    String userToken;
+    String sessionToken;
     static const bool isOwner = false;
     bool isFollowed = false;
     int itemLikes;
     bool isLiked;
-    bool isFavourited;
+    bool isFavourite;
     bool canViewImages;
+    bool canShowComments = false;
+
+    List<Comment> comments;
+
+    TextEditingController comment = TextEditingController();
+    Random random = Random();
 
     @override
     void initState() {
@@ -39,36 +51,49 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this.getUserData();
         this.itemLikes = this.item.likes.count;
         this.getSingleItem();
+        this.checkIsFavourite();
+        this.checkIsLiked();
+        this.checkIsFollowed();
+        this._loadItemComments(this.item.id);
+        Timer(Duration(seconds: 5), (){
+            setState((){
+                this.loadItemComments(this.item.id);
+                this.canShowComments = true;
+            });
+        });
     }
 
     void checkIsFollowed(){
         if(this.item.user.followersList.contains(this.userID)){
             this.isFollowed = true;
+        } else {
+            this.isFollowed = false;
         }
-        this.isFollowed = false;
     }
 
     void checkIsLiked(){
         if(this.item.likes.likers.contains(this.userID)){
             this.isLiked = true;
+        } else {
+            this.isLiked = false;
         }
-        this.isLiked = false;
     }
 
-    void checkIsFavourited(){
+    void checkIsFavourite(){
         if(this.item.favourites.contains(this.userID)){
-            this.isFavourited = true;
+            this.isFavourite = true;
+        } else {
+            this.isFavourite = false;
         }
-        this.isFavourited = false;
     }
 
     void followUser(){
-        YoBuddyService().followUser(this.item.user.id, userID, userToken).then((response){
+        YoBuddyService().followUser(this.item.user.id, this.sessionUser.id, this.sessionToken).then((response){
             setState((){
                 if(response.type == "followed"){
-                  this.isFollowed = true;
+                    this.isFollowed = true;
                 } else if(response.type == "unfollowed") {
-                  this.isFollowed = false;
+                    this.isFollowed = false;
                 }
             });
             AppProvider().showSnackBar(response.text);
@@ -79,12 +104,17 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this.userID = id;
     }
 
+    void _setUser(User user){
+        this.sessionUser = user;
+    }
+
     void _setUserToken(String token){
-        this.userToken = token;
+        this.sessionToken = token;
     }
 
     void getUserData(){
         Authentication().getSessionUser().then((value) => _setUserID(value.id));
+        Authentication().getSessionUser().then((value) => _setUser(value));
         Authentication().getUserToken().then((value) => _setUserToken(value));
     }
 
@@ -115,14 +145,15 @@ class _SingleItemPageState extends State<SingleItemPage>{
         });
     }
 
-    void getSingleItem(){
+    Future<Null> getSingleItem() async{
         YoBuddyService().getSingleItem(this.item.id).then((value){
             setState((){
                 if(value != null) {
                     this.item = value;
-                    this.checkIsFavourited();
+                    this.checkIsFavourite();
                     this.checkIsLiked();
                     this.checkIsFollowed();
+                    this.itemLikes = value.likes.count;
                 } else {
                     AppProvider().alert(context, "Error", "This item might be deleted !!!").then((_){
                         Navigator.of(context).pop();
@@ -130,6 +161,57 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 }
             });
         });
+        return null;
+    }
+
+    void likeItem(){
+        YoBuddyService().likeItem(this.item, this.sessionUser, this.sessionToken).then((response){
+            setState((){
+                if(response.type == "dislike"){
+                    this.isLiked = false;
+                    this.itemLikes -= 1;
+                } else if(response.type == "like") {
+                    this.isLiked = true;
+                    this.itemLikes += 1;
+                }
+                this.getSingleItem();
+            });
+        });
+    }
+
+    void _setItemComments(List<Comment> _comments){
+        setState((){
+            if(_comments != null){
+                this.comments = _comments.toList();
+                this.canShowComments = true;
+            } else {
+                this.loadItemComments(this.item.id);
+            }
+        });
+    }
+
+
+    void _loadItemComments(int itemID){
+        YoBuddyService().getItemCommentsInPreferences(itemID).then((data) => this._setItemComments(data));
+    }
+
+    Future<Null> loadItemComments(int itemID) async{
+        YoBuddyService().getItemComments(itemID).then((data) => _setItemComments(data));
+        return null;
+    }
+
+    void submitItemComment(){
+        AppProvider().alert(context, "Comment", this.comment.text);
+        setState((){
+            Comment _comment = Comment(
+                id: random.nextInt(999999),
+                comment: comment.text,
+                createdAt: DateTime.now(),
+                user: this.sessionUser
+            );
+            this.comments.add(_comment);
+        });
+        this.comment.text = "";
     }
 
     @override
@@ -139,60 +221,60 @@ class _SingleItemPageState extends State<SingleItemPage>{
             children: <Widget>[
                 Scaffold(
                     appBar: AppBar(
-                        title: Text(this.item.name),
-                        actions: <Widget>[
-                            PopupMenuButton<String>(
-                                padding: EdgeInsets.zero,
-                                onSelected: menuItemSelected,
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                    const PopupMenuItem<String>(
-                                        value: editVal,
-                                        enabled: isOwner,
-                                        child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text(editVal)
-                                        )
-                                    ),
-                                    const PopupMenuItem<String>(
-                                        value: deleteVal,
-                                        enabled: isOwner,
-                                        child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text(deleteVal)
-                                        )
-                                    ),
-                                    const PopupMenuItem<String>(
-                                        value: availVal,
-                                        child: ListTile(
-                                            leading: Icon(Icons.assignment),
-                                            title: Text(availVal)
-                                        )
-                                    ),
-                                    const PopupMenuItem<String>(
-                                        value: borrowVal,
-                                        enabled: !isOwner,
-                                        child: ListTile(
-                                            leading: Icon(Icons.add),
-                                            title: Text(borrowVal)
-                                        )
-                                    ),
-                                    const PopupMenuItem<String>(
-                                        value: favVal,
-                                        child: ListTile(
-                                            leading: Icon(Icons.star_border),
-                                            title: Text(favVal)
-                                        )
-                                    ),
-                                    const PopupMenuItem<String>(
-                                        value: reportVal,
-                                        child: ListTile(
-                                            leading: Icon(Icons.info_outline),
-                                            title: Text(reportVal)
-                                        )
-                                    )
-                                ],
+                      title: Text(this.item.name),
+                      actions: <Widget>[
+                        PopupMenuButton<String>(
+                          padding: EdgeInsets.zero,
+                          onSelected: menuItemSelected,
+                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                            const PopupMenuItem<String>(
+                                value: editVal,
+                                enabled: isOwner,
+                                child: ListTile(
+                                    leading: Icon(Icons.edit),
+                                    title: Text(editVal)
+                                )
+                            ),
+                            const PopupMenuItem<String>(
+                                value: deleteVal,
+                                enabled: isOwner,
+                                child: ListTile(
+                                    leading: Icon(Icons.delete),
+                                    title: Text(deleteVal)
+                                )
+                            ),
+                            const PopupMenuItem<String>(
+                                value: availVal,
+                                child: ListTile(
+                                    leading: Icon(Icons.assignment),
+                                    title: Text(availVal)
+                                )
+                            ),
+                            const PopupMenuItem<String>(
+                                value: borrowVal,
+                                enabled: !isOwner,
+                                child: ListTile(
+                                    leading: Icon(Icons.add),
+                                    title: Text(borrowVal)
+                                )
+                            ),
+                            const PopupMenuItem<String>(
+                                value: favVal,
+                                child: ListTile(
+                                    leading: Icon(Icons.star_border),
+                                    title: Text(favVal)
+                                )
+                            ),
+                            const PopupMenuItem<String>(
+                                value: reportVal,
+                                child: ListTile(
+                                    leading: Icon(Icons.info_outline),
+                                    title: Text(reportVal)
+                                )
                             )
-                        ],
+                          ],
+                        )
+                      ],
                     ),
                     body: PageView(
                         children: <Widget>[
@@ -248,12 +330,12 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                                     child: Text(
                                                                         this.item.name,
                                                                         overflow: TextOverflow.ellipsis,
-                                                                            style: TextStyle(
-                                                                                color: Color(0xFF333333),
-                                                                                fontSize: 22.0,
-                                                                                fontWeight: FontWeight.bold,
-                                                                            ),
+                                                                        style: TextStyle(
+                                                                            color: Color(0xFF333333),
+                                                                            fontSize: 22.0,
+                                                                            fontWeight: FontWeight.bold,
                                                                         ),
+                                                                    ),
                                                                 ),
                                                                 Container(
                                                                     padding: EdgeInsets.only(left: 10.0),
@@ -281,10 +363,10 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                     ),
                                                     Container(
                                                         child: IconButton(
-                                                            onPressed: () => this.followUser(),
-                                                            icon: (this.isFollowed == true) ? Icon(IconData(0xf213, fontFamily: 'ionicon'), color: Color(0xFFCC8400)) : Icon(IconData(0xf211, fontFamily: 'ionicon'), color: Color(0xFF999999)),
-                                                            iconSize: 35.0,
-                                                            color: Color(0xFF333333),
+                                                          onPressed: () => this.followUser(),
+                                                          icon: (this.isFollowed == true) ? Icon(IconData(0xf213, fontFamily: 'ionicon'), color: Color(0xFFCC8400)) : Icon(IconData(0xf211, fontFamily: 'ionicon'), color: Color(0xFF999999)),
+                                                          iconSize: 35.0,
+                                                          color: Color(0xFF333333),
                                                         )
                                                     )
                                                 ],
@@ -297,7 +379,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                 padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                                                 decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(4.0),
-                                                    color: Colors.black45, 
+                                                    color: Colors.black45,
                                                 ),
                                                 child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.center,
@@ -330,14 +412,32 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                             children: <Widget>[
                                                                 Container(
                                                                     child: IconButton(
-                                                                        icon: (this.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon')),
-                                                                        iconSize: 30.0,
-                                                                        color: Color(0xFF333333),
-                                                                        onPressed: (){},
+                                                                      icon: (this.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon')),
+                                                                      iconSize: 30.0,
+                                                                      color: Color(0xFF333333),
+                                                                      onPressed: () => this.likeItem(),
                                                                     )
                                                                 ),
                                                                 Text(
-                                                                    this.itemLikes.toString(), 
+                                                                    this.itemLikes.toString(),
+                                                                    style: TextStyle(
+                                                                        fontSize: 20.0,
+                                                                        color: Color(0xFF333333)
+                                                                    )
+                                                                )
+                                                          ],
+                                                        )
+                                                    ),
+                                                    Container(
+                                                        child: Row(
+                                                            mainAxisAlignment: MainAxisAlignment.start,
+                                                            children: <Widget>[
+                                                                Container(
+                                                                  child: Icon(IconData(0xf3fc, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
+                                                                  padding: EdgeInsets.only(left: 12.0, right: 12.0),
+                                                                ),
+                                                                Text(
+                                                                    this.item.comments.toString(),
                                                                     style: TextStyle(
                                                                         fontSize: 20.0,
                                                                         color: Color(0xFF333333)
@@ -351,11 +451,11 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                             mainAxisAlignment: MainAxisAlignment.start,
                                                             children: <Widget>[
                                                                 Container(
-                                                                    child: Icon(IconData(0xf3fc, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
-                                                                    padding: EdgeInsets.only(left: 12.0, right: 12.0),
+                                                                  child: Icon(IconData(0xf3f8, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
+                                                                  padding: EdgeInsets.only(left: 12.0, right: 12.0),
                                                                 ),
                                                                 Text(
-                                                                    this.item.comments.toString(), 
+                                                                    this.item.borrow.toString(),
                                                                     style: TextStyle(
                                                                         fontSize: 20.0,
                                                                         color: Color(0xFF333333)
@@ -369,32 +469,14 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                             mainAxisAlignment: MainAxisAlignment.start,
                                                             children: <Widget>[
                                                                 Container(
-                                                                    child: Icon(IconData(0xf3f8, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
-                                                                    padding: EdgeInsets.only(left: 12.0, right: 12.0),
-                                                                ),
-                                                                Text(
-                                                                    this.item.borrow.toString(), 
-                                                                    style: TextStyle(
-                                                                        fontSize: 20.0,
-                                                                        color: Color(0xFF333333)
-                                                                    )
-                                                                )
-                                                            ],
-                                                        )
-                                                    ),
-                                                    Container(
-                                                        child: Row(
-                                                            mainAxisAlignment: MainAxisAlignment.start,
-                                                            children: <Widget>[
-                                                                Container(
-                                                                    child: (this.isFavourited == true) ? Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)) : Container(),
+                                                                    child: (this.isFavourite == true) ? Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)) : Container(),
                                                                     padding: EdgeInsets.only(left: 10.0, right: 8.0),
                                                                 ),
                                                             ],
                                                         )
                                                     ),
                                                 ],
-                                            ), 
+                                            ),
                                         ),
                                         Divider(),
                                         Container(
@@ -404,12 +486,43 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                     ],
                                 )
                             ),
+
                             //Comments Page
+
                             Container(
                                 color: Colors.white,
                                 child: Stack(
                                     fit: StackFit.expand,
                                     children: <Widget>[
+                                        Container(
+                                            child: (this.canShowComments == true) ? Container(
+                                                child: (this.comments != null) ? Container(
+                                                    child: (this.comments.length > 0) ? ListView.builder(
+                                                        itemCount: this.comments.length,
+                                                        itemBuilder: (BuildContext context, int i){
+                                                            return CommentListItem(comment: this.comments[i], userID: this.userID);
+                                                        }
+                                                    ) : Center(
+                                                        child: Container(
+                                                            child: Text("No Comment", style: TextStyle(fontSize: 27.0))
+                                                        )
+                                                    )
+                                                ) : Center(
+                                                    child: Container(
+                                                        child: Text("No Comment", style: TextStyle(fontSize: 27.0))
+                                                    ),
+                                                )
+                                            ) : Center(
+                                                child: Container(
+                                                    width: 25.0,
+                                                    height: 25.0,
+                                                    child: CircularProgressIndicator(
+                                                        backgroundColor: Color(0xFFCC8400),
+                                                        strokeWidth: 2.0,
+                                                    ),
+                                                )
+                                            )
+                                        ),
                                         Positioned(
                                             bottom: 0.0,
                                             left: 0.0,
@@ -426,6 +539,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                                 padding: EdgeInsets.only(left: 57.0),
                                                                 child: TextFormField(
                                                                     autofocus: true,
+                                                                    controller: this.comment,
                                                                     style: TextStyle(
                                                                         fontSize: 20.0,
                                                                         color: Colors.black
@@ -444,7 +558,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                             ),
                                                         ),
                                                         IconButton(
-                                                            onPressed: (){},
+                                                            onPressed: () => this.submitItemComment(),
                                                             icon: Icon(Icons.send),
                                                             iconSize: 30.0,
                                                             color: Color(0xFF666666),
@@ -470,7 +584,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                     shape: BoxShape.circle,
                                                     color: Color(0xFF999999),
                                                     image: DecorationImage(
-                                                        image: NetworkImage(this.item.user.getImageURL),
+                                                        image: NetworkImage(this.sessionUser.getImageURL),
                                                         fit: BoxFit.fill
                                                     )
                                                 )
@@ -480,9 +594,9 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                 ),
                             )
                         ],
-                    )  
+                    )
                 ),
-                (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClose, name: this.item.name, isLiked: this.isLiked) : Container()
+              (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClose, name: this.item.name, isLiked: this.isLiked) : Container()
             ],
         );
     }

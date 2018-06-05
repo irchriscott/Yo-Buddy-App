@@ -46,7 +46,8 @@ class Authentication{
     void _saveUserInPreferences(String session, String token) async{
         prefs = await SharedPreferences.getInstance();
         prefs.setString("session", session);
-        prefs.setString("token", token);
+        if(token != null)
+            prefs.setString("token", token);
     }
 
     void logoutUser() async{
@@ -62,5 +63,17 @@ class Authentication{
     Future<String> getUserToken() async{
         prefs = await SharedPreferences.getInstance();
         return prefs.getString("token");
+    }
+
+    //Shall be called every time an action is performed
+
+    void updateUserData(String token){
+        netUtils.get(
+            Uri.encodeFull("")
+        ).then((response){
+            DatabaseHelper().update(User.fromJson(response)).then((value){
+                this._saveUserInPreferences(json.encode(response), null);
+            });
+        });
     }
 }

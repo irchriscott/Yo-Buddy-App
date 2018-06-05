@@ -39,7 +39,7 @@ class AppProvider{
 
     SnackBar showSnackBar(String message) {
         return SnackBar(
-            content: new Text(message, style: TextStyle(fontSize: 16.0)),
+            content: new Text(message, style: TextStyle(fontSize: 16.0, fontFamily: 'didact')),
             action: new SnackBarAction(
                 label: 'Cancel'.toUpperCase(),
                 onPressed: () {},

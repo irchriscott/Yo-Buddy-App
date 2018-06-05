@@ -17,14 +17,15 @@ class _HomePageState extends State<HomePage> {
 
   List<Item> items = [];
   bool canShowItems = false;
+  GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
   
   @override
   void initState(){
       super.initState();
-      this.loadHomeItems();
       this._loadHomeItems();
       Timer(Duration(seconds: 5), (){
           setState(() {
+              this.loadHomeItems();
               this.canShowItems = true;
           });
       });
@@ -32,7 +33,7 @@ class _HomePageState extends State<HomePage> {
 
   void _setItems(List<Item> _items){
       setState((){
-          if(_items != null || this.items != null) {
+          if(_items != null) {
               this.items = _items.toList();
               this.canShowItems = true;
           }
@@ -43,34 +44,37 @@ class _HomePageState extends State<HomePage> {
       YoBuddyService().getSharedHomeItems().then((value) => this._setItems(value));
   }
 
-  Future<String> loadHomeItems() async{
-      return YoBuddyService().getHomeItems().then((data){
-          setState((){
-              this.items = data.toList();
-          });
-      });
+  Future<Null> loadHomeItems() async{
+      await Future.delayed(Duration(seconds: 3));
+      _refreshKey.currentState?.show(atTop: false);
+      YoBuddyService().getHomeItems().then((data) => _setItems(data.toList()));
+      return null;
   }
 
   @override
   Widget build(BuildContext context) {
     
       return new Scaffold(
-          body: Container(
-              child: this.canShowItems == true ? ListView.builder(
-                  itemCount: this.items.length,
-                  itemBuilder: (BuildContext context, int i){
+          body: RefreshIndicator(
+              key: this._refreshKey,
+              onRefresh: () => this.loadHomeItems(),
+              child: Container(
+                  child: this.canShowItems == true ? ListView.builder(
+                    itemCount: this.items.length,
+                    itemBuilder: (BuildContext context, int i){
                       return ItemPage(item: this.items[i]);
-                  },
-              ) : Center(
-                  child: Container(
-                      width: 25.0,
-                      height: 25.0,
-                      child: CircularProgressIndicator(
-                          backgroundColor: Color(0xFFCC8400),
-                          strokeWidth: 2.0,
-                      ),
+                    },
+                  ) : Center(
+                      child: Container(
+                          width: 25.0,
+                          height: 25.0,
+                          child: CircularProgressIndicator(
+                              backgroundColor: Color(0xFFCC8400),
+                              strokeWidth: 2.0,
+                          ),
+                      )
                   )
-              )
+              ),
           )
       );
   }

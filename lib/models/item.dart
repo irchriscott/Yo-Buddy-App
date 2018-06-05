@@ -23,7 +23,6 @@ class Item{
     final int borrow;
     final List<ItemImage> images;
     final List<User> likers;
-    final List<Comment> commenters;
     final List<dynamic> favourites;
 
     Item({this.id, this.category, 
@@ -32,7 +31,7 @@ class Item{
           this.per, this.description, this.status, 
           this.isAvailable, this.createdAt, this.url, 
           this.likes, this.comments, this.borrow, this.likers, 
-          this.commenters, this.images, this.favourites
+          this.images, this.favourites
         });
 
     factory Item.fromJson(Map<String, dynamic> json){
@@ -54,7 +53,6 @@ class Item{
             comments: json['comments'],
             borrow: json['borrow'],
             likers: User().getUsersList(json['likers']),
-            commenters: Comment().getCommentsList(json['commenters']),
             images: ItemImage().getItemImages(json['images']),
             favourites: json['favourites']
         );
