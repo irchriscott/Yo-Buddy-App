@@ -63,6 +63,9 @@ flutter:
     - family: didact
       fonts:
           - asset: assets/fonts/DidactGothic-Regular.ttf
+    - family: poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Regular.ttf
   #
   # For details regarding fonts from package dependencies, 
   # see https://flutter.io/custom-fonts/#from-packages

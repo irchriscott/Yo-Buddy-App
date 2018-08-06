@@ -103,7 +103,7 @@ class YoBuddyService{
             List commentsData = JsonDecoder().convert(commentsJson).toList();
             List<Comment> comments = [];
             commentsData.forEach((comment){
-              comments.add(Comment.fromJson(comment));
+                comments.add(Comment.fromJson(comment));
             });
             return comments;
         }

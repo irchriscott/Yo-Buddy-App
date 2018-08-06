@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
                 primaryColor: Color(0xFFCC8400),
                 brightness: Brightness.light,
                 primarySwatch: Colors.orange,
-                fontFamily: 'didact'
+                fontFamily: 'poppins'
             ),
             home: SplashScreenPage()
         );

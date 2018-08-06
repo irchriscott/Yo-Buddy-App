@@ -74,10 +74,10 @@ class StaggerAnimation extends StatelessWidget {
                             height: 45.0, //buttonZoomOut.value == 70 ? 45.0 : buttonZoomOut.value,
                             alignment: FractionalOffset.center,
                             decoration: BoxDecoration(
-                                color: const Color(0xFFCC8400),
+                                color: Color(0xFFCC8400),
                                 borderRadius: buttonZoomOut.value < 300
-                                    ? new BorderRadius.all(const Radius.circular(10.0))
-                                    : new BorderRadius.all(const Radius.circular(22.5)),
+                                    ? new BorderRadius.all(Radius.circular(10.0))
+                                    : new BorderRadius.all(Radius.circular(22.5)),
                             ),
                             child: buttonSqueezeAnimation.value > 75.0 ? new Text(
                                 "Log In".toUpperCase(),
@@ -97,7 +97,7 @@ class StaggerAnimation extends StatelessWidget {
                               shape: buttonZoomOut.value < 300
                                   ? BoxShape.circle
                                   : BoxShape.rectangle,
-                              color: const Color(0xFFCC8400),
+                              color: Color(0xFFCC8400),
                             ),
                         ),
                     )
