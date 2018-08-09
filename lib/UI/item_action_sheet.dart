@@ -5,8 +5,9 @@ import '../providers/app.dart';
 import '../providers/auth.dart';
 
 class ItemActionSheet extends StatefulWidget{
-    const ItemActionSheet({Key key, @required this.item}):super(key: key);
+    const ItemActionSheet({Key key, @required this.item, @required this.scaffoldContext}):super(key: key);
     final Item item;
+    final BuildContext scaffoldContext;
     @override
     _ItemActionSheetState createState() => _ItemActionSheetState();
 }
@@ -31,32 +32,32 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
     }
 
     void editItem(){
-        Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Edited"));
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Edited"));
         Navigator.of(context).pop();
     }
 
     void deleteItem(){
-        Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Deleted"));
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Deleted"));
         Navigator.of(context).pop();
     }
 
-    void showAvailables(){
-        Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Available Shown"));
+    void showAvailable(){
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Available Shown"));
         Navigator.of(context).pop();
     }
 
     void borrowItem(){
-        Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Borrowed"));
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Borrowed"));
         Navigator.of(context).pop();
     }
 
     void favouriteItem(){
-        Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Favourited"));
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Favourited"));
         Navigator.of(context).pop();
     }
 
     void reportItem(){
-        Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Reported"));
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Reported"));
         Navigator.of(context).pop();
     }
     
@@ -79,34 +80,34 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
                         leading: Icon(Icons.edit),
                         title: Text("Edit"),
                         enabled: (this.item.user.id == this.userID),
-                        onTap: (){},
+                        onTap: () => this.editItem(),
                     ),
                     ListTile(
                         leading: Icon(Icons.delete),
                         title: Text("Delete"),
                         enabled: (this.item.user.id == this.userID),
-                        onTap: (){},
+                        onTap: () => this.editItem(),
                     ),
                     ListTile(
                         leading: Icon(Icons.assignment),
                         title: Text("Available"),
-                        onTap: (){},
+                        onTap: () => this.showAvailable(),
                     ),
                     ListTile(
                         leading: Icon(Icons.add),
                         title: Text("Borrow"),
                         enabled: (this.item.user.id != this.userID),
-                        onTap: (){},
+                        onTap: () => this.borrowItem(),
                     ),
                     ListTile(
                         leading: Icon(Icons.star_border),
                         title: Text("Favourite"),
-                        onTap: (){}, 
+                        onTap: () => this.favouriteItem(),
                     ),
                     ListTile(
                         leading: Icon(Icons.info_outline),
                         title: Text("Report"),
-                        onTap: (){}
+                        onTap: () => this.reportItem()
                     )
                 ],
             ),

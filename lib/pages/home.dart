@@ -18,17 +18,20 @@ class _HomePageState extends State<HomePage> {
   List<Item> items = [];
   bool canShowItems = false;
   GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
+  BuildContext scaffoldContext;
   
   @override
   void initState(){
-      super.initState();
       this._loadHomeItems();
+
       Timer(Duration(seconds: 5), (){
           setState(() {
               this.loadHomeItems();
               this.canShowItems = true;
           });
       });
+
+      super.initState();
   }
 
   void _setItems(List<Item> _items){
@@ -53,29 +56,34 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    
-      return new Scaffold(
-          body: RefreshIndicator(
-              key: this._refreshKey,
-              onRefresh: () => this.loadHomeItems(),
-              child: Container(
-                  child: this.canShowItems == true ? ListView.builder(
-                    itemCount: this.items.length,
-                    itemBuilder: (BuildContext context, int i){
-                      return ItemPage(item: this.items[i]);
-                    },
-                  ) : Center(
-                      child: Container(
-                          width: 25.0,
-                          height: 25.0,
-                          child: CircularProgressIndicator(
-                              backgroundColor: Color(0xFFCC8400),
-                              strokeWidth: 2.0,
-                          ),
-                      )
+      Widget body = RefreshIndicator(
+          key: this._refreshKey,
+          onRefresh: () => this.loadHomeItems(),
+          child: Container(
+              child: this.canShowItems == true ? ListView.builder(
+                  itemCount: this.items.length,
+                  itemBuilder: (BuildContext context, int i){
+                      return ItemPage(item: this.items[i], scaffoldContext: scaffoldContext);
+                  },
+              ) : Center(
+                  child: Container(
+                      width: 25.0,
+                      height: 25.0,
+                      child: CircularProgressIndicator(
+                          backgroundColor: Color(0xFFCC8400),
+                          strokeWidth: 2.0,
+                      ),
                   )
-              ),
-          )
+              )
+          ),
+      );
+      return new Scaffold(
+          body: Builder(
+              builder: (BuildContext context){
+                  scaffoldContext = context;
+                  return body;
+              }
+          ),
       );
   }
 }

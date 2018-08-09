@@ -66,7 +66,6 @@ class Authentication{
     }
 
     //Shall be called every time an action is performed
-
     void updateUserData(String token){
         netUtils.get(
             Uri.encodeFull("")

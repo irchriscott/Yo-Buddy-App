@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
+import 'dart:io';
 import '../UI/drawer_content.dart';
 import 'home.dart';
 import 'categories.dart';
@@ -17,6 +19,7 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
     final GlobalKey<ScaffoldState> _this = new GlobalKey<ScaffoldState>();
 
     TabController _tabController;
+    BuildContext scaffoldContext;
 
     @override
     void dispose(){
@@ -27,12 +30,21 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
     @override
     void initState(){
         super.initState();
-        _tabController = new TabController(length: 4, vsync: this); 
+        _tabController = new TabController(length: 4, vsync: this);
     }
 
     @override
     Widget build(BuildContext context){
-        return new Scaffold(
+        Widget body = TabBarView(
+            children: <Widget>[
+                HomePage(title: this.title),
+                CategoriesPage(title: this.title),
+                NotificationPage(title: this.title),
+                RequestsPage(title: this.title)
+            ],
+            controller: _tabController,
+        );
+        return Scaffold(
             key: _this,
             appBar: AppBar(
                 backgroundColor: Color(0xFFCC8400),
@@ -49,16 +61,13 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
                 ),
             ),
             drawer: Drawer(
-                child: DrawerContent(),
+                child: DrawerContent(scaffoldContext: scaffoldContext)
             ),
-            body: TabBarView(
-                children: <Widget>[
-                    HomePage(title: this.title),
-                    CategoriesPage(title: this.title),
-                    NotificationPage(title: this.title),
-                    RequestsPage(title: this.title)
-                ],
-                controller: _tabController,
+            body: Builder(
+                builder: (BuildContext context){
+                    scaffoldContext = context;
+                    return body;
+                }
             ),
             bottomNavigationBar: BottomAppBar(
                 hasNotch: true,

@@ -9,10 +9,12 @@ import '../UI/item_action_sheet.dart';
 import '../providers/auth.dart';
 import '../providers/yobuddy.dart';
 import '../pages/single_item.dart';
+import '../providers/helper.dart';
 
 class ItemPage extends StatefulWidget{
-    const ItemPage({Key key, @required this.item}): super(key:key);
+    const ItemPage({Key key, @required this.item, @required this.scaffoldContext}): super(key:key);
     final Item item;
+    final BuildContext scaffoldContext;
     @override
     _ItemPageState createState() => _ItemPageState();
 }
@@ -26,18 +28,41 @@ class _ItemPageState extends State<ItemPage>{
 
     @override
     void initState(){
-        super.initState();
         this.item = widget.item;
+
         this.getUserData();
         this.checkUserLike();
-        this.getSingleItem();
+
+        Timer(Duration(seconds: 3), (){
+            this.getSingleItem();
+        });
+
+        super.initState();
+    }
+
+    void _setUser(User user){
+        this.sessionUser = user;
+    }
+
+    void _setUserID(int id){
+        this.userID = id;
+    }
+
+    void _setSessionToken(String token){
+        this.sessionToken = token;
+    }
+
+    void getUserData(){
+        Authentication().getSessionUser().then((value) => _setUserID(value.id));
+        Authentication().getSessionUser().then((value) => _setUser(value));
+        Authentication().getUserToken().then((value) => _setSessionToken(value));
     }
 
     void _showBottomSheet(){
         showModalBottomSheet(
             context: context,
             builder: (builder){
-                return ItemActionSheet(item: this.item);
+                return ItemActionSheet(item: this.item, scaffoldContext: widget.scaffoldContext);
             }
         );
     }
@@ -47,6 +72,7 @@ class _ItemPageState extends State<ItemPage>{
             if(this.item.likes.likers.contains(this.userID)){
                 this.isLiked = true;
             } else {
+                this.isLiked = false;
                 this.isLiked = false;
             }
         });
@@ -68,26 +94,8 @@ class _ItemPageState extends State<ItemPage>{
         });
     }
 
-    void _setUser(User user){
-        this.sessionUser = user;
-    }
-
-    void _setUserID(int id){
-        this.userID = id;
-    }
-
-    void _setSessionToken(String token){
-        this.sessionToken = token;
-    }
-
-    void getUserData(){
-        Authentication().getSessionUser().then((value) => _setUserID(value.id));
-        Authentication().getSessionUser().then((value) => _setUser(value));
-        Authentication().getUserToken().then((value) => _setSessionToken(value));
-    }
-
     Future<Null> getSingleItem() async{
-        YoBuddyService().getSingleItem(this.item.id).then((value){
+        YoBuddyService().getSingleItem(this.item.user.username, this.item.uuid, this.item.id).then((value){
             setState((){
                 if(value != null) {
                     this.item = value;
@@ -179,7 +187,7 @@ class _ItemPageState extends State<ItemPage>{
                                                             Container(
                                                                 padding: EdgeInsets.only(left: 10.0),
                                                                 child: Text(
-                                                                    "by " + this.item.user.name + "  -  " + this.item.createdAt.toString(),
+                                                                    "by " + this.item.user.name + "  -  " + HelperProvider().formatDateTime(this.item.createdAt.toString()),
                                                                     style: TextStyle(
                                                                         color: Color(0xFF999999)
                                                                     ),
@@ -223,7 +231,7 @@ class _ItemPageState extends State<ItemPage>{
                                     color: Colors.white
                                 ),
                                 Padding(padding: EdgeInsets.only(left: 8.0)),
-                                Text(this.item.price.toString(), style: TextStyle(color: Colors.white)),
+                                Text(HelperProvider().formatPrice(this.item.price.toInt()), style: TextStyle(color: Colors.white)),
                                 Padding(padding: EdgeInsets.only(left: 8.0)),
                                 Text(this.item.currency, style: TextStyle(color: Colors.white)),
                                 Padding(padding: EdgeInsets.only(left: 8.0)),

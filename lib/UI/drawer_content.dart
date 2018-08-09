@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import '../models/user.dart';
 import '../providers/auth.dart';
+import '../UI/new_item.dart';
 
 class DrawerContent extends StatefulWidget{
+    DrawerContent({Key key, @required this.scaffoldContext}) : super(key : key);
+    final BuildContext scaffoldContext;
     @override
     _DrawerContentState createState() => _DrawerContentState();
 }
@@ -40,7 +43,15 @@ class _DrawerContentState extends State<DrawerContent>{
                 ),
                 child: Text(value),
             ),
-            onTap: () => _onTap,            
+            onTap: () => _onTap,
+        );
+    }
+
+    void showNewItemModal() {
+        Navigator.of(context).pop();
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => NewItemForm())
         );
     }
 
@@ -99,7 +110,7 @@ class _DrawerContentState extends State<DrawerContent>{
                 ListTile(
                     leading: Icon(Icons.add_shopping_cart),
                     title: Text("Add Item"),
-                    onTap: (){},            
+                    onTap: () => this.showNewItemModal(),
                 ),
                 ListTile(
                     leading: Icon(Icons.add),

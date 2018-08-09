@@ -17,6 +17,7 @@ class Item{
     final String status;
     final bool isAvailable;
     final DateTime createdAt;
+    final String uuid;
     final String url;
     final Like likes;
     final int comments;
@@ -31,7 +32,7 @@ class Item{
           this.per, this.description, this.status, 
           this.isAvailable, this.createdAt, this.url, 
           this.likes, this.comments, this.borrow, this.likers, 
-          this.images, this.favourites
+          this.images, this.favourites, this.uuid
         });
 
     factory Item.fromJson(Map<String, dynamic> json){
@@ -48,6 +49,7 @@ class Item{
             status: json['status'],
             isAvailable: json['is_available'],
             createdAt: DateTime.parse(json['created_at']),
+            uuid: json['uuid'],
             url: json['url'],
             likes: Like.fromJson(json['likes']),
             comments: json['comments'],

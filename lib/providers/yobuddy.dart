@@ -7,6 +7,7 @@ import '../models/item.dart';
 import '../models/response.dart';
 import '../models/user.dart';
 import '../models/comment.dart';
+import '../models/category.dart';
 
 class YoBuddyService{
 
@@ -57,9 +58,9 @@ class YoBuddyService{
         return null;
     }
 
-    Future<Item> getSingleItem(int itemID){
+    Future<Item> getSingleItem(String username, String uuid, int itemID){
         return net.NetworkUtil().get(
-            Uri.encodeFull(AppProvider().baseURL + "/items/"+ itemID.toString() + ".json")
+            Uri.encodeFull(AppProvider().baseURL + "/item/" + username + "/enc-dt-" + uuid + "-"+ itemID.toString() + ".json")
         ).then((response){
             return Item.fromJson(response);
         });
@@ -86,13 +87,13 @@ class YoBuddyService{
         return net.NetworkUtil().get(
             Uri.encodeFull(AppProvider().baseURL + "/items/" + itemID.toString() + "/comments.json")
         ).then((response){
-              this._saveCommentsInSharedPreferences(itemID, json.encode(response));
-             List data = response.toList();
-             List<Comment> comments = [];
-             data.forEach((comment){
+            this._saveCommentsInSharedPreferences(itemID, json.encode(response));
+            List data = response.toList();
+            List<Comment> comments = [];
+            data.forEach((comment){
                 comments.add(Comment.fromJson(comment));
-             });
-             return comments;
+            });
+            return comments;
         }); 
     }
 
@@ -107,6 +108,26 @@ class YoBuddyService{
             });
             return comments;
         }
+        return null;
+    }
+
+    void _saveCategoriesInSharedPreferences(String categories) async{
+        prefs = await SharedPreferences.getInstance();
+        prefs.setString("categories", categories);
+    }
+
+    Future<List<Category>> getAllCategories() async{
+        return net.NetworkUtil().get(
+            Uri.encodeFull(AppProvider().baseURL + "/categories/all.json")
+        ).then((response) {
+            this._saveCategoriesInSharedPreferences(json.encode(response));
+            List data = response.toList();
+            List<Category> categories = List<Category>();
+            data.forEach((category){
+               categories.add(Category.fromJson(category));
+            });
+            return categories;
+        });
         return null;
     }
 }

@@ -14,4 +14,16 @@ class Subcategory{
         );
     }
 
+    List<Subcategory> getSubcategoryList(dynamic json){
+        if(json != null){
+            List data = json.toList();
+            List<Subcategory> subcategories = List<Subcategory>();
+            data.forEach((subcategory){
+                subcategories.add(Subcategory.fromJson(subcategory));
+            });
+            return subcategories;
+        }
+        return [];
+    }
+
 }

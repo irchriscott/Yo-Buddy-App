@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class AppProvider{
 
@@ -39,12 +40,21 @@ class AppProvider{
 
     SnackBar showSnackBar(String message) {
         return SnackBar(
-            content: new Text(message, style: TextStyle(fontSize: 16.0, fontFamily: 'didact')),
+            content: new Text(message, style: TextStyle(fontSize: 16.0, fontFamily: 'popins')),
             action: new SnackBarAction(
                 label: 'Cancel'.toUpperCase(),
                 onPressed: () {},
             ),
             duration: Duration(seconds: 3),
+        );
+    }
+
+    void showToastMessage(String message){
+        Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            textcolor: "#FFFFFF"
         );
     }
 }

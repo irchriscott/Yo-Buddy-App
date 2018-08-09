@@ -12,7 +12,7 @@ class SplashScreenPage extends StatefulWidget{
 class _SplashScreenState extends State<SplashScreenPage> with SingleTickerProviderStateMixin{
     
     final String title = "yo boddy";
-    bool isLoggedIn;
+    bool isLoggedIn = false;
 
     Animation<double> _fontAnimation;
     AnimationController _fontAnimationController;
