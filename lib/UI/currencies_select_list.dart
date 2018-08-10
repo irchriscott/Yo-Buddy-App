@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../models/category.dart';
+import '../models/utils.dart';
 
-class CategoriesSelectList extends StatefulWidget{
+class CurrenciesSelectList extends StatefulWidget{
 
-    CategoriesSelectList({Key key, @required this.categories, @required this.onClose}) : super(key : key);
+    CurrenciesSelectList({Key key, @required this.currencies, @required this.onClose}) : super(key : key);
 
-    final List<Widget> categories;
+    final List<Widget> currencies;
     final VoidCallback onClose;
-    _CategoriesSelectList createState() => _CategoriesSelectList();
+    _CurrenciesSelectList createState() => _CurrenciesSelectList();
 }
 
-class _CategoriesSelectList extends State<CategoriesSelectList>{
+class _CurrenciesSelectList extends State<CurrenciesSelectList>{
 
     int categoryGroupValue;
 
@@ -20,9 +20,9 @@ class _CategoriesSelectList extends State<CategoriesSelectList>{
         return Material(
             color: Color.fromRGBO(0,0,0,0.7),
             child: Hero(
-                tag: "showcat",
+                tag: "showcurrencies",
                 child: Container(
-                    padding: EdgeInsets.fromLTRB(20.0, 40.0, 20.0, 40.0),
+                    padding: EdgeInsets.fromLTRB(20.0, 170.0, 20.0, 170.0),
                     child: Container(
                         padding: EdgeInsets.only(top: 30.0, bottom: 30.0, right: 10.0),
                         decoration: BoxDecoration(
@@ -33,7 +33,7 @@ class _CategoriesSelectList extends State<CategoriesSelectList>{
                                 Container(
                                     padding: EdgeInsets.only(left: 30.0),
                                     child: Text(
-                                        "Select Item Category : ",
+                                        "Select Item Price Currency : ",
                                         style: TextStyle(
                                             fontWeight: FontWeight.bold,
                                             fontSize: 18.0
@@ -44,7 +44,7 @@ class _CategoriesSelectList extends State<CategoriesSelectList>{
                                     padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
                                     child: ListView(
                                         children: <Widget>[
-                                            Column(children: widget.categories)
+                                            Column(children: widget.currencies)
                                         ],
                                     ),
                                 ),

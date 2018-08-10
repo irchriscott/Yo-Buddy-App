@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import 'package:fluttertoast/fluttertoast.dart';
 
 class AppProvider{
 
@@ -46,15 +45,6 @@ class AppProvider{
                 onPressed: () {},
             ),
             duration: Duration(seconds: 3),
-        );
-    }
-
-    void showToastMessage(String message){
-        Fluttertoast.showToast(
-            msg: message,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            textcolor: "#FFFFFF"
         );
     }
 }
