@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
-import '../models/item.dart';
+import 'package:buddyapp/models/item.dart';
 import 'package:flutter/foundation.dart';
-import '../providers/app.dart';
-import '../providers/auth.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/providers/auth.dart';
+import 'package:buddyapp/pages/edit_item.dart';
 
 class ItemActionSheet extends StatefulWidget{
-    const ItemActionSheet({Key key, @required this.item, @required this.scaffoldContext}):super(key: key);
+
+    const ItemActionSheet({Key key, @required this.item, @required this.scaffoldContext, @required this.context}):super(key: key);
+
     final Item item;
     final BuildContext scaffoldContext;
+    final context;
+
     @override
     _ItemActionSheetState createState() => _ItemActionSheetState();
 }
@@ -32,33 +37,36 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
     }
 
     void editItem(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Edited"));
         Navigator.of(context).pop();
+        Navigator.push(
+            widget.context,
+            MaterialPageRoute(builder: (BuildContext context) => EditItemForm(item:  this.item))
+        );
     }
 
     void deleteItem(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Deleted"));
         Navigator.of(context).pop();
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Deleted"));
     }
 
     void showAvailable(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Available Shown"));
         Navigator.of(context).pop();
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Available Shown"));
     }
 
     void borrowItem(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Borrowed"));
         Navigator.of(context).pop();
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Borrowed"));
     }
 
     void favouriteItem(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Favourited"));
         Navigator.of(context).pop();
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Favourited"));
     }
 
     void reportItem(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Reported"));
         Navigator.of(context).pop();
+        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Reported"));
     }
     
     @override
@@ -80,34 +88,34 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
                         leading: Icon(Icons.edit),
                         title: Text("Edit"),
                         enabled: (this.item.user.id == this.userID),
-                        onTap: () => this.editItem(),
+                        onTap: editItem,
                     ),
                     ListTile(
                         leading: Icon(Icons.delete),
                         title: Text("Delete"),
                         enabled: (this.item.user.id == this.userID),
-                        onTap: () => this.editItem(),
+                        onTap: editItem,
                     ),
                     ListTile(
                         leading: Icon(Icons.assignment),
                         title: Text("Available"),
-                        onTap: () => this.showAvailable(),
+                        onTap: showAvailable,
                     ),
                     ListTile(
                         leading: Icon(Icons.add),
                         title: Text("Borrow"),
                         enabled: (this.item.user.id != this.userID),
-                        onTap: () => this.borrowItem(),
+                        onTap: borrowItem,
                     ),
                     ListTile(
                         leading: Icon(Icons.star_border),
                         title: Text("Favourite"),
-                        onTap: () => this.favouriteItem(),
+                        onTap: favouriteItem,
                     ),
                     ListTile(
                         leading: Icon(Icons.info_outline),
                         title: Text("Report"),
-                        onTap: () => this.reportItem()
+                        onTap: reportItem
                     )
                 ],
             ),

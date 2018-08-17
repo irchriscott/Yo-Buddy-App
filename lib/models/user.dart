@@ -1,4 +1,4 @@
-import '../providers/app.dart';
+import 'package:buddyapp/providers/app.dart';
 
 class User{
     int id;

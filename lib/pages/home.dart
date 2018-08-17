@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../providers/yobuddy.dart';
-import '../models/item.dart';
+import 'package:buddyapp/providers/yobuddy.dart';
+import 'package:buddyapp/models/item.dart';
 import 'dart:async';
-import '../UI/item.dart';
+import 'package:buddyapp/UI/item.dart';
 
 class HomePage extends StatefulWidget {
     HomePage({Key key, this.title}) : super(key: key);

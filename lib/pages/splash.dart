@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'login.dart';
-import '../providers/session.dart';
+import 'package:buddyapp/providers/session.dart';
 import 'tabs.dart';
 
 class SplashScreenPage extends StatefulWidget{

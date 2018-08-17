@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../models/category.dart';
+import 'package:buddyapp/models/category.dart';
 
 class SubcategoriesSelectList extends StatefulWidget{
 
@@ -8,10 +8,10 @@ class SubcategoriesSelectList extends StatefulWidget{
 
     final List<Widget> subcategories;
     final VoidCallback onClose;
-    _SubcategoriesSelectList createState() => _SubcategoriesSelectList();
+    _SubcategoriesSelectListState createState() => _SubcategoriesSelectListState();
 }
 
-class _SubcategoriesSelectList extends State<SubcategoriesSelectList>{
+class _SubcategoriesSelectListState extends State<SubcategoriesSelectList>{
 
     int categoryGroupValue;
 

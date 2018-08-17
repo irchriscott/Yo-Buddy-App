@@ -1,3 +1,8 @@
+import 'dart:async';
+import 'package:buddyapp/providers/net.dart' as net;
+import 'package:buddyapp/providers/app.dart';
+import 'item.dart';
+
 class Currency{
 
     String name;
@@ -30,5 +35,36 @@ class Per{
         pers.add(Per(per: "Month", description: "30 days, 4 weeks"));
         pers.add(Per(per: "Year", description: "12 months, 360 days"));
         return pers;
+    }
+}
+
+class Available{
+
+    String from;
+    String to;
+    int count;
+
+    Available({this.from, this.to, this.count});
+
+    factory Available.fromJson(Map<String, dynamic> json){
+        return Available(
+            from: json['from'],
+            to: json['to'],
+            count: json['count']
+        );
+    }
+
+    Future<List<Available>> getItemAvailable(Item item){
+        return net.NetworkUtil().get(
+            Uri.encodeFull(AppProvider().baseURL + "/item/${item.user.username}/enc-dt-${item.uuid}-${item.id}/available.json")
+        ).then((response){
+            List data = response.toList();
+            List<Available> available = [];
+            data.forEach((avail){
+                available.add(Available.fromJson(avail));
+            });
+            return available;
+        });
+        return null;
     }
 }

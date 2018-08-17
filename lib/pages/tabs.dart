@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'dart:io';
-import '../UI/drawer_content.dart';
+import 'package:buddyapp/UI/drawer_content.dart';
 import 'home.dart';
 import 'categories.dart';
 import 'notifications.dart';

@@ -3,11 +3,11 @@ import 'app.dart';
 import 'dart:convert';
 import 'net.dart' as net;
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/item.dart';
-import '../models/response.dart';
-import '../models/user.dart';
-import '../models/comment.dart';
-import '../models/category.dart';
+import 'package:buddyapp/models/item.dart';
+import 'package:buddyapp/models/response.dart';
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/models/comment.dart';
+import 'package:buddyapp/models/category.dart';
 
 class YoBuddyService{
 

@@ -1,17 +1,20 @@
 import 'dart:async';
 import 'dart:math';
+import 'edit_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_html_view/flutter_html_view.dart';
-import '../models/item.dart';
-import '../models/user.dart';
-import '../models/comment.dart';
-import '../providers/app.dart';
-import '../providers/auth.dart';
-import '../providers/yobuddy.dart';
-import '../providers/helper.dart';
-import '../UI/image_viewer.dart';
-import '../UI/comment.dart';
+import 'package:html2md/html2md.dart' as html2md;
+import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:buddyapp/models/item.dart';
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/models/comment.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/providers/auth.dart';
+import 'package:buddyapp/providers/yobuddy.dart';
+import 'package:buddyapp/providers/helper.dart';
+import 'package:buddyapp/UI/image_viewer.dart';
+import 'package:buddyapp/UI/comment.dart';
+import 'package:buddyapp/UI/items_available.dart';
 
 // ignore: must_be_immutable
 class SingleItemPage extends StatefulWidget{
@@ -28,16 +31,20 @@ class SingleItemPage extends StatefulWidget{
 class _SingleItemPageState extends State<SingleItemPage>{
 
     Item item;
+
     User sessionUser;
     int userID;
     String sessionToken;
+
     bool isOwner;
     bool isFollowed = false;
     int itemLikes;
     bool isLiked;
     bool isFavourite;
-    bool canViewImages;
+
+    bool canViewImages = false;
     bool canShowComments = false;
+    bool canViewAvailable = false;
 
     List<Comment> comments;
 
@@ -45,6 +52,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
     Random random = Random();
 
     BuildContext scaffoldContext;
+    Color disabledColor = Color.fromRGBO(0, 0, 0, 0.2);
+    Color enabledColor = Colors.black;
 
     @override
     void initState() {
@@ -137,7 +146,28 @@ class _SingleItemPageState extends State<SingleItemPage>{
 
     void menuItemSelected(String value){
         if(_menuValue.contains(value)){
+            switch(value){
+                case editVal:
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) => EditItemForm(item:  this.item))
+                    );
+                    return;
+                case deleteVal:
+                    return;
+                case availVal:
+                    setState(() {
+                        this.canViewAvailable = true;
+                    });
+                    return;
+                case borrowVal:
+                    return;
+                case favVal:
+                    return;
+                case reportVal:
+                    return;
 
+            }
         }
     }
 
@@ -147,9 +177,15 @@ class _SingleItemPageState extends State<SingleItemPage>{
         });
     }
 
-    void onImageViewClose(){
+    void onImageViewClosed(){
         setState((){
             this.canViewImages = false;
+        });
+    }
+
+    void onAvailableClosed(){
+        setState(() {
+            this.canViewAvailable = false;
         });
     }
 
@@ -431,8 +467,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
                             ),
                             Divider(),
                             Container(
-                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                                child: HtmlView(data: this.item.description)
+                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 15.0),
+                                child: MarkdownBody(data: html2md.convert(this.item.description))
                             )
                         ],
                     )
@@ -567,7 +603,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                         enabled: isOwner,
                                         child: ListTile(
                                             leading: Icon(Icons.edit),
-                                            title: Text(editVal)
+                                            title: Text(editVal, style: TextStyle(color: isOwner ? enabledColor : disabledColor))
                                         )
                                     ),
                                     PopupMenuItem<String>(
@@ -575,7 +611,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                         enabled: isOwner,
                                         child: ListTile(
                                             leading: Icon(Icons.delete),
-                                            title: Text(deleteVal)
+                                            title: Text(deleteVal, style: TextStyle(color: isOwner ? enabledColor : disabledColor))
                                         )
                                     ),
                                     PopupMenuItem<String>(
@@ -590,7 +626,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                         enabled: !isOwner,
                                         child: ListTile(
                                             leading: Icon(Icons.add),
-                                            title: Text(borrowVal)
+                                            title: Text(borrowVal, style: TextStyle(color: !isOwner ? enabledColor : disabledColor))
                                         )
                                     ),
                                     PopupMenuItem<String>(
@@ -618,7 +654,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
                         }
                     ),
                 ),
-              (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClose, name: this.item.name, isLiked: this.isLiked) : Container()
+                (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClosed, name: this.item.name, isLiked: this.isLiked) : Container(),
+                (this.canViewAvailable == true) ? ItemsAvailable(item: this.item, onClose: this.onAvailableClosed) : Container()
             ],
         );
     }

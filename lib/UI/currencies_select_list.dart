@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import '../models/utils.dart';
+import 'package:buddyapp/models/utils.dart';
 
 class CurrenciesSelectList extends StatefulWidget{
 
@@ -8,10 +8,10 @@ class CurrenciesSelectList extends StatefulWidget{
 
     final List<Widget> currencies;
     final VoidCallback onClose;
-    _CurrenciesSelectList createState() => _CurrenciesSelectList();
+    _CurrenciesSelectListState createState() => _CurrenciesSelectListState();
 }
 
-class _CurrenciesSelectList extends State<CurrenciesSelectList>{
+class _CurrenciesSelectListState extends State<CurrenciesSelectList>{
 
     int categoryGroupValue;
 

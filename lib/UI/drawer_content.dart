@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import '../models/user.dart';
-import '../providers/auth.dart';
-import '../UI/new_item.dart';
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/providers/auth.dart';
+import 'package:buddyapp/pages/new_item.dart';
 
 class DrawerContent extends StatefulWidget{
     DrawerContent({Key key, @required this.scaffoldContext}) : super(key : key);

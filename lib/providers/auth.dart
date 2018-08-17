@@ -1,9 +1,9 @@
 import 'dart:async';
-import '../models/response.dart';
+import 'package:buddyapp/models/response.dart';
 import 'net.dart';
 import 'app.dart';
 import 'session.dart';
-import '../models/user.dart';
+import 'package:buddyapp/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 

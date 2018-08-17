@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import '../models/comment.dart';
-import '../providers/helper.dart';
-import '../UI/comment_action_sheet.dart';
+import 'package:buddyapp/models/comment.dart';
+import 'package:buddyapp/providers/helper.dart';
+import 'package:buddyapp/UI/comment_action_sheet.dart';
 
 class CommentListItem extends StatefulWidget{
 

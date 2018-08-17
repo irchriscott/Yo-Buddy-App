@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'pages/splash.dart';
+import 'package:buddyapp/pages/splash.dart';
 
 void main() => runApp(new MyApp());
 

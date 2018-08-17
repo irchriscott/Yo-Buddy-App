@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/comment.dart';
+import 'package:buddyapp/models/comment.dart';
 import 'package:flutter/foundation.dart';
-import '../providers/app.dart';
-import '../providers/auth.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/providers/auth.dart';
 
 class CommentActionSheet extends StatefulWidget{
     const CommentActionSheet({Key key, @required this.comment, @required this.scaffoldContext}):super(key: key);

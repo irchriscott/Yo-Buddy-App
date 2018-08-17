@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import '../providers/app.dart';
-import '../providers/auth.dart';
-import '../UI/popup.dart';
-import '../pages/tabs.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/providers/auth.dart';
+import 'package:buddyapp/UI/popup.dart';
+import 'package:buddyapp/pages/tabs.dart';
 
 class LoginPage extends StatefulWidget{
     @override
@@ -267,12 +267,12 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
                     ),
                 ),
                 isOverlayVisible == true ? PopupOverlay(
-                  message: this._message,
-                  type: this._type,
-                  onTap: (){
-                      this.isOverlayVisible = false;
-                      Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new TabsPage()));
-                  }) : Container(),
+                    message: this._message,
+                    type: this._type,
+                    onTap: (){
+                        this.isOverlayVisible = false;
+                        Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new TabsPage()));
+                    }) : Container(),
             ],
         );
     }

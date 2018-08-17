@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/item.dart';
+import 'package:buddyapp/models/item.dart';
 import 'package:flutter/foundation.dart';
-import '../providers/app.dart';
-import '../libraries/carousel.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/libraries/carousel.dart';
 import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart';
 import 'package:flutter_advanced_networkimage/zoomable_widget.dart';
 import 'package:flutter_advanced_networkimage/transition_to_image.dart';

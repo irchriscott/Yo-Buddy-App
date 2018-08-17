@@ -2,19 +2,21 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
-import '../models/category.dart';
-import '../models/subcategory.dart';
-import '../models/utils.dart';
-import '../models/user.dart';
-import '../models/item.dart';
-import '../providers/yobuddy.dart';
-import '../providers/auth.dart';
-import '../providers/app.dart';
-import '../UI/categories_select_list.dart';
-import '../UI/subcategories_select_list.dart';
-import '../UI/currencies_select_list.dart';
-import '../UI/pers_select_list.dart';
-import '../UI/text_editor.dart';
+import 'package:buddyapp/models/category.dart';
+import 'package:buddyapp/models/subcategory.dart';
+import 'package:buddyapp/models/utils.dart';
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/models/item.dart';
+import 'package:buddyapp/providers/yobuddy.dart';
+import 'package:buddyapp/providers/auth.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/UI/categories_select_list.dart';
+import 'package:buddyapp/UI/subcategories_select_list.dart';
+import 'package:buddyapp/UI/currencies_select_list.dart';
+import 'package:buddyapp/UI/pers_select_list.dart';
+import 'package:buddyapp/UI/text_editor.dart';
+import 'package:buddyapp/UI/popup.dart';
+import 'package:buddyapp/UI/loading_popup.dart';
 
 class NewItemForm extends StatefulWidget{
     @override
@@ -23,14 +25,17 @@ class NewItemForm extends StatefulWidget{
 
 class _NewItemFormState extends State<NewItemForm> {
 
-    bool isSaving;
+    bool isSaving = false;
+    bool isLoadingVisible = false;
+    bool isSaveLoadingVisible = false;
+
     List<Category> categories = [];
     List<Subcategory> subcategories = [];
     List<Currency> currencies = [];
     List<Per> pers = [];
 
     String _platformMessage = 'No Error';
-    List<File> images;
+    List<File> images = [];
     int maxImageNo = 10;
     bool selectSingleImage = false;
 
@@ -52,6 +57,9 @@ class _NewItemFormState extends State<NewItemForm> {
 
     String descriptionTextValue = "Enter Item Description";
     Color descriptionTextColor = Color(0x99999999);
+
+    String _message = "";
+    String _type = "";
 
     int categoryID = 0;
     int subcategoryID = 0;
@@ -109,20 +117,21 @@ class _NewItemFormState extends State<NewItemForm> {
             per: this.per,
             description: this._itemDescriptionCtrl.text,
             count: this._itemQuantityCtrl.text != "" ? int.parse(this._itemQuantityCtrl.text) : 0,
-            imageFiles: this.images
+            imageFiles: this.images,
+            isAvailable: true
         );
-        item.saveItem(this.userID.toString(), this.sessionToken).then((response){
-            if(response.text == "success"){
-                Navigator.of(context).pop();
-            } else {
-                AppProvider().alert(context, response.type.replaceRange(0, 1, response.type[0].toUpperCase()), response.text);
-                setState(() {
-                    this.isSaving = false;
-                });
-            }
-        });
         setState(() {
             this.isSaving = true;
+            this.isLoadingVisible = true;
+        });
+        item.saveOrUpdateItem(this.userID.toString(), this.sessionToken).then((response){
+            setState((){
+                this.isLoadingVisible = false;
+                this._message = response.text;
+                this._type = response.type;
+                this.isSaveLoadingVisible = true;
+                this.isSaving = false;
+            });
         });
     }
 
@@ -274,10 +283,10 @@ class _NewItemFormState extends State<NewItemForm> {
 
     Future<void> pickImages() async {
         setState(() {
-            images = null;
+            images = [];
         });
 
-        List resultList;
+        List resultList = [];
         String error;
 
         try {
@@ -561,7 +570,7 @@ class _NewItemFormState extends State<NewItemForm> {
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: <Widget>[
-                                                images == null ? Container() : SizedBox(
+                                                images.length <= 0 ? Container() : SizedBox(
                                                     width: 400.0,
                                                     height: 200.0,
                                                     child: ListView.builder(
@@ -617,6 +626,11 @@ class _NewItemFormState extends State<NewItemForm> {
                             this.showPers = false;
                         });
                     }) : Container(),
+                    (isSaveLoadingVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){
+                        setState(() { this.isSaveLoadingVisible = false;});
+                        if(this._type == "success") Navigator.of(context).pop();
+                    }) : Container(),
+                    (isLoadingVisible == true) ? LoadingOverlay() : Container()
                 ],
             )
         );

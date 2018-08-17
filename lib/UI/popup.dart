@@ -56,13 +56,16 @@ class _PopupOverlayState extends State<PopupOverlay> with SingleTickerProviderSt
                                 child: Icon(this.type == "success" ? Icons.done : Icons.clear, color: Color(0xFFCC8400), size: _iconAnimation.value * 80.0,)
                             )
                         ),
-                        Padding(padding: EdgeInsets.only(bottom: 50.0),),
-                        Text(
-                            this.message,
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 25.0,
-                           ),
+                        Padding(padding: EdgeInsets.only(bottom: 50.0)),
+                        Center(
+                            child: Text(
+                                this.message,
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 25.0
+                                ),
+                                textAlign: TextAlign.center,
+                            ),
                         )
                     ],
                 ),

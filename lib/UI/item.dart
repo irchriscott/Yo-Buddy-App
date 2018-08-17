@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
-import '../models/item.dart';
-import '../models/user.dart';
-import '../providers/app.dart';
-import '../UI/item_action_sheet.dart';
-import '../providers/auth.dart';
-import '../providers/yobuddy.dart';
-import '../pages/single_item.dart';
-import '../providers/helper.dart';
+import 'package:buddyapp/models/item.dart';
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/UI/item_action_sheet.dart';
+import 'package:buddyapp/providers/auth.dart';
+import 'package:buddyapp/providers/yobuddy.dart';
+import 'package:buddyapp/pages/single_item.dart';
+import 'package:buddyapp/providers/helper.dart';
 
 class ItemPage extends StatefulWidget{
     const ItemPage({Key key, @required this.item, @required this.scaffoldContext}): super(key:key);
@@ -62,7 +62,7 @@ class _ItemPageState extends State<ItemPage>{
         showModalBottomSheet(
             context: context,
             builder: (builder){
-                return ItemActionSheet(item: this.item, scaffoldContext: widget.scaffoldContext);
+                return ItemActionSheet(item: this.item, scaffoldContext: widget.scaffoldContext, context: context);
             }
         );
     }
