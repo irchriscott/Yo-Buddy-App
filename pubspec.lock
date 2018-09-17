@@ -195,6 +195,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.1"
+  flutter_socket_io:
+    dependency: "direct main"
+    description:
+      name: flutter_socket_io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.4.1"
   flutter_staggered_grid_view:
     dependency: "direct main"
     description:
@@ -417,6 +424,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.29.0+1"
+  rikulo_commons:
+    dependency: transitive
+    description:
+      name: rikulo_commons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.3.9"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -457,6 +471,20 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.99"
+  socket_io:
+    dependency: transitive
+    description:
+      name: socket_io
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.2"
+  socket_io_client:
+    dependency: "direct main"
+    description:
+      name: socket_io_client
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.8.2"
   source_gen:
     dependency: transitive
     description:
@@ -506,6 +534,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.7"
+  stream:
+    dependency: transitive
+    description:
+      name: stream
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.7.0+4"
   stream_channel:
     dependency: transitive
     description:
@@ -576,6 +611,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.9.0+4"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.5.3"
   vector_math:
     dependency: transitive
     description:

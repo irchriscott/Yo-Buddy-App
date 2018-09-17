@@ -68,14 +68,7 @@ class _ItemPageState extends State<ItemPage>{
     }
 
     void checkUserLike(){
-        setState((){
-            if(this.item.likes.likers.contains(this.userID)){
-                this.isLiked = true;
-            } else {
-                this.isLiked = false;
-                this.isLiked = false;
-            }
-        });
+        setState((){ this.isLiked = this.item.likes.likers.contains(this.userID) ? true : false; });
     }
 
     void likeItem(){

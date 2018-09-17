@@ -4,17 +4,19 @@ import 'package:flutter/material.dart';
 class Category{
     final int id;
     final String name;
+    final String icon;
     final String description;
     final String uuid;
     final List<Subcategory> subcategories;
     final int items;
 
-    Category({this.id, this.name, this.description, this.uuid, this.subcategories, this.items});
+    Category({this.id, this.name, this.icon, this.description, this.uuid, this.subcategories, this.items});
 
     factory Category.fromJson(Map<String, dynamic> json){
         return new Category(
             id: json['id'],
             name: json['name'],
+            icon: json['icon'],
             description: json['description'],
             uuid: json['uuid'],
             subcategories: Subcategory().getSubcategoryList(json['subcategories']),

@@ -10,6 +10,7 @@ class ItemsAvailable extends StatefulWidget{
 
     final Item item;
     final VoidCallback onClose;
+
     @override
     State<StatefulWidget> createState() {
         return _ItemsAvailableState();

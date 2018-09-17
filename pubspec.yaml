@@ -27,6 +27,8 @@ dependencies:
   flutter_multiple_image_picker: ^0.0.1
   multi_image_picker: ^1.0.51
   dio: ^1.0.0
+  flutter_socket_io: ^0.4.1
+  socket_io_client: ^0.8.2
 
 dev_dependencies:
   build_runner: ^0.7.6
@@ -68,10 +70,13 @@ flutter:
         - asset: assets/fonts/ionicons.ttf
     - family: didact
       fonts:
-          - asset: assets/fonts/DidactGothic-Regular.ttf
+        - asset: assets/fonts/DidactGothic-Regular.ttf
     - family: poppins
       fonts:
         - asset: assets/fonts/Poppins-Regular.ttf
+    - family: fontawesome
+      fonts:
+        - asset: assets/fonts/FonwAwesome.ttf
   #
   # For details regarding fonts from package dependencies, 
   # see https://flutter.io/custom-fonts/#from-packages

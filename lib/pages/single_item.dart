@@ -15,6 +15,9 @@ import 'package:buddyapp/providers/helper.dart';
 import 'package:buddyapp/UI/image_viewer.dart';
 import 'package:buddyapp/UI/comment.dart';
 import 'package:buddyapp/UI/items_available.dart';
+import 'package:flutter_socket_io/flutter_socket_io.dart';
+import 'package:flutter_socket_io/socket_io_manager.dart';
+import 'package:socket_io_client/socket_io_client.dart' as IO;
 
 // ignore: must_be_immutable
 class SingleItemPage extends StatefulWidget{
@@ -55,6 +58,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
     Color disabledColor = Color.fromRGBO(0, 0, 0, 0.2);
     Color enabledColor = Colors.black;
 
+    SocketIO socketIO;
+
     @override
     void initState() {
         this.getUserData();
@@ -76,6 +81,11 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 this.canShowComments = true;
             });
         });
+
+        this.socketIO = SocketIOManager().createSocketIO("http://127.0.0.1:5000", "");
+        this.socketIO.init();
+
+        IO.Socket socket = IO.io("http://127.0.0.1:5000");
 
         super.initState();
     }
@@ -99,27 +109,15 @@ class _SingleItemPageState extends State<SingleItemPage>{
     }
 
     void checkIsFollowed(){
-        if(this.item.user.followersList.contains(this.userID)){
-            this.isFollowed = true;
-        } else {
-            this.isFollowed = false;
-        }
+        this.isFollowed = this.item.user.followersList.contains(this.userID) ? true : false;
     }
 
     void checkIsLiked(){
-        if(this.item.likes.likers.contains(this.userID)){
-            this.isLiked = true;
-        } else {
-            this.isLiked = false;
-        }
+        this.isLiked = this.item.likes.likers.contains(this.userID) ? true : false;
     }
 
     void checkIsFavourite(){
-        if(this.item.favourites.contains(this.userID)){
-            this.isFavourite = true;
-        } else {
-            this.isFavourite = false;
-        }
+        this.isFavourite = this.item.favourites.contains(this.userID) ? true : false;
     }
 
     void followUser(){
@@ -156,9 +154,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 case deleteVal:
                     return;
                 case availVal:
-                    setState(() {
-                        this.canViewAvailable = true;
-                    });
+                    setState(() { this.canViewAvailable = true; });
                     return;
                 case borrowVal:
                     return;
@@ -172,21 +168,15 @@ class _SingleItemPageState extends State<SingleItemPage>{
     }
 
     void onImageViewOpen(){
-        setState((){
-          this.canViewImages = true;
-        });
+        setState((){ this.canViewImages = true; });
     }
 
     void onImageViewClosed(){
-        setState((){
-            this.canViewImages = false;
-        });
+        setState((){ this.canViewImages = false; });
     }
 
     void onAvailableClosed(){
-        setState(() {
-            this.canViewAvailable = false;
-        });
+        setState(() { this.canViewAvailable = false; });
     }
 
     Future<Null> getSingleItem() async{
@@ -206,6 +196,16 @@ class _SingleItemPageState extends State<SingleItemPage>{
             });
         });
         return null;
+    }
+
+    void emitLikeSocket(){
+        String data = '{"item":"${this.item.id.toString()}", "type":"like", "liker":"${this.sessionUser.id.toString()}", "user":"${this.item.user.id.toString()}"}';
+        this.socketIO.connect();
+        this.socketIO.sendMessage("like", data, this.getLikeSocketResponse);
+    }
+    
+    void getLikeSocketResponse(dynamic response){
+        print(response);
     }
 
     void likeItem(){
