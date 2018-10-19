@@ -6,11 +6,20 @@ import 'package:buddyapp/UI/comment_action_sheet.dart';
 
 class CommentListItem extends StatefulWidget{
 
-    CommentListItem({Key key, @required this.comment, @required this.userID, @required this.scaffoldContext}):super(key:key);
+    CommentListItem({
+        Key key,
+        @required this.comment,
+        @required this.userID,
+        @required this.scaffoldContext,
+        @required this.onEdit,
+        @required this.onDelete
+    }):super(key:key);
 
     final Comment comment;
     final int userID;
     final BuildContext scaffoldContext;
+    final VoidCallback onEdit;
+    final VoidCallback onDelete;
 
     @override
     _CommentListItemState createState() => _CommentListItemState();
@@ -30,7 +39,12 @@ class _CommentListItemState extends State<CommentListItem>{
         showModalBottomSheet(
             context: context,
             builder: (builder){
-                return CommentActionSheet(comment: this.comment, scaffoldContext: widget.scaffoldContext);
+                return CommentActionSheet(
+                    comment: this.comment,
+                    scaffoldContext: widget.scaffoldContext,
+                    onEdit: () => this.widget.onEdit(),
+                    onDelete: () => widget.onDelete(),
+                );
             }
         );
     }

@@ -1,12 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'package:http/http.dart' as http;
 import 'package:dio/dio.dart';
 import 'category.dart';
 import 'subcategory.dart';
 import 'user.dart';
-import 'comment.dart';
 import 'response.dart';
 import 'package:buddyapp/providers/app.dart';
 import 'package:buddyapp/providers/net.dart' as net;
@@ -125,7 +123,7 @@ class Item{
                         return ResponseService.fromJson(_decoder.convert('{"type":"error", "text":"An error has occured, Sorry!"}'));
                     }
                     return ResponseService.fromJson(response.data);
-                } on DioError catch (e) {
+                } on DioError catch (_) {
                     return ResponseService.fromJson(_decoder.convert(
                         '{"type":"error", "text":"An error has occured, Sorry!"}'));
                 }

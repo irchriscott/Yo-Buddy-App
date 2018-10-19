@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/pages/new_item.dart';
+import 'package:buddyapp/pages/session/borrowing.dart';
 
 class DrawerContent extends StatefulWidget{
     DrawerContent({Key key, @required this.scaffoldContext}) : super(key : key);
@@ -43,7 +44,7 @@ class _DrawerContentState extends State<DrawerContent>{
                 ),
                 child: Text(value),
             ),
-            onTap: () => _onTap,
+            onTap: () => _onTap(),
         );
     }
 
@@ -92,7 +93,11 @@ class _DrawerContentState extends State<DrawerContent>{
 
                 }),
                 _listTimeItem(IconData(0xf3f8, fontFamily: 'ionicon'), "Borrows", this.user.borrow.toString(), (){
-
+                    Navigator.of(context).pop();
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) => SessionBorrowing())
+                    );
                 }),
                 _listTimeItem(Icons.star_border, "Favourites", this.user.favourites.toString(), (){
 

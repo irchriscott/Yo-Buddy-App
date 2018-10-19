@@ -1,8 +1,11 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/providers/yobuddy.dart';
+import 'package:buddyapp/providers/notification.dart';
+import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/models/item.dart';
-import 'dart:async';
 import 'package:buddyapp/UI/item.dart';
+import 'package:buddyapp/models/user.dart';
 
 class HomePage extends StatefulWidget {
     HomePage({Key key, this.title}) : super(key: key);
@@ -19,11 +22,17 @@ class _HomePageState extends State<HomePage> {
   bool canShowItems = false;
   GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
   BuildContext scaffoldContext;
+
+  PushNotification pushNotification;
+
+  User sessionUser;
+  int userID;
+  String sessionToken;
   
   @override
   void initState(){
       this._loadHomeItems();
-
+      this.getUserData();
       Timer(Duration(seconds: 5), (){
           setState(() {
               this.loadHomeItems();
@@ -31,7 +40,24 @@ class _HomePageState extends State<HomePage> {
           });
       });
 
+      Timer(Duration(seconds: 1), (){ setState((){
+          this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+          this.pushNotification.initNotification();
+      }); });
+
       super.initState();
+  }
+
+  void _setUser(User user){ this.sessionUser = user; }
+
+  void _setUserID(int id){ this.userID = id; }
+
+  void _setSessionToken(String token){ this.sessionToken = token; }
+
+  void getUserData(){
+      Authentication().getSessionUser().then((value) => _setUserID(value.id));
+      Authentication().getSessionUser().then((value) => _setUser(value));
+      Authentication().getUserToken().then((value) => _setSessionToken(value));
   }
 
   void _setItems(List<Item> _items){

@@ -8,6 +8,7 @@ import 'package:buddyapp/models/response.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/models/comment.dart';
 import 'package:buddyapp/models/category.dart';
+import 'package:buddyapp/models/borrow.dart';
 
 class YoBuddyService{
 
@@ -128,6 +129,70 @@ class YoBuddyService{
             });
             return categories;
         });
+    }
+
+    void _saveBorrowingInSharedPreferences(String borrowings) async{
+        prefs = await SharedPreferences.getInstance();
+        prefs.setString("borrowings", borrowings);
+    }
+
+    Future<List<Borrow>> getBorrowing(String sessionToken) async{
+        return net.NetworkUtil().get(
+            Uri.encodeFull(AppProvider().baseURL + "/session/borrowing.json?token=$sessionToken")
+        ).then((response){
+             this._saveBorrowingInSharedPreferences(json.encode(response));
+             List data = response.toList();
+             List<Borrow> borrowings = List<Borrow>();
+             data.forEach((borrow){
+                 borrowings.add(Borrow.fromJson(borrow));
+             });
+             return borrowings;
+        });
+    }
+
+    Future<List<Borrow>> getBorrowingsInPreferences() async{
+        prefs  = await SharedPreferences.getInstance();
+        var borrowingsJson = prefs.getString("borrowings");
+        if(borrowingsJson != null){
+            List borrowingsData = JsonDecoder().convert(borrowingsJson).toList();
+            List<Borrow> borrowings = [];
+            borrowingsData.forEach((borrow){
+                borrowings.add(Borrow.fromJson(borrow));
+            });
+            return borrowings;
+        }
         return null;
     }
+
+    void _saveBorrowMessageInSharedPreferences(int borrowID, String messages) async{
+        prefs = await SharedPreferences.getInstance();
+        prefs.setString("borrow_messages_$borrowID", messages);
+    }
+
+    Future<List<BorrowMessage>> getBorrowMessages(int borrowID, String url, String sessionToken) async{
+        return net.NetworkUtil().get(AppProvider().baseURL + url + "?token=$sessionToken").then((response){
+            this._saveBorrowMessageInSharedPreferences(borrowID, json.encode(response));
+            List data = response.toList();
+            List<BorrowMessage> messages = List<BorrowMessage>();
+            data.forEach((message){
+                messages.add(BorrowMessage.fromJson(message));
+            });
+            return messages;
+        });
+    }
+
+    Future<List<BorrowMessage>> getBorrowMessagesInSharedPreferences(int borrowID) async{
+        prefs  = await SharedPreferences.getInstance();
+        var messagesJson = prefs.getString("borrow_messages_$borrowID");
+        if(messagesJson != null){
+            List messagesData = JsonDecoder().convert(messagesJson).toList();
+            List<BorrowMessage> borrowings = [];
+            messagesData.forEach((borrow){
+                borrowings.add(BorrowMessage.fromJson(borrow));
+            });
+            return borrowings;
+        }
+        return null;
+    }
+
 }

@@ -16,6 +16,8 @@ class MyApp extends StatelessWidget {
                 primarySwatch: Colors.orange,
                 fontFamily: 'poppins'
             ),
+            builder: (context, child) =>
+                MediaQuery(data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true), child: child),
             home: SplashScreenPage()
         );
     }

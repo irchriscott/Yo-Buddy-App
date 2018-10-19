@@ -1,105 +1,94 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:multi_image_picker/multi_image_picker.dart';
-import 'package:buddyapp/models/category.dart';
-import 'package:buddyapp/models/subcategory.dart';
 import 'package:buddyapp/models/utils.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/models/item.dart';
-import 'package:buddyapp/providers/yobuddy.dart';
+import 'package:buddyapp/models/borrow.dart';
 import 'package:buddyapp/providers/auth.dart';
-import 'package:buddyapp/providers/app.dart';
 import 'package:buddyapp/providers/notification.dart';
-import 'package:buddyapp/UI/categories_select_list.dart';
-import 'package:buddyapp/UI/subcategories_select_list.dart';
 import 'package:buddyapp/UI/currencies_select_list.dart';
 import 'package:buddyapp/UI/pers_select_list.dart';
 import 'package:buddyapp/UI/text_editor.dart';
 import 'package:buddyapp/UI/popup.dart';
 import 'package:buddyapp/UI/loading_popup.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
 
-class NewItemForm extends StatefulWidget{
-    @override
-    _NewItemFormState createState() => _NewItemFormState();
+class BorrowItemForm extends StatefulWidget{
+    BorrowItemForm({Key key, @required this.item}) : super(key : key);
+    final Item item;
+    _BorrowItemState createState() => _BorrowItemState();
 }
 
-class _NewItemFormState extends State<NewItemForm> {
+class _BorrowItemState extends State<BorrowItemForm>{
+
 
     bool isSaving = false;
+    bool isOverlayVisible = false;
     bool isLoadingVisible = false;
     bool isSaveLoadingVisible = false;
 
-    List<Category> categories = [];
-    List<Subcategory> subcategories = [];
     List<Currency> currencies = [];
     List<Per> pers = [];
 
-    String _platformMessage = 'No Error';
-    List<File> images = [];
-    int maxImageNo = 10;
-    bool selectSingleImage = false;
 
-    String selectedCategory = "";
-    String selectedSubcategory = "";
     String selectedCurrency = "";
     String selectedPer = "";
-
-    bool showCategories = false;
-    bool showSubcategories = false;
-    bool showCurrencies = false;
-    bool showPers = false;
-    bool showTextEditor = false;
-
-    TextEditingController _itemNameCtrl = TextEditingController();
-    TextEditingController _itemPriceCtrl = TextEditingController();
-    TextEditingController _itemQuantityCtrl = TextEditingController();
-    TextEditingController _itemDescriptionCtrl = TextEditingController();
-
-    String descriptionTextValue = "Enter Item Description";
-    Color descriptionTextColor = Color(0x99999999);
+    String selectedFromDate = "";
 
     String _message = "";
     String _type = "";
 
-    int categoryID = 0;
-    int subcategoryID = 0;
+    bool showCurrencies = false;
+    bool showPers = false;
+    bool showTextEditor = false;
+
+    TextEditingController _itemPriceCtrl = TextEditingController();
+    TextEditingController _itemQuantityCtrl = TextEditingController();
+    TextEditingController _borrowDescriptionCtrl = TextEditingController();
+    TextEditingController _numberOfTimes = TextEditingController();
+
+    String descriptionTextValue = "Enter Borrow Conditions";
+    Color descriptionTextColor = Color(0x99999999);
+
     String currency = "";
     String per = "";
 
     User sessionUser;
     int userID;
     String sessionToken;
-
     PushNotification pushNotification;
 
     @override
     void initState() {
-        this.isSaving = false;
-        super.initState();
-        this.getCategoriesList();
         this.getUserData();
 
         this.currencies = Currency().getCurrencies();
         this.pers = Per().getPers();
 
-        this.currency = Currency().getCurrencies()[0].abbr;
-        this.per = Per().getPers()[0].per;
+        this.currency = widget.item.currency;
+        this.per = widget.item.per;
 
-        this.selectedCurrency = Currency().getCurrencies()[0].name;
-        this.selectedPer = Per().getPers()[0].perName;
+        this.selectedCurrency = Currency().getCurrencies().firstWhere((currency) => currency.abbr == widget.item.currency).name;
+        this.selectedPer = Per().getPers().firstWhere((per) => per.per == widget.item.per).perName;
+
+        _itemPriceCtrl.text = widget.item.price.toString();
 
         Timer(Duration(seconds: 1), (){ setState((){
             this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
             this.pushNotification.initNotification();
         }); });
 
-        _itemQuantityCtrl.text = "1";
+        super.initState();
     }
 
     @override
     void dispose(){
         this.pushNotification.dispose();
+        this._itemQuantityCtrl.dispose();
+        this._itemPriceCtrl.dispose();
+        this._borrowDescriptionCtrl.dispose();
+        this._numberOfTimes.dispose();
         super.dispose();
     }
 
@@ -115,79 +104,11 @@ class _NewItemFormState extends State<NewItemForm> {
         Authentication().getUserToken().then((value) => _setSessionToken(value));
     }
 
-    void saveNewItem(){
-        Item item = Item(
-            name: this._itemNameCtrl.text,
-            category: this.categories.firstWhere((category) => category.id == this.categoryID),
-            subcategory: this.subcategories.firstWhere((subcategory) => subcategory.id == this.subcategoryID),
-            price: this._itemPriceCtrl.text != "" ? double.parse(this._itemPriceCtrl.text) : 0.0,
-            currency: this.currency,
-            per: this.per,
-            description: this._itemDescriptionCtrl.text,
-            count: this._itemQuantityCtrl.text != "" ? int.parse(this._itemQuantityCtrl.text) : 0,
-            imageFiles: this.images,
-            isAvailable: true
-        );
-        setState(() {
-            this.isSaving = true;
-            this.isLoadingVisible = true;
-        });
-        item.saveOrUpdateItem(this.userID.toString(), this.sessionToken).then((response){
-            setState((){
-                this.isLoadingVisible = false;
-                this._message = response.text;
-                this._type = response.type;
-                this.isSaveLoadingVisible = true;
-                this.isSaving = false;
-            });
-        });
-    }
-
-    void getCategoriesList(){
-        YoBuddyService().getAllCategories().then((data){
-            setState(() {
-                this.categories = data.toList();
-                this.subcategories = data.toList()[0].subcategories.toList();
-
-                this.selectedCategory = this.categories[0].name;
-                this.selectedSubcategory = this.subcategories[0].name;
-
-                this.categoryID = this.categories[0].id;
-                this.subcategoryID = this.subcategories[0].id;
-            });
-        });
-    }
-
-    void openSelectAlertCategory(){ setState(() { this.showCategories = true; }); }
-
-    void openSelectAlertSubcategory(){ setState(() { this.showSubcategories = true; }); }
-
     void openSelectCurrency(){ setState(() { this.showCurrencies = true; }); }
 
     void openSelectPer(){ setState(() { this.showPers = true; }); }
 
     void openTextEditor(){ setState(() { this.showTextEditor = true; }); }
-
-    void onCategorySelected(int value){
-        setState(() {
-            Category category = this.categories.firstWhere((cat) => cat.id == value);
-            this.categoryID = value;
-
-            this.subcategories = category.subcategories.toList();
-            this.selectedCategory = category.name;
-
-            this.selectedSubcategory = category.subcategories.toList()[0].name;
-            this.subcategoryID = category.subcategories.toList()[0].id;
-        });
-    }
-
-    void onSubcategorySelected(int value){
-        setState(() {
-            this.subcategoryID = value;
-            Subcategory subcategory = this.subcategories.firstWhere((subcategory) => subcategory.id == value);
-            this.selectedSubcategory = subcategory.name;
-        });
-    }
 
     void onCurrencySelected(String value){
         setState(() {
@@ -204,38 +125,8 @@ class _NewItemFormState extends State<NewItemForm> {
             this.selectedPer = per.perName;
         });
     }
-
-    List<Widget> categoriesRadio(){
-        List<Widget> categoriesRadios = List<Widget>();
-        this.categories.forEach((category){
-            categoriesRadios.add(
-                RadioListTile(
-                    value: category.id,
-                    groupValue: categoryID,
-                    onChanged: (i) => this.onCategorySelected(i),
-                    title: Text(category.name),
-                    subtitle: Text(category.description, overflow: TextOverflow.ellipsis),
-                )
-            );
-        });
-        return categoriesRadios;
-    }
-
-    List<Widget> subcategoriesRadio(){
-        List<Widget> subcategoriesRadios = List<Widget>();
-        this.subcategories.forEach((subcategory){
-            subcategoriesRadios.add(
-                RadioListTile(
-                    value: subcategory.id,
-                    groupValue: subcategoryID,
-                    onChanged: (i) => this.onSubcategorySelected(i),
-                    title: Text(subcategory.name),
-                    subtitle: Text("Category : " + this.selectedCategory, overflow: TextOverflow.ellipsis),
-                )
-            );
-        });
-        return subcategoriesRadios;
-    }
+    
+    void setFromDate(String date){ setState((){ this.selectedFromDate = date; }); }
 
     List<Widget> currenciesRadio(){
         List<Widget> currenciesRadios = List<Widget>();
@@ -269,26 +160,39 @@ class _NewItemFormState extends State<NewItemForm> {
         return persRadio;
     }
 
-    Future<void> pickImages() async {
-        setState(() {
-            images = [];
-        });
+    void saveBorrow(){
+        setState(() { this.isSaving = true; this.isLoadingVisible = true; });
+        if(this._itemPriceCtrl.text != "" && this._numberOfTimes.text != "" && this._itemQuantityCtrl.text != "" && this.selectedFromDate != "") {
+            Borrow borrow = Borrow(
+                item: this.widget.item,
+                price: double.parse(this._itemPriceCtrl.text),
+                currency: this.selectedCurrency,
+                per: this.selectedPer,
+                numbers: int.parse(this._numberOfTimes.text),
+                conditions: this._borrowDescriptionCtrl.text,
+                count: int.parse(this._itemQuantityCtrl.text),
+                fromDate: this.selectedFromDate
+            );
 
-        List resultList = [];
-        String error;
-
-        try {
-            resultList = await MultiImagePicker.pickImages(maxImages: maxImageNo);
-        } catch (e) {
-            error = e.message;
+            borrow.saveBorrow(this.sessionToken).then((response) {
+                setState(() {
+                    this._message = response.text;
+                    this._type = response.type;
+                    this.isSaving = false;
+                    this.isLoadingVisible = false;
+                    if (response.type == "success") { this.isSaveLoadingVisible = true; }
+                    else { this.isOverlayVisible = true; }
+                });
+            });
+        } else {
+            setState((){
+                this._message = "Fill all Fiels With Right Data !!!";
+                this._type = "error";
+                this.isSaving = false;
+                this.isLoadingVisible = false;
+                this.isOverlayVisible = true;
+            });
         }
-
-        if (!mounted) return;
-
-        setState(() {
-            images = resultList;
-            if (error == null) _platformMessage = 'No Error Dectected';
-        });
     }
 
     @override
@@ -313,7 +217,7 @@ class _NewItemFormState extends State<NewItemForm> {
                                     ),
                                     Expanded(
                                         child: Text(
-                                            "Add New Item",
+                                            "Borrow Item",
                                             style: TextStyle(
                                                 color: Color(0xFF333333),
                                                 fontWeight: FontWeight.bold
@@ -332,7 +236,7 @@ class _NewItemFormState extends State<NewItemForm> {
                                             )
                                         ) :
                                         InkWell(
-                                            onTap: () => this.saveNewItem(),
+                                            onTap: () => this.saveBorrow(),
                                             child: Text("Save".toUpperCase(), style: TextStyle(color: Color(0xFF666666), fontSize: 15.0)),
                                         ),
                                     )
@@ -350,85 +254,17 @@ class _NewItemFormState extends State<NewItemForm> {
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0),
-                                        child: TextFormField(
-                                            controller: _itemNameCtrl,
-                                            autofocus: false,
+                                        child: Text(
+                                            this.widget.item.name,
                                             style: TextStyle(
                                                 fontSize: 17.0,
-                                                color: Colors.black
+                                                fontWeight: FontWeight.bold
                                             ),
-                                            decoration: InputDecoration(
-                                                hintText: 'Enter Item Name',
-                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
-                                                hintStyle: TextStyle(color: Color(0x99999999)),
-                                                border: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(5.0)
-                                                )
-                                            ),
-                                        ),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: Text("Item Category & Subcategory :"),
-                                    ),
-                                    Container(
-                                        child: Row(
-                                            children: <Widget>[
-                                                Container(
-                                                    padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Color(0x99999999),
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(5.0)
-                                                    ),
-                                                    child: InkWell(
-                                                        onTap: () => this.openSelectAlertCategory(),
-                                                        child: Container(
-                                                            padding: EdgeInsets.all(5.0),
-                                                            child: Text(
-                                                                this.selectedCategory,
-                                                                textAlign: TextAlign.center,
-                                                                overflow: TextOverflow.ellipsis,
-                                                                style: TextStyle(
-                                                                    fontSize: 15.0
-                                                                )
-                                                            ),
-                                                        ),
-                                                    ),
-                                                ),
-                                                SizedBox(width: 10.0),
-                                                Expanded(
-                                                    child: Container(
-                                                        padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
-                                                        decoration: BoxDecoration(
-                                                            border: Border.all(
-                                                                color: Color(0x99999999),
-                                                            ),
-                                                            borderRadius: BorderRadius.circular(5.0)
-                                                        ),
-                                                        child: InkWell(
-                                                            onTap: () => this.openSelectAlertSubcategory(),
-                                                            child: Container(
-                                                                padding: EdgeInsets.all(5.0),
-                                                                child: Text(
-                                                                    this.selectedSubcategory,
-                                                                    textAlign: TextAlign.center,
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                    style: TextStyle(
-                                                                        fontSize: 15.0
-                                                                    )
-                                                                ),
-                                                            ),
-                                                        ),
-                                                    ),
-                                                ),
-                                            ],
                                         ),
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                        child: Text("Item Borrow Price :"),
+                                        child: Text("Propose Price :"),
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0),
@@ -507,6 +343,48 @@ class _NewItemFormState extends State<NewItemForm> {
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                        child: Text("From Date :"),
+                                    ),
+                                    DateTimePickerFormField(
+                                        format: DateFormat("yyyy/M/d HH:mm"),
+                                        onChanged: (date) => this.setFromDate(date.toString()),
+                                        initialDate: DateTime.now(),
+                                        initialTime: TimeOfDay(hour: 9, minute: 0),
+                                        decoration: InputDecoration(
+                                            hintText: 'YYYY/MM/DD H:M',
+                                            contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                            hintStyle: TextStyle(color: Color(0x99999999)),
+                                            border: OutlineInputBorder(
+                                                borderRadius: BorderRadius.circular(5.0)
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                        child: Text("Number Of Times :"),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0),
+                                        child: TextFormField(
+                                            controller: _numberOfTimes,
+                                            autofocus: false,
+                                            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                                            style: TextStyle(
+                                                fontSize: 17.0,
+                                                color: Colors.black
+                                            ),
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter Number of Times',
+                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(5.0)
+                                                )
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
                                         child: Text("Item Quantity :"),
                                     ),
                                     Container(
@@ -531,12 +409,12 @@ class _NewItemFormState extends State<NewItemForm> {
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                        child: Text("Item Description :"),
+                                        child: Text("Conditions Description :"),
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0),
                                         child: TextFormField(
-                                            controller: _itemDescriptionCtrl,
+                                            controller: _borrowDescriptionCtrl,
                                             autofocus: false,
                                             maxLines: 10,
                                             style: TextStyle(
@@ -544,7 +422,7 @@ class _NewItemFormState extends State<NewItemForm> {
                                                 color: Colors.black
                                             ),
                                             decoration: InputDecoration(
-                                                hintText: 'Enter Item Description',
+                                                hintText: 'Enter Borrow Conditions',
                                                 contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
                                                 hintStyle: TextStyle(color: Color(0x99999999)),
                                                 border: OutlineInputBorder(
@@ -553,67 +431,17 @@ class _NewItemFormState extends State<NewItemForm> {
                                             ),
                                         ),
                                     ),
-                                    Container(
-                                        child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: <Widget>[
-                                                images.length <= 0 ? Container() : SizedBox(
-                                                    width: 400.0,
-                                                    height: 200.0,
-                                                    child: ListView.builder(
-                                                        scrollDirection: Axis.horizontal,
-                                                        itemBuilder: (BuildContext context, int index) =>
-                                                            Padding(
-                                                                padding: EdgeInsets.all(5.0),
-                                                                child: Image.file(images[index])
-                                                            ),
-                                                        itemCount: images.length,
-                                                    ),
-                                                ),
-                                                Container(
-                                                    padding: EdgeInsets.only(top: 8.0),
-                                                    child: Row(
-                                                        children: <Widget>[
-                                                            Expanded(
-                                                                child: RaisedButton.icon(
-                                                                    onPressed: pickImages,
-                                                                    icon: Icon(Icons.image),
-                                                                    label: Text("Add Item Images".toUpperCase()),
-                                                                ),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
                                 ],
                             )
                         ),
                     ),
-                    (this.showCategories == true) ? CategoriesSelectList(categories: this.categoriesRadio(), onClose: (){
-                        setState(() {
-                            this.showCategories = false;
-                            this.showSubcategories = true;
-                        });
-                    }) : Container(),
-                    (this.showSubcategories == true) ? SubcategoriesSelectList(subcategories: this.subcategoriesRadio(), onClose: (){
-                        setState(() {
-                            this.showSubcategories = false;
-                        });
-                    }) : Container(),
                     (this.showCurrencies == true) ? CurrenciesSelectList(currencies: this.currenciesRadio(), onClose: (){
-                        setState(() {
-                            this.showCurrencies = false;
-                            this.showPers = true;
-                        });
+                        setState(() { this.showCurrencies = false; this.showPers = true; });
                     }) : Container(),
                     (this.showPers == true) ? PersSelectList(pers: this.persRadio(), onClose: (){
-                        setState(() {
-                            this.showPers = false;
-                        });
+                        setState(() { this.showPers = false; });
                     }) : Container(),
+                    (isOverlayVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){ setState(() { this.isOverlayVisible = false; }); }) : Container(),
                     (isSaveLoadingVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){
                         setState(() { this.isSaveLoadingVisible = false;});
                         if(this._type == "success") Navigator.of(context).pop();

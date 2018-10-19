@@ -5,9 +5,20 @@ import 'package:buddyapp/providers/app.dart';
 import 'package:buddyapp/providers/auth.dart';
 
 class CommentActionSheet extends StatefulWidget{
-    const CommentActionSheet({Key key, @required this.comment, @required this.scaffoldContext}):super(key: key);
+
+    const CommentActionSheet({
+        Key key,
+        @required this.comment,
+        @required this.scaffoldContext,
+        @required this.onEdit,
+        @required this.onDelete
+    }):super(key: key);
+
     final Comment comment;
     final BuildContext scaffoldContext;
+    final VoidCallback onEdit;
+    final VoidCallback onDelete;
+
     @override
     _CommentActionSheetState createState() => _CommentActionSheetState();
 }
@@ -18,33 +29,16 @@ class _CommentActionSheetState extends State<CommentActionSheet>{
 
     @override
     void initState(){
-        super.initState();
         this.comment = widget.comment;
         this.getUserData();
+        super.initState();
     }
 
-    void _setUserID(int id){
-        this.userID = id;
-    }
+    void _setUserID(int id){ this.userID = id; }
 
-    void getUserData(){
-        Authentication().getSessionUser().then((value) => _setUserID(value.id));
-    }
+    void getUserData(){ Authentication().getSessionUser().then((value) => _setUserID(value.id)); }
 
-    void editComment(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Comment Edited"));
-        Navigator.of(context).pop();
-    }
-
-    void deleteComment(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Comment Deleted"));
-        Navigator.of(context).pop();
-    }
-
-    void reportComment(){
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Comment Reported"));
-        Navigator.of(context).pop();
-    }
+    void popNavigator(){ Navigator.of(context).pop(); }
 
     @override
     Widget build(BuildContext context){
@@ -66,18 +60,24 @@ class _CommentActionSheetState extends State<CommentActionSheet>{
                         leading: Icon(Icons.edit),
                         title: Text("Edit"),
                         enabled: (this.comment.user.id == this.userID),
-                        onTap: () => this.editComment(),
+                        onTap: () {
+                            this.widget.onEdit();
+                            this.popNavigator();
+                        }
                     ),
                     ListTile(
                         leading: Icon(Icons.delete),
                         title: Text("Delete"),
                         enabled: (this.comment.user.id == this.userID),
-                        onTap: () => this.deleteComment(),
+                        onTap: () {
+                            this.widget.onDelete();
+                            this.popNavigator();
+                        }
                     ),
                     ListTile(
                         leading: Icon(Icons.info_outline),
                         title: Text("Report"),
-                        onTap: (){}
+                        onTap: () => this.popNavigator(),
                     )
                 ],
             ),

@@ -1,11 +1,15 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'dart:io';
 import 'package:buddyapp/UI/drawer_content.dart';
 import 'home.dart';
 import 'categories.dart';
 import 'notifications.dart';
 import 'requests.dart';
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/providers/notification.dart';
+import 'package:buddyapp/providers/auth.dart';
 
 class TabsPage extends StatefulWidget{
 
@@ -21,16 +25,38 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
     TabController _tabController;
     BuildContext scaffoldContext;
 
+    User sessionUser;
+    int userID;
+    String sessionToken;
+
+    PushNotification pushNotification;
+
     @override
     void dispose(){
-        super.dispose();
         _tabController.dispose();
+        super.dispose();
     }
 
     @override
     void initState(){
-        super.initState();
         _tabController = new TabController(length: 4, vsync: this);
+        Timer(Duration(seconds: 1), (){ setState((){
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification.initNotification();
+        }); });
+        super.initState();
+    }
+
+    void _setUser(User user){ this.sessionUser = user; }
+
+    void _setUserID(int id){ this.userID = id; }
+
+    void _setSessionToken(String token){ this.sessionToken = token; }
+
+    void getUserData(){
+        Authentication().getSessionUser().then((value) => _setUserID(value.id));
+        Authentication().getSessionUser().then((value) => _setUser(value));
+        Authentication().getUserToken().then((value) => _setSessionToken(value));
     }
 
     @override
@@ -49,6 +75,9 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
             appBar: AppBar(
                 backgroundColor: Color(0xFFCC8400),
                 centerTitle: true,
+                actions: <Widget>[
+                    IconButton(icon: Icon(IconData(0xf4a4, fontFamily: 'ionicon')), onPressed: (){})
+                ],
                 title: Text(
                     this.title.toUpperCase(),
                     style: TextStyle(

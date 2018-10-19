@@ -10,6 +10,7 @@ import 'package:buddyapp/models/item.dart';
 import 'package:buddyapp/providers/yobuddy.dart';
 import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/providers/app.dart';
+import 'package:buddyapp/providers/notification.dart';
 import 'package:buddyapp/UI/categories_select_list.dart';
 import 'package:buddyapp/UI/subcategories_select_list.dart';
 import 'package:buddyapp/UI/currencies_select_list.dart';
@@ -78,10 +79,10 @@ class _EditItemFormState extends State<EditItemForm> {
     User sessionUser;
     int userID;
     String sessionToken;
+    PushNotification pushNotification;
 
     @override
     void initState() {
-        super.initState();
         this.getCategoriesList();
         this.getUserData();
 
@@ -101,19 +102,30 @@ class _EditItemFormState extends State<EditItemForm> {
         isAvailable = widget.item.isAvailable;
 
         this.itemImages = widget.item.images;
+
+        Timer(Duration(seconds: 1), (){ setState((){
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification.initNotification();
+        }); });
+
+        super.initState();
     }
 
-    void _setUser(User user){
-        this.sessionUser = user;
+    @override
+    void dispose(){
+        this._itemNameCtrl.dispose();
+        this._itemPriceCtrl.dispose();
+        this._itemQuantityCtrl.dispose();
+        this._itemDescriptionCtrl.dispose();
+        this.pushNotification.dispose();
+        super.dispose();
     }
 
-    void _setUserID(int id){
-        this.userID = id;
-    }
+    void _setUser(User user){ this.sessionUser = user; }
 
-    void _setSessionToken(String token){
-        this.sessionToken = token;
-    }
+    void _setUserID(int id){ this.userID = id; }
+
+    void _setSessionToken(String token){ this.sessionToken = token; }
 
     void getUserData(){
         Authentication().getSessionUser().then((value) => _setUserID(value.id));
@@ -165,35 +177,15 @@ class _EditItemFormState extends State<EditItemForm> {
         });
     }
 
-    void openSelectAlertCategory(){
-        setState(() {
-            this.showCategories = true;
-        });
-    }
+    void openSelectAlertCategory(){ setState(() { this.showCategories = true; }); }
 
-    void openSelectAlertSubcategory(){
-        setState(() {
-            this.showSubcategories = true;
-        });
-    }
+    void openSelectAlertSubcategory(){ setState(() { this.showSubcategories = true; }); }
 
-    void openSelectCurrency(){
-        setState(() {
-            this.showCurrencies = true;
-        });
-    }
+    void openSelectCurrency(){ setState(() { this.showCurrencies = true; }); }
 
-    void openSelectPer(){
-        setState(() {
-            this.showPers = true;
-        });
-    }
+    void openSelectPer(){ setState(() { this.showPers = true; }); }
 
-    void openTextEditor(){
-        setState(() {
-            this.showTextEditor = true;
-        });
-    }
+    void openTextEditor(){ setState(() { this.showTextEditor = true; }); }
 
     void onCategorySelected(int value){
         setState(() {
@@ -232,11 +224,7 @@ class _EditItemFormState extends State<EditItemForm> {
         });
     }
 
-    void onIsAvailableChanged(bool x){
-        setState((){
-            this.isAvailable = x;
-        });
-    }
+    void onIsAvailableChanged(bool x){ setState((){ this.isAvailable = x; }); }
 
     List<Widget> categoriesRadio(){
         List<Widget> categoriesRadios = List<Widget>();

@@ -161,7 +161,7 @@ class _ItemPageState extends State<ItemPage>{
                                                                   overflow: TextOverflow.ellipsis,
                                                                   style: TextStyle(
                                                                       color: Color(0xFF333333),
-                                                                      fontSize: 22.0,
+                                                                      fontSize: 18.0,
                                                                       fontWeight: FontWeight.bold,
                                                                   ),
                                                               ),
@@ -173,7 +173,7 @@ class _ItemPageState extends State<ItemPage>{
                                                                     overflow: TextOverflow.ellipsis,
                                                                     style: TextStyle(
                                                                         color: Color(0xFF666666),
-                                                                        fontSize: 17.0
+                                                                        fontSize: 15.0
                                                                     )
                                                                 ),
                                                             ),
@@ -182,7 +182,8 @@ class _ItemPageState extends State<ItemPage>{
                                                                 child: Text(
                                                                     "by " + this.item.user.name + "  -  " + HelperProvider().formatDateTime(this.item.createdAt.toString()),
                                                                     style: TextStyle(
-                                                                        color: Color(0xFF999999)
+                                                                        color: Color(0xFF999999),
+                                                                        fontSize: 13.0
                                                                     ),
                                                                     overflow: TextOverflow.clip
                                                                 ),

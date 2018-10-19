@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'edit_item.dart';
+import 'borrow_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html2md/html2md.dart' as html2md;
@@ -12,12 +13,14 @@ import 'package:buddyapp/providers/app.dart';
 import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/providers/yobuddy.dart';
 import 'package:buddyapp/providers/helper.dart';
+import 'package:buddyapp/providers/notification.dart';
 import 'package:buddyapp/UI/image_viewer.dart';
 import 'package:buddyapp/UI/comment.dart';
 import 'package:buddyapp/UI/items_available.dart';
-import 'package:flutter_socket_io/flutter_socket_io.dart';
-import 'package:flutter_socket_io/socket_io_manager.dart';
-import 'package:socket_io_client/socket_io_client.dart' as IO;
+import 'package:buddyapp/UI/popup.dart';
+import 'package:buddyapp/UI/loading_popup.dart';
+import 'package:buddyapp/UI/edit_comment.dart';
+import 'package:buddyapp/UI/confirmation_popup.dart';
 
 // ignore: must_be_immutable
 class SingleItemPage extends StatefulWidget{
@@ -38,6 +41,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
     User sessionUser;
     int userID;
     String sessionToken;
+    bool canShowProfileImage = false;
 
     bool isOwner;
     bool isFollowed = false;
@@ -50,20 +54,27 @@ class _SingleItemPageState extends State<SingleItemPage>{
     bool canViewAvailable = false;
 
     List<Comment> comments;
+    bool canShowPopup = false;
+    bool canShowConfirmation = false;
+    bool isLoadingVisible;
+    String message = "";
+    String type = "";
+    bool canEditComment = false;
+    Comment selectedComment;
+    int selectedCommentIndex;
 
     TextEditingController comment = TextEditingController();
+    TextEditingController editableCommentCtrl = TextEditingController();
     Random random = Random();
 
     BuildContext scaffoldContext;
     Color disabledColor = Color.fromRGBO(0, 0, 0, 0.2);
     Color enabledColor = Colors.black;
-
-    SocketIO socketIO;
+    PushNotification pushNotification;
 
     @override
     void initState() {
-        this.getUserData();
-
+        setState((){ this.getUserData(); });
         this.item = widget.item;
         this.itemLikes = this.item.likes.count;
         this.isOwner = widget.isOwner;
@@ -74,6 +85,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
 
         this._loadItemComments(this.item.id);
 
+        Timer(Duration(seconds: 1), (){ setState((){ this.canShowProfileImage = true; }); });
         Timer(Duration(seconds: 5), (){
             setState((){
                 this.getSingleItem();
@@ -81,26 +93,33 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 this.canShowComments = true;
             });
         });
-
-        this.socketIO = SocketIOManager().createSocketIO("http://127.0.0.1:5000", "");
-        this.socketIO.init();
-
-        IO.Socket socket = IO.io("http://127.0.0.1:5000");
+        Timer(Duration(seconds: 1), (){ setState((){
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification.initNotification();
+        }); });
 
         super.initState();
     }
 
-    void _setUserID(int id){
-        this.userID = id;
+    @override
+    void dispose(){
+        this.canShowPopup = false;
+        this.selectedComment = null;
+        this.selectedCommentIndex = null;
+        this.canShowConfirmation = false;
+        this.isLoadingVisible = false;
+        this.canEditComment = false;
+        this.comment.dispose();
+        this.editableCommentCtrl.dispose();
+        this.pushNotification.dispose();
+        super.dispose();
     }
 
-    void _setUser(User user){
-        this.sessionUser = user;
-    }
+    void _setUserID(int id){ this.userID = id; }
 
-    void _setUserToken(String token){
-        this.sessionToken = token;
-    }
+    void _setUser(User user){ this.sessionUser = user; }
+
+    void _setUserToken(String token){ this.sessionToken = token; }
 
     void getUserData(){
         Authentication().getSessionUser().then((value) => _setUserID(value.id));
@@ -108,26 +127,17 @@ class _SingleItemPageState extends State<SingleItemPage>{
         Authentication().getUserToken().then((value) => _setUserToken(value));
     }
 
-    void checkIsFollowed(){
-        this.isFollowed = this.item.user.followersList.contains(this.userID) ? true : false;
-    }
+    void checkIsFollowed(){ this.isFollowed = this.item.user.followersList.contains(this.userID) ? true : false; }
 
-    void checkIsLiked(){
-        this.isLiked = this.item.likes.likers.contains(this.userID) ? true : false;
-    }
+    void checkIsLiked(){ this.isLiked = this.item.likes.likers.contains(this.userID) ? true : false; }
 
-    void checkIsFavourite(){
-        this.isFavourite = this.item.favourites.contains(this.userID) ? true : false;
-    }
+    void checkIsFavourite(){ this.isFavourite = this.item.favourites.contains(this.userID) ? true : false; }
 
     void followUser(){
         YoBuddyService().followUser(this.item.user.id, this.sessionUser.id, this.sessionToken).then((response){
             setState((){
-                if(response.type == "followed"){
-                    this.isFollowed = true;
-                } else if(response.type == "unfollowed") {
-                    this.isFollowed = false;
-                }
+                if(response.type == "followed"){ this.isFollowed = true; }
+                else if(response.type == "unfollowed") { this.isFollowed = false; }
             });
             AppProvider().showSnackBar(response.text);
         });
@@ -157,6 +167,10 @@ class _SingleItemPageState extends State<SingleItemPage>{
                     setState(() { this.canViewAvailable = true; });
                     return;
                 case borrowVal:
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) => BorrowItemForm(item:  this.item))
+                    );
                     return;
                 case favVal:
                     return;
@@ -167,17 +181,11 @@ class _SingleItemPageState extends State<SingleItemPage>{
         }
     }
 
-    void onImageViewOpen(){
-        setState((){ this.canViewImages = true; });
-    }
+    void onImageViewOpen(){ setState((){ this.canViewImages = true; }); }
 
-    void onImageViewClosed(){
-        setState((){ this.canViewImages = false; });
-    }
+    void onImageViewClosed(){ setState((){ this.canViewImages = false; }); }
 
-    void onAvailableClosed(){
-        setState(() { this.canViewAvailable = false; });
-    }
+    void onAvailableClosed(){ setState(() { this.canViewAvailable = false; }); }
 
     Future<Null> getSingleItem() async{
         YoBuddyService().getSingleItem(this.item.user.username, this.item.uuid, this.item.id).then((value){
@@ -196,16 +204,6 @@ class _SingleItemPageState extends State<SingleItemPage>{
             });
         });
         return null;
-    }
-
-    void emitLikeSocket(){
-        String data = '{"item":"${this.item.id.toString()}", "type":"like", "liker":"${this.sessionUser.id.toString()}", "user":"${this.item.user.id.toString()}"}';
-        this.socketIO.connect();
-        this.socketIO.sendMessage("like", data, this.getLikeSocketResponse);
-    }
-    
-    void getLikeSocketResponse(dynamic response){
-        print(response);
     }
 
     void likeItem(){
@@ -228,9 +226,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
             if(_comments != null){
                 this.comments = _comments.toList();
                 this.canShowComments = true;
-            } else {
-                this.loadItemComments(this.item.id);
-            }
+            } else { this.loadItemComments(this.item.id); }
         });
     }
 
@@ -254,11 +250,76 @@ class _SingleItemPageState extends State<SingleItemPage>{
                     user: this.sessionUser
                 );
                 this.comments.add(_comment);
+                Comment().postComment(_comment, this.item.id.toString(), this.sessionToken).then((response){
+                    setState(() {
+                        this.message = response.text;
+                        this.type = response.type;
+                        this.canShowPopup = true;
+                    });
+                });
             });
             this.comment.text = "";
         } else {
             AppProvider().alert(context, "Error", "Please, Enter Your Comment !!!");
         }
+    }
+
+    Future<void> updateComment(Comment comment, int index){
+        comment.comment = editableCommentCtrl.text;
+        comment.updateComment(this.userID.toString(), this.sessionToken).then((response){
+            setState((){
+                this.isLoadingVisible = false;
+                this.message = response.text;
+                this.type = response.type;
+                this.canShowPopup = true;
+                this.comments[index].comment = editableCommentCtrl.text;
+                this.selectedComment = null;
+                this.selectedCommentIndex = null;
+            });
+        });
+        return null;
+    }
+
+    Future<void> deleteComment(Comment comment, int index){
+        showDialog<Null>(
+            context: context,
+            barrierDismissible: false, // user must tap button!
+            builder: (BuildContext context) {
+                return AlertDialog(
+                    title: Text("Delete Comment", style: TextStyle(fontWeight: FontWeight.bold)),
+                    content: SingleChildScrollView(
+                        child: ListBody(
+                            children: <Widget>[
+                                Text("Do you really want to delete this comment ?"),
+                            ],
+                        ),
+                    ),
+                    actions: <Widget>[
+                        FlatButton(
+                            child: Text("YES", style: TextStyle(color: Color(0xFFCC8400))),
+                            onPressed: () {
+                                setState((){ this.isLoadingVisible = true; });
+                                comment.deleteComment(this.item.id.toString(), this.sessionToken).then((response){
+                                    setState(() {
+                                        this.message = response.text;
+                                        this.type = response.type;
+                                        this.isLoadingVisible = false;
+                                        this.canShowPopup = true;
+                                        this.comments.removeAt(index);
+                                    });
+                                });
+                                Navigator.of(context).pop();
+                            },
+                        ),
+                        FlatButton(
+                            child: Text("NO", style: TextStyle(color: Colors.redAccent)),
+                            onPressed: () { Navigator.of(context).pop(); },
+                        ),
+                    ],
+                );
+            },
+        );
+        return null;
     }
 
     @override
@@ -319,7 +380,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                             overflow: TextOverflow.ellipsis,
                                                             style: TextStyle(
                                                                 color: Color(0xFF333333),
-                                                                fontSize: 22.0,
+                                                                fontSize: 18.0,
                                                                 fontWeight: FontWeight.bold,
                                                             ),
                                                         ),
@@ -331,7 +392,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                             overflow: TextOverflow.ellipsis,
                                                             style: TextStyle(
                                                                 color: Color(0xFF666666),
-                                                                fontSize: 17.0
+                                                                fontSize: 15.0
                                                             )
                                                         ),
                                                     ),
@@ -340,7 +401,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                         child: Text(
                                                             "by " + this.item.user.name + "  -  " + HelperProvider().formatDateTime(this.item.createdAt.toString()),
                                                             style: TextStyle(
-                                                                color: Color(0xFF999999)
+                                                                color: Color(0xFF999999),
+                                                                fontSize: 13.0
                                                             ),
                                                             overflow: TextOverflow.clip
                                                         ),
@@ -361,7 +423,6 @@ class _SingleItemPageState extends State<SingleItemPage>{
                             ),
                             Divider(),
                             Container(
-                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                                 child: Container(
                                     padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
                                     decoration: BoxDecoration(
@@ -386,6 +447,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                         ],
                                     )
                                 ),
+                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                             ),
                             Divider(),
                             Container(
@@ -488,7 +550,25 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                         child: (this.comments.length > 0) ? ListView.builder(
                                             itemCount: this.comments.length,
                                             itemBuilder: (BuildContext context, int i){
-                                                return CommentListItem(comment: this.comments[i], userID: this.userID, scaffoldContext: this.scaffoldContext);
+                                                return CommentListItem(
+                                                    comment: this.comments[i],
+                                                    userID: this.userID,
+                                                    scaffoldContext: this.scaffoldContext,
+                                                    onDelete: () {
+                                                        setState(() {
+                                                            this.selectedComment = this.comments[i];
+                                                            this.selectedCommentIndex = i;
+                                                            this.canShowConfirmation = true;
+                                                        });
+                                                    },
+                                                    onEdit: (){
+                                                        setState(() {
+                                                            this.selectedComment = this.comments[i];
+                                                            this.selectedCommentIndex = i;
+                                                            this.canEditComment = true;
+                                                        });
+                                                    },
+                                                );
                                             }
                                         ) : Center(
                                             child: Container(
@@ -575,7 +655,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                         shape: BoxShape.circle,
                                         color: Color(0xFF999999),
                                         image: DecorationImage(
-                                            image: NetworkImage(this.sessionUser.getImageURL),
+                                            image: (this.canShowProfileImage == false) ? NetworkImage(AppProvider().defaultImage) : NetworkImage(this.sessionUser.getImageURL),
                                             fit: BoxFit.fill
                                         )
                                     )
@@ -655,7 +735,43 @@ class _SingleItemPageState extends State<SingleItemPage>{
                     ),
                 ),
                 (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClosed, name: this.item.name, isLiked: this.isLiked) : Container(),
-                (this.canViewAvailable == true) ? ItemsAvailable(item: this.item, onClose: this.onAvailableClosed) : Container()
+                (this.canViewAvailable == true) ? ItemsAvailable(item: this.item, onClose: this.onAvailableClosed) : Container(),
+                (this.canShowPopup == true) ? PopupOverlay(type: this.type, message: this.message, onTap: (){
+                    setState(() { this.canShowPopup = false; });
+                }) : Container(),
+                (this.isLoadingVisible == true) ? LoadingOverlay() : Container(),
+                (this.canEditComment == true) ? EditComment(
+                    comment: this.selectedComment,
+                    onClose: (){ setState(() { this.canEditComment = false; this.selectedComment = null; this.selectedCommentIndex = null; this.editableCommentCtrl.dispose(); });},
+                    onUpdate: (){
+                        setState(() {
+                            this.canEditComment = false;
+                            this.isLoadingVisible = true;
+                            this.editableCommentCtrl.dispose();
+                        });
+                        this.updateComment(selectedComment, selectedCommentIndex);
+                    },
+                    commentCtrl: this.editableCommentCtrl
+                ) : Container(),
+                (this.canShowConfirmation == true) ? ConfirmationPopup(
+                    title: "Delete Comment",
+                    message: "Do you really want to delete this comment ?",
+                    onAccept: (){
+                        setState((){ this.canShowConfirmation = false; this.isLoadingVisible = false; });
+                        this.selectedComment.deleteComment(this.item.id.toString(), this.sessionToken).then((response){
+                            setState(() {
+                                this.message = response.text;
+                                this.type = response.type;
+                                this.isLoadingVisible = false;
+                                this.canShowPopup = true;
+                                this.comments.removeAt(this.selectedCommentIndex);
+                                this.selectedComment = null;
+                                this.selectedCommentIndex = null;
+                            });
+                        });
+                    },
+                    onDecline: (){ setState(() { this.canShowConfirmation = false; this.selectedComment = null; this.selectedCommentIndex = null; }); },
+                ) : Container()
             ],
         );
     }

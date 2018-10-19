@@ -4,8 +4,7 @@ import 'package:timeago/timeago.dart';
 class HelperProvider{
 
     String formatPrice(int value){
-        var number = NumberFormat.compact();
-        return number.format(value);
+        return NumberFormat.compact().format(value);
     }
 
     String formatDateTime(dynamic datetime){
@@ -15,5 +14,14 @@ class HelperProvider{
         var ago = DateTime.now().subtract(Duration(minutes: now - date));
         TimeAgo timeAgo = TimeAgo();
         return timeAgo.format(ago);
+    }
+
+    String formatDateTimeString(dynamic datetime){
+        return DateFormat("EE, MMM d, yyyy 'at' h:mma").format(DateTime.parse(datetime));
+    }
+
+    String checkJsonURL(String url){
+        if(url.endsWith(".json")){ return url; }
+        else { return url + ".json"; }
     }
 }

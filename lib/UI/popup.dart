@@ -53,7 +53,7 @@ class _PopupOverlayState extends State<PopupOverlay> with SingleTickerProviderSt
                             ),
                             child: Transform.rotate(
                                 angle: _iconAnimation.value * 2 * pi,
-                                child: Icon(this.type == "success" ? Icons.done : Icons.clear, color: Color(0xFFCC8400), size: _iconAnimation.value * 80.0,)
+                                child: Icon(this.type == "success" ? Icons.done : Icons.clear, color: Color(0xFFCC8400), size: _iconAnimation.value * 80.0)
                             )
                         ),
                         Padding(padding: EdgeInsets.only(bottom: 50.0)),
