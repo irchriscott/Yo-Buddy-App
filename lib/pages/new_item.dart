@@ -55,6 +55,7 @@ class _NewItemFormState extends State<NewItemForm> {
     TextEditingController _itemPriceCtrl = TextEditingController();
     TextEditingController _itemQuantityCtrl = TextEditingController();
     TextEditingController _itemDescriptionCtrl = TextEditingController();
+    TextEditingController _itemSaleValueCtrl = TextEditingController();
 
     String descriptionTextValue = "Enter Item Description";
     Color descriptionTextColor = Color(0x99999999);
@@ -90,7 +91,7 @@ class _NewItemFormState extends State<NewItemForm> {
         this.selectedPer = Per().getPers()[0].perName;
 
         Timer(Duration(seconds: 1), (){ setState((){
-            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken, context: context);
             this.pushNotification.initNotification();
         }); });
 
@@ -126,6 +127,7 @@ class _NewItemFormState extends State<NewItemForm> {
             description: this._itemDescriptionCtrl.text,
             count: this._itemQuantityCtrl.text != "" ? int.parse(this._itemQuantityCtrl.text) : 0,
             imageFiles: this.images,
+            saleValue: this._itemSaleValueCtrl.text != "" ? double.parse(this._itemSaleValueCtrl.text) : 0.0,
             isAvailable: true
         );
         setState(() {
@@ -521,6 +523,30 @@ class _NewItemFormState extends State<NewItemForm> {
                                             ),
                                             decoration: InputDecoration(
                                                 hintText: 'Enter Item Quantity',
+                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(5.0)
+                                                )
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                        child: Text("Sale Value (Currency For Price):"),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0),
+                                        child: TextFormField(
+                                            controller: _itemSaleValueCtrl,
+                                            autofocus: false,
+                                            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                                            style: TextStyle(
+                                                fontSize: 17.0,
+                                                color: Colors.black
+                                            ),
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter Sale Value',
                                                 contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
                                                 hintStyle: TextStyle(color: Color(0x99999999)),
                                                 border: OutlineInputBorder(

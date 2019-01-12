@@ -19,6 +19,7 @@ class Borrow{
     final String per;
     final int numbers;
     final String conditions;
+    final String reasons;
     final int count;
     final String status;
     final bool isDeleted;
@@ -27,19 +28,25 @@ class Borrow{
     final double penalties;
     final String deadline;
     final String uuid;
+    final int adminId;
+    final int extension;
     final String expiration;
     final String url;
     final String messagesURL;
+    final bool wasRendered;
+    final bool wasReceived;
+    final bool wasReturned;
     final String createdAt;
     final String updatedAt;
 
     Borrow({
         this.id, this.item, this.user, this.fromDate,
-        this.toDate, this.price, this.currency,
+        this.toDate, this.price, this.currency, this.adminId, this.extension,
         this.per, this.numbers, this.conditions, this.messagesURL,
-        this.count, this.status, this.isDeleted, this.url,
+        this.count, this.status, this.isDeleted, this.url, this.reasons,
         this.lastUpdateBy, this.uuid, this.createdAt, this.updatedAt,
-        this.code, this.deadline, this.penalties, this.total, this.expiration
+        this.code, this.deadline, this.penalties, this.total, this.expiration,
+        this.wasReceived, this.wasRendered, this.wasReturned
     });
 
     factory Borrow.fromJson(Map<String, dynamic> json){
@@ -54,11 +61,14 @@ class Borrow{
             per: json['per'],
             numbers: json['numbers'],
             conditions: json['conditions'],
+            reasons: json['reasons'],
             count: json['count'],
             status: json['status'],
             isDeleted: json['is_deleted'],
             lastUpdateBy: User.fromJson(json['last_updated_by']),
             uuid: json['uuid'],
+            adminId: json['admin_id'],
+            extension: json['extension'],
             createdAt: json['created_at'],
             updatedAt: json['updated_at'],
             code: json['code'],
@@ -67,7 +77,10 @@ class Borrow{
             deadline: json['deadline'],
             expiration: json['expiration'],
             url: json['url'],
-            messagesURL: json['messages_url']
+            messagesURL: json['messages_url'],
+            wasReceived: json['was_received'],
+            wasRendered: json['was_rendered'],
+            wasReturned: json['was_returned']
         );
     }
 
@@ -99,7 +112,8 @@ class Borrow{
                     "item_borrow[numbers]": this.numbers.toString(),
                     "item_borrow[conditions]": this.conditions,
                     "item_borrow[count]": this.count.toString(),
-                    "item_borrow[from_date]": this.fromDate
+                    "item_borrow[from_date]": this.fromDate,
+                    "item_borrow[reasons]": this.reasons
                 }
             ).then((response) {
                 return ResponseService.fromJson(response);

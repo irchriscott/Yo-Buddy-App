@@ -7,11 +7,6 @@ import 'package:buddyapp/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 
-enum userLog {
-    LOGGED_IN,
-    LOGGED_OUT
-}
-
 class Authentication{
 
     NetworkUtil netUtils = new NetworkUtil();
@@ -66,13 +61,14 @@ class Authentication{
     }
 
     //Shall be called every time an action is performed
-    void updateUserData(String token){
-        netUtils.get(
-            Uri.encodeFull("")
+    Future<ResponseService> updateUserData(String token) async{
+        return netUtils.get(
+            Uri.encodeFull(AppProvider().baseURL + "/user/get_and_update/user_s_data/from_token/in_the_application.json?token=$token")
         ).then((response){
             DatabaseHelper().update(User.fromJson(response)).then((value){
-                this._saveUserInPreferences(json.encode(response), null);
+                this._saveUserInPreferences(json.encode(response), token);
             });
+            return ResponseService(type: "success", text: "User Data Updated !!!");
         });
     }
 }

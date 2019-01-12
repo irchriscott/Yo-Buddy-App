@@ -27,6 +27,7 @@ class Item{
     final bool isAvailable;
     final DateTime createdAt;
     final String uuid;
+    final double saleValue;
     final String url;
     final Like likes;
     final int comments;
@@ -42,7 +43,7 @@ class Item{
           this.name, this.price, this.currency, 
           this.per, this.description, this.status, 
           this.isAvailable, this.createdAt, this.url, 
-          this.likes, this.comments, this.borrow, this.likers,
+          this.likes, this.comments, this.borrow, this.likers, this.saleValue,
           this.images, this.favourites, this.uuid, this.count, this.imageFiles
         });
 
@@ -72,6 +73,7 @@ class Item{
             isAvailable: json['is_available'],
             createdAt: DateTime.parse(json['created_at']),
             uuid: json['uuid'],
+            saleValue: json['sale_value'],
             url: json['url'],
             likes: Like.fromJson(json['likes']),
             comments: json['comments'],
@@ -111,7 +113,8 @@ class Item{
                         "item[description]": this.description,
                         "item[count]": this.count,
                         "item[image][]": this.getImagesInfo(),
-                        "item[is_available]": this.isAvailable
+                        "item[is_available]": this.isAvailable,
+                        "item[sale_value]": this.saleValue
                     }
                 );
 
@@ -131,6 +134,15 @@ class Item{
             return ResponseService(type: "error", text: "Fill all Fiels With Right Data !!!");
         }
         return ResponseService(type: "error", text: "Fill all Fiels With Right Data !!!");
+    }
+    
+    Future<ResponseService> favouriteItem(String sessionToken, String userID){
+        return net.NetworkUtil().post(
+                Uri.encodeFull(AppProvider().baseURL + "/item/${this.id}/favourite.json?token=$sessionToken"),
+                body: {"favourite[item_id]": this.id.toString()}
+            ).then((response){
+                return ResponseService.fromJson(response);
+        });
     }
 }
 

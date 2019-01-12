@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/auth.dart';
@@ -14,23 +16,31 @@ class DrawerContent extends StatefulWidget{
 class _DrawerContentState extends State<DrawerContent>{
 
     User user;
+    String sessionToken;
     bool canShowData = false;
 
     @override
     void initState(){
         super.initState();  
         this._getUserData();
+        Timer(Duration(seconds: 3), (){ this.updateUserData();});
     }
 
     void _setValue(User user){
-        setState((){
-            this.user = user;
-            this.canShowData = true;
-        });
+        setState((){ this.user = user; this.canShowData = true; });
     }
+
+    void _setUserToken(String token){ setState((){ this.sessionToken = token; }); }
 
     void _getUserData(){
         Authentication().getSessionUser().then((value) => _setValue(value));
+        Authentication().getUserToken().then((value) => _setUserToken(value));
+    }
+
+    void updateUserData(){
+        Authentication().updateUserData(this.sessionToken).then((_){
+            Authentication().getSessionUser().then((value) => _setValue(value));
+        });
     }
 
     ListTile _listTimeItem(IconData icon, String title, String value, VoidCallback _onTap){

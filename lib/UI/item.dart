@@ -1,7 +1,10 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
+import 'package:flutter_socket_io/flutter_socket_io.dart';
+import 'package:flutter_socket_io/socket_io_manager.dart';
 import 'package:buddyapp/models/item.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/app.dart';
@@ -26,6 +29,8 @@ class _ItemPageState extends State<ItemPage>{
     bool isLiked = false;
     String sessionToken;
 
+    SocketIO socketIO;
+
     @override
     void initState(){
         this.item = widget.item;
@@ -33,24 +38,20 @@ class _ItemPageState extends State<ItemPage>{
         this.getUserData();
         this.checkUserLike();
 
-        Timer(Duration(seconds: 3), (){
-            this.getSingleItem();
-        });
+        Timer(Duration(seconds: 3), (){ this.getSingleItem(); });
+
+        this.socketIO = SocketIOManager().createSocketIO(AppProvider().socketURL, "");
+        this.socketIO.init();
+        this.socketIO.connect();
 
         super.initState();
     }
 
-    void _setUser(User user){
-        this.sessionUser = user;
-    }
+    void _setUser(User user){ this.sessionUser = user; }
 
-    void _setUserID(int id){
-        this.userID = id;
-    }
+    void _setUserID(int id){ this.userID = id; }
 
-    void _setSessionToken(String token){
-        this.sessionToken = token;
-    }
+    void _setSessionToken(String token){ this.sessionToken = token; }
 
     void getUserData(){
         Authentication().getSessionUser().then((value) => _setUserID(value.id));
@@ -67,18 +68,15 @@ class _ItemPageState extends State<ItemPage>{
         );
     }
 
-    void checkUserLike(){
-        setState((){ this.isLiked = this.item.likes.likers.contains(this.userID) ? true : false; });
-    }
+    void checkUserLike(){ setState((){ this.isLiked = this.item.likes.likers.contains(this.userID) ? true : false; }); }
 
     void likeItem(){
         YoBuddyService().likeItem(this.item, this.sessionUser, this.sessionToken).then((response){
             setState((){
-                if(response.type == "dislike"){
-                    this.isLiked = false;
-                    Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Disiked !!!"));
-                } else if(response.type == "like") {
-                    this.isLiked = true;
+                _emitLikeEventSocket(response.type);
+                if(response.type == "dislike"){ this.isLiked = false;
+                Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Disiked !!!"));
+                } else if(response.type == "like") {this.isLiked = true;
                     Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Item Liked !!!"));
                 } else {
                     Scaffold.of(context).showSnackBar(AppProvider().showSnackBar("Oops... Something happend !!!"));
@@ -87,14 +85,26 @@ class _ItemPageState extends State<ItemPage>{
         });
     }
 
+    void _emitLikeEventSocket(String type){
+        if (this.socketIO != null) {
+            String data = '{"item": "${this.item.id}", "type": "$type", "liker": "${this.sessionUser.username}", "user": "${this.item.user.id}", "about": "like_item", "url": "${this.item.url}"}';
+            String notification = '{"user": "${this.item.user.id}", "title": "From ${this.sessionUser.name}", "body": "${this.sessionUser.name} has liked your item.", "icon": "http://127.0.0.1:3000/${this.item.user.image}", "url": "http://127.0.0.1:3000/${this.item.url}"}';
+            this.socketIO.sendMessage("like", data, _onItemLikeSocket);
+            this.socketIO.sendMessage("setNotification", '{"user":"${this.item.user.id}"}');
+            this.socketIO.sendMessage("notify", notification);
+        }
+    }
+
+    void _onItemLikeSocket(dynamic data){
+        var dt = json.decode(data.toString());
+        if(int.parse(dt['item']) == this.item.id && dt['liker'] == this.sessionUser.username){
+            setState(() { this.isLiked = true; });
+        }
+    }
+
     Future<Null> getSingleItem() async{
         YoBuddyService().getSingleItem(this.item.user.username, this.item.uuid, this.item.id).then((value){
-            setState((){
-                if(value != null) {
-                    this.item = value;
-                    this.checkUserLike();
-                }
-            });
+            setState((){ if(value != null) { this.item = value; this.checkUserLike(); } });
         });
         return null;
     }

@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:convert';
 import 'edit_item.dart';
 import 'borrow_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html2md/html2md.dart' as html2md;
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:flutter_socket_io/flutter_socket_io.dart';
+import 'package:flutter_socket_io/socket_io_manager.dart';
 import 'package:buddyapp/models/item.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/models/comment.dart';
@@ -72,6 +75,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
     Color enabledColor = Colors.black;
     PushNotification pushNotification;
 
+    SocketIO socketIO;
+
     @override
     void initState() {
         setState((){ this.getUserData(); });
@@ -86,7 +91,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this._loadItemComments(this.item.id);
 
         Timer(Duration(seconds: 1), (){ setState((){ this.canShowProfileImage = true; }); });
-        Timer(Duration(seconds: 5), (){
+        Timer(Duration(seconds: 3), (){
             setState((){
                 this.getSingleItem();
                 this.loadItemComments(this.item.id);
@@ -94,9 +99,15 @@ class _SingleItemPageState extends State<SingleItemPage>{
             });
         });
         Timer(Duration(seconds: 1), (){ setState((){
-            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken, context: context);
             this.pushNotification.initNotification();
         }); });
+
+        this.socketIO = SocketIOManager().createSocketIO(AppProvider().socketURL, "");
+        this.socketIO.init();
+        this.socketIO.subscribe("getLike", _onItemLikeSocket);
+        this.socketIO.subscribe("getComment", _onItemCommentSocket);
+        this.socketIO.connect();
 
         super.initState();
     }
@@ -112,6 +123,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this.comment.dispose();
         this.editableCommentCtrl.dispose();
         this.pushNotification.dispose();
+        this.socketIO.disconnect();
+        this.socketIO.destroy();
         super.dispose();
     }
 
@@ -173,6 +186,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                     );
                     return;
                 case favVal:
+                    this.favouriteItem();
                     return;
                 case reportVal:
                     return;
@@ -209,14 +223,45 @@ class _SingleItemPageState extends State<SingleItemPage>{
     void likeItem(){
         YoBuddyService().likeItem(this.item, this.sessionUser, this.sessionToken).then((response){
             setState((){
-                if(response.type == "dislike"){
-                    this.isLiked = false;
-                    this.itemLikes -= 1;
-                } else if(response.type == "like") {
-                    this.isLiked = true;
-                    this.itemLikes += 1;
-                }
+                _emitLikeEventSocket(response.type);
+                if(response.type == "dislike"){ this.isLiked = false; }
+                else if(response.type == "like") { this.isLiked = true; }
                 this.getSingleItem();
+            });
+        });
+    }
+
+    void _emitLikeEventSocket(String type){
+        if (this.socketIO != null) {
+            String data = '{"item": "${this.item.id}", "type": "$type", "liker": "${this.sessionUser.username}", "user": "${this.item.user.id}", "about": "like_item", "url": "${this.item.url}"}';
+            String notification = '{"user": "${this.item.user.id}", "title": "From ${this.sessionUser.name}", "body": "${this.sessionUser.name} has liked your item.", "icon": "http://127.0.0.1:3000/${this.item.user.image}", "url": "http://127.0.0.1:3000/${this.item.url}"}';
+            this.socketIO.sendMessage("like", data, _onItemLikeSocket);
+            this.socketIO.sendMessage("setNotification", '{"user":"${this.item.user.id}"}');
+            this.socketIO.sendMessage("notify", notification);
+        }
+    }
+
+    void _onItemLikeSocket(dynamic data){
+        var dt = json.decode(data.toString());
+        if(int.parse(dt['item']) == this.item.id){
+            setState((){
+                if(dt['type'] == "dislike"){ this.itemLikes -= 1; }
+                else if(dt['type'] == "like") { this.itemLikes += 1; }
+                if(this.sessionUser.username == dt['liker']){ this.isLiked = true; }
+            });
+        }
+    }
+
+    void favouriteItem() async{
+        this.item.favouriteItem(this.sessionToken, this.sessionUser.id.toString()).then((response){
+            setState((){
+                if(response.type == "success"){ this.isFavourite = true; }
+                else if(response.type == "unmark"){ this.isFavourite = false; }
+                else {
+                    this.message = response.text;
+                    this.type = response.type;
+                    this.canShowPopup = true;
+                }
             });
         });
     }
@@ -252,6 +297,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 this.comments.add(_comment);
                 Comment().postComment(_comment, this.item.id.toString(), this.sessionToken).then((response){
                     setState(() {
+                        _emitCommentItemSocket();
                         this.message = response.text;
                         this.type = response.type;
                         this.canShowPopup = true;
@@ -259,8 +305,23 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 });
             });
             this.comment.text = "";
-        } else {
-            AppProvider().alert(context, "Error", "Please, Enter Your Comment !!!");
+        } else { AppProvider().alert(context, "Error", "Please, Enter Your Comment !!!"); }
+    }
+
+    void _emitCommentItemSocket(){
+        if (this.socketIO != null) {
+            String data = '{"url": "/items/${this.item.id}/comments", "item": "${this.item.id}", "from": "add", "user": "${this.item.user.id}", "commenter": "${this.sessionUser.username}", "itemurl": "${this.item.url}", "about": "comment_item"}';
+            String notification = '{"user": "${this.item.user.id}", "title": "From ${this.sessionUser.name}", "body": "${this.sessionUser.name} has posted a comment to your item.", "icon": "http://127.0.0.1:3000/${this.item.user.image}", "url": "http://127.0.0.1:3000/${this.item.url}"}';
+            this.socketIO.sendMessage("comment", data, _onItemCommentSocket);
+            this.socketIO.sendMessage("setNotification", '{"user":"${this.item.user.id}"}');
+            this.socketIO.sendMessage("notify", notification);
+        }
+    }
+
+    void _onItemCommentSocket(String data){
+        var dt = json.decode(data.toString());
+        if(int.parse(dt['item']) == this.item.id){
+            loadItemComments(int.parse(dt['item']));
         }
     }
 
@@ -275,6 +336,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 this.comments[index].comment = editableCommentCtrl.text;
                 this.selectedComment = null;
                 this.selectedCommentIndex = null;
+                this.loadItemComments(this.item.id);
             });
         });
         return null;
@@ -518,7 +580,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
                                                 mainAxisAlignment: MainAxisAlignment.start,
                                                 children: <Widget>[
                                                     Container(
-                                                        child: (this.isFavourite == true) ? Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)) : Container(),
+                                                        child: (this.isFavourite == true) ? IconButton(icon: Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)), onPressed: () => this.favouriteItem()) : Container(),
                                                         padding: EdgeInsets.only(left: 10.0, right: 8.0),
                                                     ),
                                                 ],
@@ -742,12 +804,11 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 (this.isLoadingVisible == true) ? LoadingOverlay() : Container(),
                 (this.canEditComment == true) ? EditComment(
                     comment: this.selectedComment,
-                    onClose: (){ setState(() { this.canEditComment = false; this.selectedComment = null; this.selectedCommentIndex = null; this.editableCommentCtrl.dispose(); });},
+                    onClose: (){ setState(() { this.canEditComment = false; this.selectedComment = null; this.selectedCommentIndex = null; });},
                     onUpdate: (){
                         setState(() {
                             this.canEditComment = false;
                             this.isLoadingVisible = true;
-                            this.editableCommentCtrl.dispose();
                         });
                         this.updateComment(selectedComment, selectedCommentIndex);
                     },

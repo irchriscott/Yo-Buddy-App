@@ -41,7 +41,7 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
     void initState(){
         _tabController = new TabController(length: 4, vsync: this);
         Timer(Duration(seconds: 1), (){ setState((){
-            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken, context: context);
             this.pushNotification.initNotification();
         }); });
         super.initState();

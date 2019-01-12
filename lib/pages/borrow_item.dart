@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:buddyapp/providers/app.dart';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/utils.dart';
 import 'package:buddyapp/models/user.dart';
@@ -47,6 +48,7 @@ class _BorrowItemState extends State<BorrowItemForm>{
     TextEditingController _itemQuantityCtrl = TextEditingController();
     TextEditingController _borrowDescriptionCtrl = TextEditingController();
     TextEditingController _numberOfTimes = TextEditingController();
+    TextEditingController _reasonsCtrl = TextEditingController();
 
     String descriptionTextValue = "Enter Borrow Conditions";
     Color descriptionTextColor = Color(0x99999999);
@@ -75,7 +77,7 @@ class _BorrowItemState extends State<BorrowItemForm>{
         _itemPriceCtrl.text = widget.item.price.toString();
 
         Timer(Duration(seconds: 1), (){ setState((){
-            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken, context: context);
             this.pushNotification.initNotification();
         }); });
 
@@ -89,6 +91,7 @@ class _BorrowItemState extends State<BorrowItemForm>{
         this._itemPriceCtrl.dispose();
         this._borrowDescriptionCtrl.dispose();
         this._numberOfTimes.dispose();
+        this._reasonsCtrl.dispose();
         super.dispose();
     }
 
@@ -171,7 +174,8 @@ class _BorrowItemState extends State<BorrowItemForm>{
                 numbers: int.parse(this._numberOfTimes.text),
                 conditions: this._borrowDescriptionCtrl.text,
                 count: int.parse(this._itemQuantityCtrl.text),
-                fromDate: this.selectedFromDate
+                fromDate: this.selectedFromDate,
+                reasons: this._reasonsCtrl.text
             );
 
             borrow.saveBorrow(this.sessionToken).then((response) {
@@ -250,17 +254,31 @@ class _BorrowItemState extends State<BorrowItemForm>{
                                 children: <Widget>[
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0),
-                                        child: Text("Item Name :"),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: Text(
-                                            this.widget.item.name,
-                                            style: TextStyle(
-                                                fontSize: 17.0,
-                                                fontWeight: FontWeight.bold
+                                        child: Container(
+                                            child: Column(
+                                                children: <Widget>[
+                                                    Center(
+                                                        child: Container(
+                                                            width: 120.0,
+                                                            padding: EdgeInsets.only(right: 10.0),
+                                                            child: Image.network(AppProvider().baseURL + widget.item.images[0].image.path, fit: BoxFit.fill),
+                                                        ),
+                                                    ),
+                                                    Center(
+                                                        child: Container(
+                                                            padding: EdgeInsets.only(top: 8.0),
+                                                            child: Text(
+                                                                widget.item.name,
+                                                                style: TextStyle(
+                                                                    fontSize: 15.0,
+                                                                    fontWeight: FontWeight.bold
+                                                                ),
+                                                            ),
+                                                        ),
+                                                    )
+                                                ],
                                             ),
-                                        ),
+                                        )
                                     ),
                                     Container(
                                         padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
@@ -399,6 +417,30 @@ class _BorrowItemState extends State<BorrowItemForm>{
                                             ),
                                             decoration: InputDecoration(
                                                 hintText: 'Enter Item Quantity',
+                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                border: OutlineInputBorder(
+                                                    borderRadius: BorderRadius.circular(5.0)
+                                                )
+                                            ),
+                                        ),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                        child: Text("Reasons :"),
+                                    ),
+                                    Container(
+                                        padding: EdgeInsets.only(bottom: 8.0),
+                                        child: TextFormField(
+                                            controller: _reasonsCtrl,
+                                            autofocus: false,
+                                            maxLines: 4,
+                                            style: TextStyle(
+                                                fontSize: 17.0,
+                                                color: Colors.black
+                                            ),
+                                            decoration: InputDecoration(
+                                                hintText: 'Enter Reasons',
                                                 contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
                                                 hintStyle: TextStyle(color: Color(0x99999999)),
                                                 border: OutlineInputBorder(

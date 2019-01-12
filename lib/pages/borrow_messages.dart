@@ -59,7 +59,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
         this.socketIO.connect();
 
         Timer(Duration(seconds: 1), (){ setState((){
-            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+            this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken, context: context);
             this.pushNotification.initNotification();
         }); });
 
@@ -72,7 +72,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                     color: Color(0xFFFFFFFF),
                     fontSize: 11.0,
                     height: 0.8
-                )
+                ),
             ),
         );
 
@@ -152,7 +152,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
 
     void sendMessageSocket(String message) async{
         if (this.socketIO != null) {
-            String data = '{"item": "${this.borrow.item.id}","borrow": "${this.borrow.id}","receiver": "${(this.sessionUser.id == this.borrow.user.id) ? this.borrow.item.user.id : this.borrow.user.id}","sender": "${this.sessionUser.username}","message": "$message","url": "${this.borrow.messagesURL}","path": "${this.borrow.url}","type": "message"}';
+            String data = '{"item": "${this.borrow.item.id}","borrow": "${this.borrow.id}","receiver": "${(this.sessionUser.id == this.borrow.user.id) ? this.borrow.item.user.id : this.borrow.user.id}","sender": "${this.sessionUser.username}","message": "$message","url": "${this.borrow.messagesURL}","path": "${this.borrow.url}","type": "message", "about": "borrow_message"}';
             this.socketIO.sendMessage("messageSent", data, _onReceiveMessageSocket);
         }
     }

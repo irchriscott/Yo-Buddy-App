@@ -41,7 +41,7 @@ class _HomePageState extends State<HomePage> {
       });
 
       Timer(Duration(seconds: 1), (){ setState((){
-          this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken);
+          this.pushNotification = PushNotification(user: this.sessionUser, token: this.sessionToken, context: context);
           this.pushNotification.initNotification();
       }); });
 
