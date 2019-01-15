@@ -35,7 +35,7 @@ class _EditCommentState extends State<EditComment>{
             child: (this.widget.comment != null) ? Hero(
                 tag: "editcomment",
                 child: Container(
-                    padding: EdgeInsets.fromLTRB(20.0, 220.0, 20.0, 220.0),
+                    padding: EdgeInsets.fromLTRB(20.0, 237.0, 20.0, 237.0),
                     child: Container(
                         padding: EdgeInsets.only(top: 20.0, bottom: 20.0, right: 20.0, left: 20.0),
                         decoration: BoxDecoration(
@@ -58,19 +58,19 @@ class _EditCommentState extends State<EditComment>{
                                     )
                                 ),
                                 Container(
-                                    padding: EdgeInsets.only(top: 40.0, bottom: 30.0),
+                                    padding: EdgeInsets.only(top: 45.0, bottom: 30.0),
                                     child: Container(
                                         child: TextFormField(
                                             autofocus: false,
                                             controller: widget.commentCtrl,
-                                            maxLines: 4,
+                                            maxLines: 3,
                                             style: TextStyle(
-                                                fontSize: 20.0,
+                                                fontSize: 18.0,
                                                 color: Colors.black
                                             ),
                                             decoration: InputDecoration(
                                                 hintText: 'Enter Comment',
-                                                contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                                                contentPadding: EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
                                                 hintStyle: TextStyle(color: Color(0x99999999)),
                                                 border: OutlineInputBorder(
                                                     borderRadius: BorderRadius.circular(4.0)

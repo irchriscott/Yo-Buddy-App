@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 import 'user.dart';
 import 'item.dart';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/response.dart';
 import 'package:buddyapp/providers/net.dart' as net;
 import 'package:buddyapp/providers/app.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Borrow{
 
@@ -120,6 +122,40 @@ class Borrow{
             });
         }
         return ResponseService(text: "Fill all Fiels With Right Data !!!", type: "error");
+    }
+
+    Future<ResponseService> updateBorrowStatus(int index, String status, String sessionToken) async{
+        if(index > 0 && status != null){
+            return net.NetworkUtil().get(
+                Uri.encodeFull(AppProvider().baseURL + "/items/${this.item.id.toString()}/item_borrow_user/${this.id.toString()}/update_status?status=${index.toString()}&token=$sessionToken")
+            ).then((response){
+                return ResponseService.fromJson(response);
+            });
+        }
+        return ResponseService(text: "Unknown Status !!!", type: "error");
+    }
+
+    void saveBorrowInSharedPreferences(int borrowID, String borrow) async{
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        prefs.setString("borrow_${borrowID.toString()}", borrow);
+    }
+
+    Future<Borrow> getBorrow(String sessionToken) async{
+        return net.NetworkUtil().get(
+            Uri.encodeFull(AppProvider().baseURL + "/item/enc-dt-${this.item.uuid}-${this.item.id.toString()}-${this.id.toString()}/borrow?token=$sessionToken")
+        ).then((response){
+            this.saveBorrowInSharedPreferences(this.id, json.encode(response));
+            return Borrow.fromJson(response);
+        });
+    }
+
+    Future<Borrow> getBorrowInPreferences() async{
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        var borrowJson = prefs.getString("borrow_${this.id.toString()}");
+        if(borrowJson != null){
+            return Borrow.fromJson(JsonDecoder().convert(borrowJson));
+        }
+        return null;
     }
 }
 

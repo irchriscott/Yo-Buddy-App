@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/auth.dart';
-import 'package:buddyapp/pages/new_item.dart';
-import 'package:buddyapp/pages/session/borrowing.dart';
+import 'package:buddyapp/pages/item/new_item.dart';
+import 'package:buddyapp/pages/session/borrows.dart';
 
 class DrawerContent extends StatefulWidget{
     DrawerContent({Key key, @required this.scaffoldContext}) : super(key : key);
@@ -106,7 +106,7 @@ class _DrawerContentState extends State<DrawerContent>{
                     Navigator.of(context).pop();
                     Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (BuildContext context) => SessionBorrowing())
+                        MaterialPageRoute(builder: (BuildContext context) => SessionBorrows())
                     );
                 }),
                 _listTimeItem(Icons.star_border, "Favourites", this.user.favourites.toString(), (){

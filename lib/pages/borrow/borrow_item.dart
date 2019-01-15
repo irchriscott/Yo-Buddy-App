@@ -259,18 +259,31 @@ class _BorrowItemState extends State<BorrowItemForm>{
                                                 children: <Widget>[
                                                     Center(
                                                         child: Container(
-                                                            width: 120.0,
+                                                            width: 150.0,
+                                                            height: 150.0,
                                                             padding: EdgeInsets.only(right: 10.0),
-                                                            child: Image.network(AppProvider().baseURL + widget.item.images[0].image.path, fit: BoxFit.fill),
+                                                            decoration: BoxDecoration(
+                                                                border: Border.all(
+                                                                    style: BorderStyle.solid,
+                                                                    width: 2.0,
+                                                                    color: Color(0xFFDDDDDD)
+                                                                ),
+                                                                shape: BoxShape.circle,
+                                                                color: Color(0xFFDDDDDD),
+                                                                image: DecorationImage(
+                                                                    image: NetworkImage(AppProvider().baseURL + widget.item.images[0].image.path),
+                                                                    fit: BoxFit.fitWidth
+                                                                )
+                                                            )
                                                         ),
                                                     ),
                                                     Center(
                                                         child: Container(
-                                                            padding: EdgeInsets.only(top: 8.0),
+                                                            padding: EdgeInsets.only(top: 12.0),
                                                             child: Text(
                                                                 widget.item.name,
                                                                 style: TextStyle(
-                                                                    fontSize: 15.0,
+                                                                    fontSize: 17.0,
                                                                     fontWeight: FontWeight.bold
                                                                 ),
                                                             ),
@@ -493,4 +506,17 @@ class _BorrowItemState extends State<BorrowItemForm>{
             )
         );
     }
+}
+
+class ImageClipper extends CustomClipper<Rect>{
+    @override
+    Rect getClip(Size size) {
+        return Rect.fromLTWH(0.0, 0.0, size.width, size.height);
+    }
+
+    @override
+    bool shouldReclip(CustomClipper<Rect> oldClipper) {
+        return false;
+    }
+
 }

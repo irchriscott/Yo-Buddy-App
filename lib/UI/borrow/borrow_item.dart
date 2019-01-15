@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buddyapp/models/borrow.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/helper.dart';
-import 'package:buddyapp/pages/borrow_messages.dart';
+import 'package:buddyapp/pages/borrow/borrow_messages.dart';
 
 class BorrowItem extends StatefulWidget{
     BorrowItem({Key key, @required this.borrow, @required this.session}) : super(key : key);
@@ -30,6 +30,7 @@ class _BorrowItemState extends State<BorrowItem>{
     Widget build(BuildContext context) {
         return InkWell(
             onTap: () => this.redirectSingleBorrow(),
+            onLongPress: (){},
             child: Container(
                 decoration: BoxDecoration(
                     border: Border(bottom: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD), width: 0.5))
@@ -38,21 +39,20 @@ class _BorrowItemState extends State<BorrowItem>{
                 child: Row(
                     children: <Widget>[
                         Container(
-                            width: 75.0,
-                            height: 85.0,
-                            padding: EdgeInsets.only(right: 15.0),
-                            decoration: BoxDecoration(
-                                border: Border.all(
-                                    style: BorderStyle.solid,
-                                    width: 1.0,
-                                    color: Color(0xFF999999)
-                                ),
-                                color: Color(0xFF999999),
-                                image: DecorationImage(
-                                    image: NetworkImage(this.widget.borrow.item.images[0].imageUrl),
-                                    fit: BoxFit.fitWidth
+                            child: Container(
+                                width: 85.0,
+                                height: 85.0,
+                                padding: EdgeInsets.only(right: 15.0),
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(3.0),
+                                    color: Color(0xFFDDDDDD),
+                                    image: DecorationImage(
+                                        image: (this.widget.borrow.item.user.id == this.widget.session.id) ? NetworkImage(this.widget.borrow.user.getImageURL) : NetworkImage(this.widget.borrow.item.images[0].imageUrl),
+                                        fit: BoxFit.fitWidth
+                                    )
                                 )
-                            )
+                            ),
                         ),
                         Expanded(
                             child: Column(
@@ -63,7 +63,7 @@ class _BorrowItemState extends State<BorrowItem>{
                                     Container(
                                         padding: EdgeInsets.only(left: 15.0, bottom: 3.0, right: 10.0),
                                         child: Text(
-                                            this.widget.borrow.item.name,
+                                            (this.widget.borrow.item.user.id == this.widget.session.id) ? this.widget.borrow.user.name : this.widget.borrow.item.name,
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
                                                 color: Color(0xFF333333),
@@ -75,10 +75,10 @@ class _BorrowItemState extends State<BorrowItem>{
                                     Container(
                                         padding: EdgeInsets.only(left: 15.0, right: 10.0),
                                         child: Text(
-                                            "by ${this.widget.borrow.item.user.name}",
+                                            (this.widget.borrow.item.user.id == this.widget.session.id) ? "Status - ${this.widget.borrow.status.replaceRange(0, 1, this.widget.borrow.status[0].toUpperCase())}" : "by ${this.widget.borrow.item.user.name}",
                                             style: TextStyle(
                                                 color: Color(0xFF666666),
-                                                fontSize: 16.0,
+                                                fontSize: 15.0,
                                                 height: 0.8
                                             )
                                         ),
@@ -88,7 +88,8 @@ class _BorrowItemState extends State<BorrowItem>{
                                         child: Text(
                                             "From ${HelperProvider().formatDateTimeString(this.widget.borrow.fromDate)}",
                                             style: TextStyle(
-                                                color: Color(0xFF999999)
+                                                color: Color(0xFF999999),
+                                                fontSize: 13.0
                                             ),
                                             overflow: TextOverflow.clip
                                         ),
@@ -98,7 +99,8 @@ class _BorrowItemState extends State<BorrowItem>{
                                         child: Text(
                                             "To ${HelperProvider().formatDateTimeString(this.widget.borrow.toDate)}",
                                             style: TextStyle(
-                                                color: Color(0xFF999999)
+                                                color: Color(0xFF999999),
+                                                fontSize: 13.0
                                             ),
                                             overflow: TextOverflow.clip
                                         ),

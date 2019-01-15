@@ -22,7 +22,7 @@ class _CurrenciesSelectListState extends State<CurrenciesSelectList>{
             child: Hero(
                 tag: "showcurrencies",
                 child: Container(
-                    padding: EdgeInsets.fromLTRB(20.0, 170.0, 20.0, 170.0),
+                    padding: EdgeInsets.fromLTRB(20.0, 210.0, 20.0, 210.0),
                     child: Container(
                         padding: EdgeInsets.only(top: 30.0, bottom: 30.0, right: 10.0),
                         decoration: BoxDecoration(

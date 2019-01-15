@@ -8,10 +8,10 @@ import 'package:flutter_socket_io/socket_io_manager.dart';
 import 'package:buddyapp/models/item.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/app.dart';
-import 'package:buddyapp/UI/item_action_sheet.dart';
+import 'package:buddyapp/UI/item/item_action_sheet.dart';
 import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/providers/yobuddy.dart';
-import 'package:buddyapp/pages/single_item.dart';
+import 'package:buddyapp/pages/item/single_item.dart';
 import 'package:buddyapp/providers/helper.dart';
 
 class ItemPage extends StatefulWidget{

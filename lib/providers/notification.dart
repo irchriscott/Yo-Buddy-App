@@ -5,8 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/models/borrow.dart';
 import 'package:buddyapp/models/item.dart';
-import 'package:buddyapp/pages/borrow_messages.dart';
-import 'package:buddyapp/pages/single_item.dart';
+import 'package:buddyapp/pages/borrow/borrow_messages.dart';
+import 'package:buddyapp/pages/item/single_item.dart';
 import 'package:buddyapp/providers/net.dart' as net;
 import 'package:buddyapp/providers/helper.dart';
 import 'package:flutter_socket_io/flutter_socket_io.dart';
@@ -38,6 +38,7 @@ class PushNotification{
         this.socketIO.subscribe("getMessage", _onReceiveMessageSocket);
         this.socketIO.subscribe("getLike", _onItemLikeSocket);
         this.socketIO.subscribe("getComment", _onItemCommentSocket);
+        this.socketIO.subscribe("getNotification", _onNotificationReceived);
         this.socketIO.connect();
 
     }
@@ -84,6 +85,8 @@ class PushNotification{
                     );
                 });
                 break;
+            case "notification":
+                break;
         }
     }
 
@@ -118,6 +121,21 @@ class PushNotification{
         var dt = json.decode(data.toString());
         if(int.parse(dt['user']) == this.user.id){
             this.showNotification("New Comment Posted", dt['commenter'].replaceRange(0, 1, dt['commenter'][0].toUpperCase()) + " has posted a comment to your item", "comment_item", data);
+        }
+    }
+
+    void _onNotificationReceived(String data){
+        this.initNot();
+        print(data);
+        if(data.toString().contains("{") && data.toString().contains("}")){
+            var dt = json.decode(data.toString());
+            if(int.parse(dt['user']) == this.user.id){
+                this.showNotification("New Notification", "You have received a new notification", "notification", data);
+            }
+        } else {
+            if(int.parse(data.toString()) == this.user.id){
+                this.showNotification("New Notification", "You have received a new notification", "notification", data);
+            }
         }
     }
 }

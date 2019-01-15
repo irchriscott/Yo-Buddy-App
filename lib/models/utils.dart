@@ -13,7 +13,6 @@ class Currency{
     List<Currency> getCurrencies(){
         List<Currency> currencies = new List<Currency>();
         currencies.add(Currency(name: "Ugandian Shilling", abbr: "UGX"));
-        currencies.add(Currency(name: "Franc Congolais", abbr: "FC"));
         currencies.add(Currency(name: "United States Dollars", abbr: "USD"));
         return currencies;
     }

@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:convert';
-import 'edit_item.dart';
-import 'borrow_item.dart';
+import 'package:buddyapp/pages/item/edit_item.dart';
+import 'package:buddyapp/pages/borrow/borrow_item.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:html2md/html2md.dart' as html2md;
@@ -18,11 +18,11 @@ import 'package:buddyapp/providers/yobuddy.dart';
 import 'package:buddyapp/providers/helper.dart';
 import 'package:buddyapp/providers/notification.dart';
 import 'package:buddyapp/UI/image_viewer.dart';
-import 'package:buddyapp/UI/comment.dart';
-import 'package:buddyapp/UI/items_available.dart';
+import 'package:buddyapp/UI/comment/comment.dart';
+import 'package:buddyapp/UI/item/items_available.dart';
 import 'package:buddyapp/UI/popup.dart';
 import 'package:buddyapp/UI/loading_popup.dart';
-import 'package:buddyapp/UI/edit_comment.dart';
+import 'package:buddyapp/UI/comment/edit_comment.dart';
 import 'package:buddyapp/UI/confirmation_popup.dart';
 
 // ignore: must_be_immutable

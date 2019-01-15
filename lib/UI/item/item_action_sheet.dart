@@ -3,7 +3,7 @@ import 'package:buddyapp/models/item.dart';
 import 'package:flutter/foundation.dart';
 import 'package:buddyapp/providers/app.dart';
 import 'package:buddyapp/providers/auth.dart';
-import 'package:buddyapp/pages/edit_item.dart';
+import 'package:buddyapp/pages/item/edit_item.dart';
 
 class ItemActionSheet extends StatefulWidget{
 

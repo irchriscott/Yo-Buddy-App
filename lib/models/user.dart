@@ -16,10 +16,11 @@ class User{
     int request;
     int borrow;
     int favourites;
+    bool isPrivate;
     List<dynamic> followersList;
     List<dynamic> followingList;
 
-    User({this.id, this.name, this.username, this.email, this.country, this.town, this.image, this.gender, this.followers, this.following, this.url, this.items, this.request, this.borrow, this.followersList, this.followingList, this.favourites});
+    User({this.id, this.name, this.username, this.email, this.country, this.town, this.image, this.gender, this.followers, this.following, this.url, this.items, this.request, this.borrow, this.followersList, this.followingList, this.favourites, this.isPrivate});
 
     factory User.fromJson(Map<String, dynamic> json){
         return new User(
@@ -39,7 +40,8 @@ class User{
             borrow: json['borrow'],
             followersList: json['followers_list'],
             followingList: json['following_list'],
-            favourites: json['favourites']
+            favourites: json['favourites'],
+            isPrivate: json['is_private']
         );
     }
 
@@ -59,6 +61,7 @@ class User{
         this.request = json['requests'];
         this.borrow = json['borrow'];
         this.favourites = json['favourites'];
+        this.isPrivate = json['is_private'];
     }
 
     Map<String, dynamic> toMap() {
@@ -78,6 +81,7 @@ class User{
         map['requests'] = request;
         map['borrow'] = borrow;
         map['favourites'] = favourites;
+        map['is_private'] = isPrivate;
         return map;
     }
 
@@ -97,6 +101,7 @@ class User{
         request = map['requests'];
         borrow = map['borrow'];
         favourites = map['favourites'];
+        isPrivate = map['is_private'];
     }
 
     String get getImageURL => AppProvider().baseURL + this.image;

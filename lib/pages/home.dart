@@ -4,7 +4,7 @@ import 'package:buddyapp/providers/yobuddy.dart';
 import 'package:buddyapp/providers/notification.dart';
 import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/models/item.dart';
-import 'package:buddyapp/UI/item.dart';
+import 'package:buddyapp/UI/item/item.dart';
 import 'package:buddyapp/models/user.dart';
 
 class HomePage extends StatefulWidget {

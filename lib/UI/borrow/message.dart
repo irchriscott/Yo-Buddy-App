@@ -19,6 +19,22 @@ class _BorrowMessageLayoutState extends State<BorrowMessageLayout>{
         super.initState();
     }
 
+    String getAdminMessage(String message){
+        if(message == "new"){
+            return (this.widget.borrow.user.id == this.widget.session.id) ? "Borrow Request Sent" : "Borrow Request Received";
+        } else if (message.contains("extension_request")){
+            if(message.contains("rejected")){
+                return "Borrow Extension Request Rejected";
+            } else if(message.contains("canceled")){
+                return "Borrow Extension Request Canceled";
+            } else {
+                return "Borrow Item Extended For ${message.split("_").last} ${this.widget.borrow.per}s";
+            }
+        } else {
+            return this.widget.message.adminMessage;
+        }
+    }
+
     @override
     Widget build(BuildContext context) {
         return Container(
@@ -53,28 +69,45 @@ class _BorrowMessageLayoutState extends State<BorrowMessageLayout>{
                                         ),
                                     ),
                                     Container(
-                                        child: Center(
-                                            child: (this.widget.message.message == "new") ? Container(
-                                                child: (this.widget.borrow.user.id == this.widget.session.id) ? Text(
-                                                    "Borrow Request Sent",
-                                                    style: TextStyle(
-                                                        color: Color(0xFF333333),
-                                                        fontSize: 17.0,
-                                                        height: 0.7
+                                        child: (this.widget.message.message.contains("extension_request_sent")) ? Container(
+                                            child: (this.widget.borrow.item.user.id == this.widget.session.id) ? Container(
+                                                child: Column(
+                                                    children: <Widget>[
+                                                        Center(
+                                                            child: Container(
+                                                                child: Text(
+                                                                    "Borrow Extension Request Sent",
+                                                                    style: TextStyle(
+                                                                        color: Color(0xFF333333),
+                                                                        fontSize: 17.0,
+                                                                        height: 0.7
+                                                                    ),
+                                                                    textAlign: TextAlign.center,
+                                                                ),
+                                                            )
+                                                        ),
+                                                        Row(
+                                                            children: <Widget>[],
+                                                        )
+                                                    ],
+                                                )
+                                            ) : Center(
+                                                child: Container(
+                                                    child: Text(
+                                                        "Borrow Extension Request Sent",
+                                                        style: TextStyle(
+                                                            color: Color(0xFF333333),
+                                                            fontSize: 17.0,
+                                                            height: 0.7
+                                                        ),
+                                                        textAlign: TextAlign.center,
                                                     ),
-                                                    textAlign: TextAlign.center,
-                                                ) : Text(
-                                                    "Borrow Request Received",
-                                                    style: TextStyle(
-                                                        color: Color(0xFF333333),
-                                                        fontSize: 17.0,
-                                                        height: 0.7
-                                                    ),
-                                                    textAlign: TextAlign.center,
-                                                ),
-                                            ) : Container(
+                                                )
+                                            ),
+                                        ): Center(
+                                            child: Container(
                                                 child: Text(
-                                                    this.widget.message.adminMessage,
+                                                    this.getAdminMessage(this.widget.message.message),
                                                     style: TextStyle(
                                                         color: Color(0xFF333333),
                                                         fontSize: 17.0,

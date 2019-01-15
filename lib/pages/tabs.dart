@@ -70,79 +70,82 @@ class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin
             ],
             controller: _tabController,
         );
-        return Scaffold(
-            key: _this,
-            appBar: AppBar(
-                backgroundColor: Color(0xFFCC8400),
-                centerTitle: true,
-                actions: <Widget>[
-                    IconButton(icon: Icon(IconData(0xf4a4, fontFamily: 'ionicon')), onPressed: (){})
-                ],
-                title: Text(
-                    this.title.toUpperCase(),
-                    style: TextStyle(
-                        color: Colors.white
+        return DefaultTabController(
+            length: 4,
+            child: Scaffold(
+                key: _this,
+                appBar: AppBar(
+                    backgroundColor: Color(0xFFCC8400),
+                    centerTitle: true,
+                    actions: <Widget>[
+                        IconButton(icon: Icon(IconData(0xf4a4, fontFamily: 'ionicon')), onPressed: (){})
+                    ],
+                    title: Text(
+                        this.title.toUpperCase(),
+                        style: TextStyle(
+                            color: Colors.white
+                        ),
+                    ),
+                    leading: IconButton(
+                        icon: Icon(Icons.menu, color: Colors.white),
+                        onPressed: () => _this.currentState.openDrawer(),
                     ),
                 ),
-                leading: IconButton(
-                    icon: Icon(Icons.menu, color: Colors.white),
-                    onPressed: () => _this.currentState.openDrawer(),
+                drawer: Drawer(
+                    child: DrawerContent(scaffoldContext: scaffoldContext)
                 ),
-            ),
-            drawer: Drawer(
-                child: DrawerContent(scaffoldContext: scaffoldContext)
-            ),
-            body: Builder(
-                builder: (BuildContext context){
-                    scaffoldContext = context;
-                    return body;
-                }
-            ),
-            bottomNavigationBar: BottomAppBar(
-                hasNotch: true,
-                child: Material(
-                    color: Color(0xFFCC8400),
-                    child: TabBar(
-                        indicatorColor: Color(0xFFFFFF),
-                        controller: _tabController,
-                        labelColor: Color(0xFFFFFFFF),
-                        unselectedLabelColor: Colors.black54,
-                        tabs: <Widget>[
-                            Tab(
-                                icon: Icon(
-                                    IconData(0xf448, fontFamily: 'ionicon'),
-                                    size: 28.0
+                body: Builder(
+                    builder: (BuildContext context){
+                        scaffoldContext = context;
+                        return body;
+                    }
+                ),
+                bottomNavigationBar: BottomAppBar(
+                    hasNotch: true,
+                    child: Material(
+                        color: Color(0xFFCC8400),
+                        child: TabBar(
+                            indicatorColor: Color(0xFFFFFF),
+                            controller: _tabController,
+                            labelColor: Color(0xFFFFFFFF),
+                            unselectedLabelColor: Colors.black54,
+                            tabs: <Widget>[
+                                Tab(
+                                    icon: Icon(
+                                        IconData(0xf448, fontFamily: 'ionicon'),
+                                        size: 28.0
+                                    )
+                                ),
+                                Tab(
+                                    icon: Icon(
+                                        IconData(0xf482, fontFamily: 'ionicon'),
+                                        size: 28.0
+                                    )
+                                ),
+                                Tab(
+                                    icon: Icon(
+                                        IconData(0xf3e2, fontFamily: 'ionicon'),
+                                        size: 28.0
+                                    )
+                                ),
+                                Tab(
+                                    icon: Icon(
+                                        IconData(0xf454, fontFamily: 'ionicon'),
+                                        size: 28.0
+                                    )
                                 )
-                            ),
-                            Tab(
-                                icon: Icon(
-                                    IconData(0xf482, fontFamily: 'ionicon'),
-                                    size: 28.0
-                                )
-                            ),
-                            Tab(
-                                icon: Icon(
-                                    IconData(0xf3e2, fontFamily: 'ionicon'),
-                                    size: 28.0
-                                )
-                            ),
-                            Tab(
-                                icon: Icon(
-                                    IconData(0xf454, fontFamily: 'ionicon'),
-                                    size: 28.0
-                                )
-                            )
-                        ],
+                            ],
+                        ),
                     ),
                 ),
-            ),
-            floatingActionButton: FloatingActionButton(
-                onPressed: (){},
-                child: Icon(Icons.add, color: Colors.white),
-                backgroundColor: Color(0xFFCC8400),
-                notchMargin: 3.0,
-            ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
+                floatingActionButton: FloatingActionButton(
+                    onPressed: (){},
+                    child: Icon(Icons.add, color: Colors.white),
+                    backgroundColor: Color(0xFFCC8400),
+                    notchMargin: 3.0,
+                ),
+                floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked
+            )
         );
     } 
 }

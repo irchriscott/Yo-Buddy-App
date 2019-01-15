@@ -131,6 +131,8 @@ class YoBuddyService{
         });
     }
 
+    //For Borrowing
+
     void _saveBorrowingInSharedPreferences(String borrowings) async{
         prefs = await SharedPreferences.getInstance();
         prefs.setString("borrowings", borrowings);
@@ -152,7 +154,7 @@ class YoBuddyService{
 
     Future<List<Borrow>> getBorrowingsInPreferences() async{
         prefs  = await SharedPreferences.getInstance();
-        var borrowingsJson = prefs.getString("borrowings");
+        var borrowingsJson = prefs.getString("lending_items");
         if(borrowingsJson != null){
             List borrowingsData = JsonDecoder().convert(borrowingsJson).toList();
             List<Borrow> borrowings = [];
@@ -163,6 +165,78 @@ class YoBuddyService{
         }
         return null;
     }
+
+    //For Lending
+
+    void _saveLendingItemsInSharedPreferences(String items) async{
+        prefs = await SharedPreferences.getInstance();
+        prefs.setString("lending_items", items);
+    }
+
+    Future<List<Item>> getLendingItems(String sessionToken) async{
+        return net.NetworkUtil().get(
+            Uri.encodeFull(AppProvider().baseURL + "/session/lending.json?token=$sessionToken")
+        ).then((response){
+            this._saveLendingItemsInSharedPreferences(json.encode(response));
+            List data = response.toList();
+            List<Item> items = List<Item>();
+            data.forEach((item){
+                items.add(Item.fromJson(item));
+            });
+            return items;
+        });
+    }
+
+    Future<List<Item>> getLendingItemsInPreferences() async{
+        prefs  = await SharedPreferences.getInstance();
+        var itemsJson = prefs.getString("lending_items");
+        if(itemsJson != null){
+            List itemsData = JsonDecoder().convert(itemsJson).toList();
+            List<Item> items = [];
+            itemsData.forEach((item){
+                items.add(Item.fromJson(item));
+            });
+            return items;
+        }
+        return null;
+    }
+
+    //Lending Borrows
+
+    void _saveLendingBorrowsInSharedPreferences(String lending, int itemID) async{
+        prefs = await SharedPreferences.getInstance();
+        prefs.setString("lending_borrows_${itemID.toString()}", lending);
+    }
+
+    Future<List<Borrow>> getLendingBorrows(String sessionToken, String username, String uuid, int itemID) async{
+        return net.NetworkUtil().get(
+            Uri.encodeFull(AppProvider().baseURL + "/item/$username}/enc-dt-$uuid-${itemID.toString()}/borrows.json?token=$sessionToken")
+        ).then((response){
+            this._saveLendingBorrowsInSharedPreferences(json.encode(response), itemID);
+            List data = response.toList();
+            List<Borrow> borrows = List<Borrow>();
+            data.forEach((borrow){
+                borrows.add(Borrow.fromJson(borrow));
+            });
+            return borrows;
+        });
+    }
+
+    Future<List<Borrow>> getLendingBorrowsInPreferences(int itemID) async{
+        prefs  = await SharedPreferences.getInstance();
+        var borrowsJson = prefs.getString("lending_borrows_${itemID.toString()}");
+        if(borrowsJson != null){
+            List borrowsData = JsonDecoder().convert(borrowsJson).toList();
+            List<Borrow> borrows = [];
+            borrowsData.forEach((borrow){
+                borrows.add(Borrow.fromJson(borrow));
+            });
+            return borrows;
+        }
+        return null;
+    }
+
+    //Borrow Messages
 
     void _saveBorrowMessageInSharedPreferences(int borrowID, String messages) async{
         prefs = await SharedPreferences.getInstance();

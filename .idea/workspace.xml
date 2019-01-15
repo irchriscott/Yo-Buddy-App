@@ -10,22 +10,36 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="13ca4716-434c-4b65-bf1f-87f4431c0baa" name="Default" comment="">
+      <change afterPath="$PROJECT_DIR$/lib/pages/borrow/borrow_messages.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Dart_Packages.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/libraries/Flutter_Plugins.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/borrow_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/borrow/borrow_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/comment.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/comment/comment.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/comment_action_sheet.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/comment/comment_action_sheet.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/currencies_select_list.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/currencies_select_list.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/UI/drawer_content.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/drawer_content.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/UI/item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/edit_comment.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/comment/edit_comment.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/item/item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/item_action_sheet.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/item/item_action_sheet.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/items_available.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/item/items_available.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/UI/message.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/UI/borrow/message.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/models/borrow.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/borrow.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/models/item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/borrow_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/borrow_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/borrow_messages.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/borrow_messages.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/edit_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/edit_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/user.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/user.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/models/utils.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/models/utils.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/borrow_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/borrow/borrow_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/borrow_messages.dart" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/edit_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/item/edit_item.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/pages/home.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/home.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/new_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/new_item.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/session/borrowing.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/session/borrowing.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/pages/single_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/single_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/new_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/item/new_item.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/session/borrowing.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/session/borrows.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/pages/single_item.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/item/single_item.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/pages/tabs.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/pages/tabs.dart" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/lib/providers/auth.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/auth.dart" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/lib/providers/notification.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/notification.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/providers/session.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/session.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/providers/yobuddy.dart" beforeDir="false" afterPath="$PROJECT_DIR$/lib/providers/yobuddy.dart" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.lock" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pubspec.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/pubspec.yaml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/.pub/" />
     <ignored path="$PROJECT_DIR$/build/" />
@@ -50,31 +64,67 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/pages/single_item.dart">
+        <entry file="file://$PROJECT_DIR$/lib/pages/borrow/borrow_messages.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="9096">
-              <caret line="404" column="45" selection-start-line="404" selection-start-column="45" selection-end-line="404" selection-end-column="45" />
+            <state relative-caret-position="-794">
+              <caret line="134" column="17" selection-start-line="134" selection-start-column="17" selection-end-line="134" selection-end-column="17" />
+              <folding>
+                <element signature="e#0#20#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/pages/tabs.dart">
+        <entry file="file://$PROJECT_DIR$/lib/pages/item/edit_item.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3072">
-              <caret line="139" column="32" selection-start-line="139" selection-start-column="32" selection-end-line="139" selection-end-column="32" />
+            <state relative-caret-position="-4872">
+              <caret line="134" lean-forward="true" selection-start-line="134" selection-end-line="134" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/lib/pages/borrow_item.dart">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/providers/notification.dart">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="177" column="47" selection-start-line="177" selection-start-column="47" selection-end-line="177" selection-end-column="47" />
+            <state relative-caret-position="166">
+              <caret line="21" column="4" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="4" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/models/borrow.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="328">
+              <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/pages/borrow/description.dart">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/pages/borrow/review.dart">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/lib/pages/borrow/update.dart">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/UI/borrow/message.dart">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="226">
+              <caret line="24" column="58" selection-start-line="24" selection-start-column="58" selection-end-line="24" selection-end-column="58" />
             </state>
           </provider>
         </entry>
@@ -120,57 +170,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/lib/libraries/zoom_image.dart" />
-        <option value="$PROJECT_DIR$/lib/providers/net.dart" />
-        <option value="$PROJECT_DIR$/lib/pages/search.dart" />
-        <option value="$PROJECT_DIR$/lib/animations/sign_in_animation.dart" />
-        <option value="$PROJECT_DIR$/lib/providers/helpers.dart" />
-        <option value="$PROJECT_DIR$/lib/models/subcategory.dart" />
         <option value="$PROJECT_DIR$/ios/Runner/Info.plist" />
         <option value="$PROJECT_DIR$/lib/UI/text_editor.dart" />
         <option value="$PROJECT_DIR$/lib/UI/new_item.dart" />
         <option value="$PROJECT_DIR$/lib/UI/image_viewer.dart" />
-        <option value="$PROJECT_DIR$/lib/providers/session.dart" />
         <option value="$PROJECT_DIR$/lib/pages/splash.dart" />
-        <option value="$PROJECT_DIR$/lib/models/user.dart" />
         <option value="$PROJECT_DIR$/lib/UI/subcategories_select_list.dart" />
         <option value="$PROJECT_DIR$/lib/UI/pers_select_list.dart" />
         <option value="$PROJECT_DIR$/lib/UI/categories_select_list.dart" />
-        <option value="$PROJECT_DIR$/lib/UI/currencies_select_list.dart" />
         <option value="$PROJECT_DIR$/lib/UI/item_action_sheet.dart" />
         <option value="$PROJECT_DIR$/lib/UI/loading_popup.dart" />
-        <option value="$PROJECT_DIR$/lib/models/utils.dart" />
         <option value="$PROJECT_DIR$/lib/UI/items_available.dart" />
         <option value="$PROJECT_DIR$/lib/models/category.dart" />
         <option value="$PROJECT_DIR$/lib/models/comment.dart" />
         <option value="$PROJECT_DIR$/lib/UI/comment_action_sheet.dart" />
         <option value="$PROJECT_DIR$/lib/UI/comment.dart" />
-        <option value="$PROJECT_DIR$/lib/UI/edit_comment.dart" />
         <option value="$PROJECT_DIR$/lib/UI/confirmation_popup.dart" />
         <option value="$PROJECT_DIR$/lib/UI/popup.dart" />
-        <option value="$PROJECT_DIR$/lib/UI/borrow_item.dart" />
-        <option value="$PROJECT_DIR$/lib/providers/yobuddy.dart" />
         <option value="$PROJECT_DIR$/lib/main.dart" />
         <option value="$PROJECT_DIR$/lib/providers/helper.dart" />
-        <option value="$PROJECT_DIR$/lib/UI/message.dart" />
         <option value="$PROJECT_DIR$/android/app/src/main/AndroidManifest.xml" />
-        <option value="$PROJECT_DIR$/lib/pages/session/borrowing.dart" />
         <option value="$PROJECT_DIR$/lib/pages/edit_item.dart" />
         <option value="$PROJECT_DIR$/lib/pages/home.dart" />
-        <option value="$PROJECT_DIR$/lib/pages/borrow_messages.dart" />
         <option value="$PROJECT_DIR$/lib/pages/login.dart" />
         <option value="$PROJECT_DIR$/lib/providers/app.dart" />
         <option value="$PROJECT_DIR$/lib/UI/item.dart" />
-        <option value="$PROJECT_DIR$/lib/providers/notification.dart" />
         <option value="$PROJECT_DIR$/lib/pages/single_item.dart" />
         <option value="$PROJECT_DIR$/lib/providers/auth.dart" />
-        <option value="$PROJECT_DIR$/lib/UI/drawer_content.dart" />
-        <option value="$PROJECT_DIR$/pubspec.yaml" />
-        <option value="$PROJECT_DIR$/lib/pages/tabs.dart" />
         <option value="$PROJECT_DIR$/lib/pages/new_item.dart" />
         <option value="$PROJECT_DIR$/lib/models/item.dart" />
-        <option value="$PROJECT_DIR$/lib/models/borrow.dart" />
+        <option value="$PROJECT_DIR$/pubspec.yaml" />
+        <option value="$PROJECT_DIR$/lib/models/utils.dart" />
+        <option value="$PROJECT_DIR$/lib/UI/currencies_select_list.dart" />
+        <option value="$PROJECT_DIR$/lib/UI/edit_comment.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/session/borrowing.dart" />
         <option value="$PROJECT_DIR$/lib/pages/borrow_item.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/tabs.dart" />
+        <option value="$PROJECT_DIR$/lib/UI/drawer_content.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/session/borrows.dart" />
+        <option value="$PROJECT_DIR$/lib/UI/item_row.dart" />
+        <option value="$PROJECT_DIR$/lib/providers/yobuddy.dart" />
+        <option value="$PROJECT_DIR$/lib/UI/borrow_item.dart" />
+        <option value="$PROJECT_DIR$/lib/UI/message.dart" />
+        <option value="$PROJECT_DIR$/lib/models/user.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/session/lending.dart" />
+        <option value="$PROJECT_DIR$/lib/providers/notification.dart" />
+        <option value="$PROJECT_DIR$/lib/providers/session.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/borrow_messages.dart" />
+        <option value="$PROJECT_DIR$/lib/models/borrow.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/borrow/description.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/borrow/review.dart" />
+        <option value="$PROJECT_DIR$/lib/pages/borrow/update.dart" />
       </list>
     </option>
   </component>
@@ -197,7 +247,6 @@
     </navigator>
     <panes>
       <pane id="PackagesPane" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -231,6 +280,13 @@
               <item name="buddyapp" type="b2602c69:ProjectViewProjectNode" />
               <item name="buddyapp" type="462c0819:PsiDirectoryNode" />
               <item name="lib" type="462c0819:PsiDirectoryNode" />
+              <item name="pages" type="462c0819:PsiDirectoryNode" />
+              <item name="borrow" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="buddyapp" type="b2602c69:ProjectViewProjectNode" />
+              <item name="buddyapp" type="462c0819:PsiDirectoryNode" />
+              <item name="lib" type="462c0819:PsiDirectoryNode" />
               <item name="providers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
@@ -244,13 +300,14 @@
         </subPane>
       </pane>
       <pane id="AndroidView" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547119610888" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547533414820" />
     <property name="dart.analysis.tool.window.force.activate" value="false" />
     <property name="go.gopath.indexing.explicitly.defined" value="true" />
     <property name="io.flutter.reload.alreadyRun" value="true" />
@@ -263,7 +320,11 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="C:\Users\Ir Christian Scott\Desktop\Projects\YoBuddy\buddyapp\lib\pages" />
+      <recent name="C:\Users\Ir Christian Scott\Desktop\Projects\YoBuddy\buddyapp\lib\UI\comment" />
+      <recent name="C:\Users\Ir Christian Scott\Desktop\Projects\YoBuddy\buddyapp\lib\UI\borrow" />
+      <recent name="C:\Users\Ir Christian Scott\Desktop\Projects\YoBuddy\buddyapp\lib\UI\item" />
+      <recent name="C:\Users\Ir Christian Scott\Desktop\Projects\YoBuddy\buddyapp\lib\pages\item" />
+      <recent name="C:\Users\Ir Christian Scott\Desktop\Projects\YoBuddy\buddyapp\lib\pages\borrow" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -291,7 +352,7 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="true">
+    <configuration name="main.dart" type="FlutterRunConfigurationType" factoryName="Flutter" singleton="false">
       <option name="filePath" value="$PROJECT_DIR$/lib/main.dart" />
       <method v="2" />
     </configuration>
@@ -382,12 +443,14 @@
       <workItem from="1547120456835" duration="922000" />
       <workItem from="1547122644421" duration="5455000" />
       <workItem from="1547233030734" duration="2311000" />
-      <workItem from="1547266366274" duration="376000" />
+      <workItem from="1547266366274" duration="25632000" />
+      <workItem from="1547440894379" duration="25755000" />
+      <workItem from="1547520849985" duration="12273000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="499250000" />
+    <option name="totallyTimeSpent" value="562534000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -402,7 +465,7 @@
     <frame x="-8" y="-8" width="1616" height="886" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49304175" visible="true" weight="0.145625" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49304175" visible="true" weight="0.193125" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Designer" order="2" />
       <window_info id="Build Variants" order="3" sideWeight="0.50695825" side_tool="true" weight="0.16388175" />
@@ -414,7 +477,7 @@
       <window_info id="JRebel" order="9" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.499375" weight="0.3351135" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.499375" weight="0.32309747" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3994812" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -422,7 +485,7 @@
       <window_info anchor="bottom" id="Dart Analysis" order="7" weight="0.328877" />
       <window_info anchor="bottom" id="Android Monitor" order="8" weight="0.32933334" />
       <window_info anchor="bottom" id="Android Profiler" order="9" show_stripe_button="false" />
-      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.500625" side_tool="true" weight="0.30949107" />
+      <window_info anchor="bottom" id="Event Log" order="10" sideWeight="0.500625" side_tool="true" weight="0.3084112" />
       <window_info anchor="bottom" id="Logcat" order="11" weight="0.328877" />
       <window_info anchor="bottom" id="Database Changes" order="12" show_stripe_button="false" />
       <window_info anchor="bottom" id="Version Control" order="13" weight="0.32814527" />
@@ -503,102 +566,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://C:/flutter/packages/flutter/lib/src/material/time.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1364">
-          <caret line="89" column="74" lean-forward="true" selection-start-line="89" selection-start-column="74" selection-end-line="89" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/.pub-cache/hosted/pub.dartlang.org/datetime_picker_formfield-0.1.3/lib/datetime_picker_formfield.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="260">
-          <caret line="127" column="29" lean-forward="true" selection-start-line="127" selection-start-column="29" selection-end-line="127" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/text_editor.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="552">
-          <caret line="93" column="36" lean-forward="true" selection-start-line="93" selection-start-column="36" selection-end-line="93" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/borrow_item.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="328">
-          <caret line="88" column="119" lean-forward="true" selection-start-line="88" selection-start-column="119" selection-end-line="88" selection-end-column="119" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/bin/cache/pkg/sky_engine/lib/core/string.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-18780">
-          <caret line="87" column="69" lean-forward="true" selection-start-line="87" selection-start-column="69" selection-end-line="87" selection-end-column="69" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/packages/flutter/lib/src/painting/box_shadow.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="296">
-          <caret line="30" column="29" lean-forward="true" selection-start-line="30" selection-start-column="29" selection-end-line="30" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/packages/flutter/lib/src/widgets/basic.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="38475">
-          <caret line="1484" column="46" selection-start-line="1484" selection-start-column="35" selection-end-line="1484" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/models/user.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="512">
-          <caret line="101" column="65" selection-start-line="101" selection-start-column="65" selection-end-line="101" selection-end-column="65" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/popup.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="416">
-          <caret line="58" column="72" selection-start-line="58" selection-start-column="72" selection-end-line="58" selection-end-column="72" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/packages/flutter/lib/src/widgets/scroll_view.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="191">
-          <caret line="647" column="11" selection-start-line="647" selection-start-column="11" selection-end-line="647" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/packages/flutter/lib/src/widgets/async.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="945">
-          <caret line="371" column="20" selection-start-line="371" selection-start-column="9" selection-end-line="371" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/main.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="12" column="33" selection-start-line="12" selection-start-column="33" selection-end-line="12" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/bin/cache/pkg/sky_engine/lib/core/list.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="159">
-          <caret line="327" column="20" lean-forward="true" selection-start-line="327" selection-start-column="20" selection-end-line="327" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/flutter/bin/cache/pkg/sky_engine/lib/async/future.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-24235" />
-      </provider>
-    </entry>
     <entry file="file://C:/flutter/bin/cache/pkg/sky_engine/lib/async/async.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="591">
@@ -610,13 +577,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="28" column="41" lean-forward="true" selection-start-line="28" selection-start-column="41" selection-end-line="28" selection-end-column="41" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/providers/helper.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="92">
-          <caret line="9" column="44" lean-forward="true" selection-start-line="9" selection-start-column="44" selection-end-line="9" selection-end-column="44" />
         </state>
       </provider>
     </entry>
@@ -671,59 +631,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/message.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="30" column="52" selection-start-line="30" selection-start-column="52" selection-end-line="30" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/session/borrowing.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="286">
-          <caret line="34" column="11" lean-forward="true" selection-start-line="34" selection-start-column="11" selection-end-line="34" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/edit_item.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="106" column="119" selection-start-line="106" selection-start-column="119" selection-end-line="106" selection-end-column="119" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://C:/flutter/bin/cache/pkg/sky_engine/lib/convert/json.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="242">
           <caret line="523" column="8" selection-start-line="523" selection-start-column="8" selection-end-line="523" selection-end-column="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/borrow_messages.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-471">
-          <caret line="88" column="32" lean-forward="true" selection-start-line="88" selection-start-column="32" selection-end-line="88" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/providers/app.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="7" column="38" selection-start-line="7" selection-start-column="38" selection-end-line="7" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/item.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-397">
-          <caret line="75" selection-start-line="75" selection-end-line="75" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/providers/yobuddy.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="367">
-          <caret line="88" column="93" lean-forward="true" selection-start-line="88" selection-start-column="93" selection-end-line="88" selection-end-column="93" />
         </state>
       </provider>
     </entry>
@@ -734,24 +645,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/comment.dart">
+    <entry file="file://$PROJECT_DIR$/lib/UI/comment/comment.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-481">
           <caret line="8" column="4" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="4" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/providers/auth.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="67" column="74" lean-forward="true" selection-start-line="67" selection-start-column="74" selection-end-line="67" selection-end-column="74" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/UI/drawer_content.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="41" column="80" lean-forward="true" selection-start-line="41" selection-start-column="80" selection-end-line="41" selection-end-column="80" />
         </state>
       </provider>
     </entry>
@@ -786,27 +683,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pubspec.yaml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="144">
-          <caret line="6" selection-start-line="6" selection-end-line="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/providers/notification.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="17" column="20" selection-start-line="17" selection-start-column="20" selection-end-line="17" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/new_item.dart">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="312">
-          <caret line="133" column="33" lean-forward="true" selection-start-line="133" selection-start-column="33" selection-end-line="133" selection-end-column="33" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/models/item.dart">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2149">
@@ -814,36 +690,230 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/models/borrow.dart">
+    <entry file="file://$PROJECT_DIR$/buddyapp.iml">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pubspec.yaml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="467">
-          <caret line="113" column="64" lean-forward="true" selection-start-line="113" selection-start-column="64" selection-end-line="113" selection-end-column="64" />
+        <state relative-caret-position="140">
+          <caret line="32" column="20" selection-start-line="32" selection-start-column="20" selection-end-line="32" selection-end-column="20" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/single_item.dart">
+    <entry file="file://$PROJECT_DIR$/lib/models/utils.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="9096">
-          <caret line="404" column="45" selection-start-line="404" selection-start-column="45" selection-end-line="404" selection-end-column="45" />
+        <state relative-caret-position="264">
+          <caret line="14" column="73" selection-start-line="14" selection-start-column="73" selection-end-line="14" selection-end-column="73" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/currencies_select_list.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="92">
+          <caret line="24" column="70" selection-start-line="24" selection-start-column="70" selection-end-line="24" selection-end-column="70" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/comment/edit_comment.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="299">
+          <caret line="37" column="58" selection-start-line="37" selection-start-column="58" selection-end-line="37" selection-end-column="58" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/flutter/packages/flutter/lib/src/material/tab_controller.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-3713">
+          <caret line="79" column="2" selection-start-line="79" selection-start-column="2" selection-end-line="79" selection-end-column="2" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/pages/tabs.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3072">
-          <caret line="139" column="32" selection-start-line="139" selection-start-column="32" selection-end-line="139" selection-end-column="32" />
+        <state relative-caret-position="3123">
+          <caret line="148" column="10" selection-start-line="148" selection-start-column="10" selection-end-line="148" selection-end-column="10" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/pages/borrow_item.dart">
+    <entry file="file://$PROJECT_DIR$/lib/UI/item/item_row.dart">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="177" column="47" selection-start-line="177" selection-start-column="47" selection-end-line="177" selection-end-column="47" />
+        <state relative-caret-position="696">
+          <caret line="29" column="50" lean-forward="true" selection-start-line="29" selection-start-column="50" selection-end-line="29" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#39#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/drawer_content.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="605">
+          <caret line="104" column="67" lean-forward="true" selection-start-line="104" selection-start-column="67" selection-end-line="104" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/session/borrows.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="658">
+          <caret line="52" column="11" selection-start-line="52" selection-start-column="11" selection-end-line="52" selection-end-column="11" />
           <folding>
             <element signature="e#0#20#0" expanded="true" />
           </folding>
         </state>
       </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/item/new_item.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9484">
+          <caret line="631" column="68" lean-forward="true" selection-start-line="631" selection-start-column="68" selection-end-line="631" selection-end-column="68" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/borrow/borrow_item.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="663">
+          <caret line="294" column="38" lean-forward="true" selection-start-line="294" selection-start-column="38" selection-end-line="294" selection-end-column="38" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/providers/helper.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="6" column="52" lean-forward="true" selection-start-line="6" selection-start-column="52" selection-end-line="6" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/providers/app.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="144">
+          <caret line="7" column="38" selection-start-line="7" selection-start-column="38" selection-end-line="7" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/models/user.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2271">
+          <caret line="103" column="38" selection-start-line="103" selection-start-column="38" selection-end-line="103" selection-end-column="38" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/item/item.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4608">
+          <caret line="206" column="132" selection-start-line="206" selection-start-column="132" selection-end-line="206" selection-end-column="132" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/providers/auth.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="67" column="74" lean-forward="true" selection-start-line="67" selection-start-column="74" selection-end-line="67" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/providers/session.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="14" column="35" lean-forward="true" selection-start-line="14" selection-start-column="35" selection-end-line="14" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/session/lending.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-56">
+          <caret line="181" column="42" selection-start-line="181" selection-start-column="42" selection-end-line="181" selection-end-column="42" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/loading_popup.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="48">
+          <caret line="3" column="6" selection-start-line="3" selection-start-column="6" selection-end-line="3" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/item/single_item.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="565">
+          <caret line="384" column="5" lean-forward="true" selection-start-line="384" selection-start-column="5" selection-end-line="384" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/providers/notification.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="166">
+          <caret line="21" column="4" selection-start-line="21" selection-start-column="4" selection-end-line="21" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/borrow/borrow_messages.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-794">
+          <caret line="134" column="17" selection-start-line="134" selection-start-column="17" selection-end-line="134" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/borrow/message.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="226">
+          <caret line="24" column="58" selection-start-line="24" selection-start-column="58" selection-end-line="24" selection-end-column="58" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/providers/yobuddy.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="624">
+          <caret line="166" column="5" lean-forward="true" selection-start-line="166" selection-start-column="5" selection-end-line="166" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/item/edit_item.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-4872">
+          <caret line="134" lean-forward="true" selection-start-line="134" selection-end-line="134" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/UI/borrow/borrow_item.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="696">
+          <caret line="33" column="29" lean-forward="true" selection-start-line="33" selection-start-column="29" selection-end-line="33" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/models/borrow.dart">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="328">
+          <caret line="150" lean-forward="true" selection-start-line="150" selection-end-line="150" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/borrow/description.dart">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/borrow/review.dart">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/pages/borrow/update.dart">
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
   <component name="masterDetails">
