@@ -11,7 +11,7 @@ class SplashScreenPage extends StatefulWidget{
 
 class _SplashScreenState extends State<SplashScreenPage> with SingleTickerProviderStateMixin{
     
-    final String title = "yo boddy";
+    final String title = "Yo Buddy";
     bool isLoggedIn = false;
 
     Animation<double> _fontAnimation;
@@ -40,23 +40,35 @@ class _SplashScreenState extends State<SplashScreenPage> with SingleTickerProvid
 
     @override
     Widget build(BuildContext context){
-        return new Material(
+        return Material(
             color: Color(0xFFCC8400),
-            child: new InkWell(
-                onTap: _onTap,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                        Text(
-                            this.title.toUpperCase(),
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: _fontAnimation.value * 50.0,
-                                fontWeight: FontWeight.bold
+            child: Hero(
+                tag: "splash",
+                child: InkWell(
+                    onTap: _onTap,
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                            Container(
+                                width: 70.0,
+                                height: 70.0,
+                                padding: EdgeInsets.only(bottom: 15.0),
+                                child: Image(
+                                    image: AssetImage("assets/images/yobuddy.png"),
+                                    fit: BoxFit.fitHeight
+                                ),
                             ),
-                        )
-                    ],
-                ),
+                            Text(
+                                this.title.toUpperCase(),
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: _fontAnimation.value * 40.0,
+                                    fontWeight: FontWeight.bold
+                                ),
+                            )
+                        ],
+                    ),
+                )
             )
         );
     } 

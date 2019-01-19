@@ -1,13 +1,24 @@
+import 'package:buddyapp/providers/app.dart';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/borrow.dart';
 import 'package:buddyapp/models/user.dart';
 import 'package:buddyapp/providers/helper.dart';
 
 class BorrowMessageLayout extends StatefulWidget{
-    BorrowMessageLayout({ Key key, @required this.borrow, @required this.message, @required this.session }) : super(key : key);
+
+    BorrowMessageLayout({
+        Key key,
+        @required this.borrow,
+        @required this.message,
+        @required this.session,
+        @required this.onViewImages
+    }) : super(key : key);
+
     final Borrow borrow;
     final BorrowMessage message;
     final User session;
+    final VoidCallback onViewImages;
+
     @override
     _BorrowMessageLayoutState createState() => _BorrowMessageLayoutState();
 }
@@ -152,7 +163,47 @@ class _BorrowMessageLayoutState extends State<BorrowMessageLayout>{
                                                                 children: <Widget>[
                                                                     Container(
                                                                         padding: EdgeInsets.only(left: 13.0, right: 13.0, top: 2.0),
-                                                                        child: Text(
+                                                                        child: (this.widget.message.hasImages == true) ? Container(
+                                                                            child: Stack(
+                                                                                children: <Widget>[
+                                                                                    Container(
+                                                                                        padding: EdgeInsets.only(top: 8.0),
+                                                                                        width: MediaQuery.of(context).size.width,
+                                                                                        child: Hero(
+                                                                                            tag: this.widget.message.images[0].image.path,
+                                                                                            child: InkWell(
+                                                                                                onTap: () => widget.onViewImages(),
+                                                                                                child: Image(
+                                                                                                    image: NetworkImage(AppProvider().baseURL + this.widget.message.images[0].image.path),
+                                                                                                    fit: BoxFit.fill
+                                                                                                )
+                                                                                            )
+                                                                                        )
+                                                                                    ),
+                                                                                    Positioned(
+                                                                                        bottom: 6.0,
+                                                                                        right: 6.0,
+                                                                                        child: Container(
+                                                                                            decoration: BoxDecoration(
+                                                                                                borderRadius: BorderRadius.circular(4.0),
+                                                                                                color: Color.fromRGBO(0,0,0,0.7)
+                                                                                            ),
+                                                                                            child: Container(
+                                                                                                padding: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 14.0, right: 14.0),
+                                                                                                child: Text(
+                                                                                                    "+ ${this.widget.message.images.length - 1}",
+                                                                                                    style: TextStyle(
+                                                                                                        color: Colors.white,
+                                                                                                        fontSize: 17.0,
+                                                                                                        fontWeight: FontWeight.w700
+                                                                                                    ),
+                                                                                                )
+                                                                                            )
+                                                                                        )
+                                                                                    )
+                                                                                ],
+                                                                            )
+                                                                        ) : Text(
                                                                             this.widget.message.message,
                                                                             style: TextStyle(
                                                                                 color: Color(0xFFFFFFFF),
@@ -232,7 +283,47 @@ class _BorrowMessageLayoutState extends State<BorrowMessageLayout>{
                                                             children: <Widget>[
                                                                 Container(
                                                                     padding: EdgeInsets.only(left: 13.0, right: 13.0, top: 2.0),
-                                                                    child: Text(
+                                                                    child: (this.widget.message.hasImages == true) ? Container(
+                                                                        child: Stack(
+                                                                            children: <Widget>[
+                                                                                Container(
+                                                                                    padding: EdgeInsets.only(top: 8.0),
+                                                                                    width: MediaQuery.of(context).size.width,
+                                                                                    child: Hero(
+                                                                                        tag: this.widget.message.images[0].image.path,
+                                                                                        child: InkWell(
+                                                                                            onTap: () => widget.onViewImages(),
+                                                                                            child: Image(
+                                                                                                image: NetworkImage(AppProvider().baseURL + this.widget.message.images[0].image.path),
+                                                                                                fit: BoxFit.fill
+                                                                                            )
+                                                                                        )
+                                                                                    )
+                                                                                ),
+                                                                                Positioned(
+                                                                                    bottom: 6.0,
+                                                                                    left: 6.0,
+                                                                                    child: Container(
+                                                                                        decoration: BoxDecoration(
+                                                                                            borderRadius: BorderRadius.circular(4.0),
+                                                                                            color: Color.fromRGBO(0,0,0,0.7)
+                                                                                        ),
+                                                                                        child: Container(
+                                                                                            padding: EdgeInsets.only(top: 6.0, bottom: 6.0, left: 14.0, right: 14.0),
+                                                                                            child: Text(
+                                                                                                "+ ${this.widget.message.images.length - 1}",
+                                                                                                style: TextStyle(
+                                                                                                    color: Colors.white,
+                                                                                                    fontSize: 17.0,
+                                                                                                    fontWeight: FontWeight.w700
+                                                                                                ),
+                                                                                            )
+                                                                                        )
+                                                                                    )
+                                                                                )
+                                                                            ],
+                                                                        )
+                                                                    ) : Text(
                                                                         this.widget.message.message,
                                                                         style: TextStyle(
                                                                             color: Color(0xFF333333),

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:multi_image_picker/multi_image_picker.dart';
 import 'package:buddyapp/models/category.dart';
@@ -358,371 +359,394 @@ class _EditItemFormState extends State<EditItemForm> {
 
     @override
     Widget build(BuildContext context) {
-        return Hero(
-            tag: "show form",
-            child: Stack(
-                fit: StackFit.expand,
-                children: <Widget>[
-                    Scaffold(
-                        backgroundColor: Colors.white,
-                        appBar: AppBar(
-                            backgroundColor: Colors.white,
-                            automaticallyImplyLeading: false,
-                            title: Row(
-                                children: <Widget>[
-                                    IconButton(
-                                        onPressed: (){
-                                            Navigator.of(context).pop();
-                                        },
-                                        icon: Icon(Icons.close, color: Theme.of(context).primaryColor)
-                                    ),
-                                    Expanded(
-                                        child: Text(
-                                            "Edit Item",
-                                            style: TextStyle(
-                                                color: Color(0xFF333333),
-                                                fontWeight: FontWeight.bold
+        return Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+                Scaffold(
+                    resizeToAvoidBottomPadding: true,
+                    backgroundColor: Colors.white,
+                    body: CustomScrollView(
+                        slivers: <Widget>[
+                            SliverAppBar(
+                                expandedHeight: 200.0,
+                                pinned: true,
+                                floating: false,
+                                snap: false,
+                                leading: IconButton(
+                                    onPressed: (){
+                                        Navigator.of(context).pop();
+                                    },
+                                    icon: Icon(Icons.close, color: Colors.white)
+                                ),
+                                flexibleSpace: FlexibleSpaceBar(
+                                    title: Text("Edit Item"),
+                                    centerTitle: true,
+                                    background: Stack(
+                                        fit: StackFit.expand,
+                                        children: <Widget>[
+                                            Image(
+                                                image: NetworkImage(AppProvider().baseURL + this.widget.item.images[0].image.path),
+                                                fit: BoxFit.fitWidth,
+                                                height: 200.0,
                                             ),
-                                            textAlign:TextAlign.center,
-                                        ),
+                                            DecoratedBox(
+                                                decoration: BoxDecoration(
+                                                    gradient: LinearGradient(
+                                                        begin: Alignment(0.0, -1.0),
+                                                        end: Alignment(0.0, -0.4),
+                                                        colors: <Color>[const Color(0x90000000), const Color(0x00000000)],
+                                                    ),
+                                                ),
+                                            ),
+                                        ],
                                     ),
+                                ),
+                                actions: <Widget>[
                                     Container(
                                         child: (this.isSaving) ? Container(
+                                            padding: EdgeInsets.only(right: 20.0),
                                             height: 20.0,
                                             width: 20.0,
-                                            child: CircularProgressIndicator(
-                                                backgroundColor: Color(0xFF666666),
-                                                strokeWidth: 1.0,
-                                                valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF666666)),
+                                            child: Center(
+                                                child: CupertinoActivityIndicator(radius: 10.0)
                                             )
                                         ) :
-                                        InkWell(
-                                            onTap: () => this.updateItem(),
-                                            child: Text("Save".toUpperCase(), style: TextStyle(color: Color(0xFF666666), fontSize: 15.0)),
-                                        ),
+                                        Container(
+                                            padding: EdgeInsets.only(top: 18.0, right: 12.0),
+                                            child: InkWell(
+                                                onTap: () => this.updateItem(),
+                                                child: Text("Update".toUpperCase(), style: TextStyle(color: Colors.white, fontSize: 14.0)),
+                                            ),
+                                        )
                                     )
                                 ],
-                            )
-                        ),
-                        body: Container(
-                            padding: EdgeInsets.all(12.0),
-                            color: Colors.white,
-                            child: ListView(
-                                children: <Widget>[
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: Text("Item Name :"),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: TextFormField(
-                                            controller: _itemNameCtrl,
-                                            autofocus: false,
-                                            style: TextStyle(
-                                                fontSize: 17.0,
-                                                color: Colors.black
-                                            ),
-                                            decoration: InputDecoration(
-                                                hintText: 'Enter Item Name',
-                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
-                                                hintStyle: TextStyle(color: Color(0x99999999)),
-                                                border: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(5.0)
-                                                )
-                                            ),
-                                        ),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: Text("Item Category & Subcategory :"),
-                                    ),
-                                    Container(
-                                        child: Row(
-                                            children: <Widget>[
-                                                Container(
-                                                    padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Color(0x99999999),
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(5.0)
+                            ),
+                            SliverList(
+                                delegate: SliverChildListDelegate(
+                                    <Widget>[
+                                        Container(
+                                            padding: EdgeInsets.all(12.0),
+                                            child: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0),
+                                                        child: Text("Item Name :"),
                                                     ),
-                                                    child: InkWell(
-                                                        onTap: () => this.openSelectAlertCategory(),
-                                                        child: Container(
-                                                            padding: EdgeInsets.all(5.0),
-                                                            child: Text(
-                                                                this.selectedCategory,
-                                                                textAlign: TextAlign.center,
-                                                                overflow: TextOverflow.ellipsis,
-                                                                style: TextStyle(
-                                                                    fontSize: 15.0
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0),
+                                                        child: TextFormField(
+                                                            controller: _itemNameCtrl,
+                                                            autofocus: false,
+                                                            style: TextStyle(
+                                                                fontSize: 17.0,
+                                                                color: Colors.black
+                                                            ),
+                                                            decoration: InputDecoration(
+                                                                hintText: 'Enter Item Name',
+                                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(5.0)
                                                                 )
                                                             ),
                                                         ),
                                                     ),
-                                                ),
-                                                SizedBox(width: 10.0),
-                                                Expanded(
-                                                    child: Container(
-                                                        padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
-                                                        decoration: BoxDecoration(
-                                                            border: Border.all(
-                                                                color: Color(0x99999999),
-                                                            ),
-                                                            borderRadius: BorderRadius.circular(5.0)
-                                                        ),
-                                                        child: InkWell(
-                                                            onTap: () => this.openSelectAlertSubcategory(),
-                                                            child: Container(
-                                                                padding: EdgeInsets.all(5.0),
-                                                                child: Text(
-                                                                    this.selectedSubcategory,
-                                                                    textAlign: TextAlign.center,
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                    style: TextStyle(
-                                                                        fontSize: 15.0
-                                                                    )
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0),
+                                                        child: Text("Item Category & Subcategory :"),
+                                                    ),
+                                                    Container(
+                                                        child: Row(
+                                                            children: <Widget>[
+                                                                Container(
+                                                                    padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
+                                                                    decoration: BoxDecoration(
+                                                                        border: Border.all(
+                                                                            color: Color(0x99999999),
+                                                                        ),
+                                                                        borderRadius: BorderRadius.circular(5.0)
+                                                                    ),
+                                                                    child: InkWell(
+                                                                        onTap: () => this.openSelectAlertCategory(),
+                                                                        child: Container(
+                                                                            padding: EdgeInsets.all(5.0),
+                                                                            child: Text(
+                                                                                this.selectedCategory,
+                                                                                textAlign: TextAlign.center,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                style: TextStyle(
+                                                                                    fontSize: 15.0
+                                                                                )
+                                                                            ),
+                                                                        ),
+                                                                    ),
                                                                 ),
-                                                            ),
-                                                        ),
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                        child: Text("Item Borrow Price :"),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: TextFormField(
-                                            controller: _itemPriceCtrl,
-                                            autofocus: false,
-                                            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
-                                            style: TextStyle(
-                                                fontSize: 17.0,
-                                                color: Colors.black
-                                            ),
-                                            decoration: InputDecoration(
-                                                hintText: 'Enter Item Price',
-                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
-                                                hintStyle: TextStyle(color: Color(0x99999999)),
-                                                border: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(5.0)
-                                                )
-                                            ),
-                                        ),
-                                    ),
-                                    Container(
-                                        child: Row(
-                                            children: <Widget>[
-                                                Expanded(
-                                                    child: Container(
-                                                        padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
-                                                        decoration: BoxDecoration(
-                                                            border: Border.all(
-                                                                color: Color(0x99999999),
-                                                            ),
-                                                            borderRadius: BorderRadius.circular(5.0)
-                                                        ),
-                                                        child: InkWell(
-                                                            onTap: () => this.openSelectCurrency(),
-                                                            child: Container(
-                                                                padding: EdgeInsets.all(5.0),
-                                                                child: Text(
-                                                                    this.selectedCurrency,
-                                                                    textAlign: TextAlign.center,
-                                                                    overflow: TextOverflow.ellipsis,
-                                                                    style: TextStyle(
-                                                                        fontSize: 15.0
-                                                                    )
+                                                                SizedBox(width: 10.0),
+                                                                Expanded(
+                                                                    child: Container(
+                                                                        padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
+                                                                        decoration: BoxDecoration(
+                                                                            border: Border.all(
+                                                                                color: Color(0x99999999),
+                                                                            ),
+                                                                            borderRadius: BorderRadius.circular(5.0)
+                                                                        ),
+                                                                        child: InkWell(
+                                                                            onTap: () => this.openSelectAlertSubcategory(),
+                                                                            child: Container(
+                                                                                padding: EdgeInsets.all(5.0),
+                                                                                child: Text(
+                                                                                    this.selectedSubcategory,
+                                                                                    textAlign: TextAlign.center,
+                                                                                    overflow: TextOverflow.ellipsis,
+                                                                                    style: TextStyle(
+                                                                                        fontSize: 15.0
+                                                                                    )
+                                                                                ),
+                                                                            ),
+                                                                        ),
+                                                                    ),
                                                                 ),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                                        child: Text("Item Borrow Price :"),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0),
+                                                        child: TextFormField(
+                                                            controller: _itemPriceCtrl,
+                                                            autofocus: false,
+                                                            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                                                            style: TextStyle(
+                                                                fontSize: 17.0,
+                                                                color: Colors.black
                                                             ),
-                                                        ),
-                                                    ),
-                                                ),
-                                                SizedBox(width: 10.0),
-                                                Container(
-                                                    padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
-                                                    decoration: BoxDecoration(
-                                                        border: Border.all(
-                                                            color: Color(0x99999999),
-                                                        ),
-                                                        borderRadius: BorderRadius.circular(5.0)
-                                                    ),
-                                                    child: InkWell(
-                                                        onTap: () => this.openSelectPer(),
-                                                        child: Container(
-                                                            padding: EdgeInsets.all(5.0),
-                                                            child: Text(
-                                                                this.selectedPer,
-                                                                textAlign: TextAlign.center,
-                                                                overflow: TextOverflow.ellipsis,
-                                                                style: TextStyle(
-                                                                    fontSize: 15.0
+                                                            decoration: InputDecoration(
+                                                                hintText: 'Enter Item Price',
+                                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(5.0)
                                                                 )
                                                             ),
                                                         ),
                                                     ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                        child: Text("Item Quantity :"),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: TextFormField(
-                                            controller: _itemQuantityCtrl,
-                                            autofocus: false,
-                                            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
-                                            style: TextStyle(
-                                                fontSize: 17.0,
-                                                color: Colors.black
-                                            ),
-                                            decoration: InputDecoration(
-                                                hintText: 'Enter Item Quantity',
-                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
-                                                hintStyle: TextStyle(color: Color(0x99999999)),
-                                                border: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(5.0)
-                                                )
-                                            ),
-                                        ),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                        child: Text("Item Description :"),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0),
-                                        child: TextFormField(
-                                            controller: _itemDescriptionCtrl,
-                                            autofocus: false,
-                                            maxLines: 10,
-                                            style: TextStyle(
-                                                fontSize: 17.0,
-                                                color: Colors.black
-                                            ),
-                                            decoration: InputDecoration(
-                                                hintText: 'Enter Item Description',
-                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
-                                                hintStyle: TextStyle(color: Color(0x99999999)),
-                                                border: OutlineInputBorder(
-                                                    borderRadius: BorderRadius.circular(5.0)
-                                                )
-                                            ),
-                                        ),
-                                    ),
-                                    Container(
-                                        child: CheckboxListTile(
-                                            value: this.isAvailable,
-                                            title: Text("Is Available"),
-                                            onChanged: (x) => onIsAvailableChanged(x),
+                                                    Container(
+                                                        child: Row(
+                                                            children: <Widget>[
+                                                                Expanded(
+                                                                    child: Container(
+                                                                        padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
+                                                                        decoration: BoxDecoration(
+                                                                            border: Border.all(
+                                                                                color: Color(0x99999999),
+                                                                            ),
+                                                                            borderRadius: BorderRadius.circular(5.0)
+                                                                        ),
+                                                                        child: InkWell(
+                                                                            onTap: () => this.openSelectCurrency(),
+                                                                            child: Container(
+                                                                                padding: EdgeInsets.all(5.0),
+                                                                                child: Text(
+                                                                                    this.selectedCurrency,
+                                                                                    textAlign: TextAlign.center,
+                                                                                    overflow: TextOverflow.ellipsis,
+                                                                                    style: TextStyle(
+                                                                                        fontSize: 15.0
+                                                                                    )
+                                                                                ),
+                                                                            ),
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                                SizedBox(width: 10.0),
+                                                                Container(
+                                                                    padding: EdgeInsets.fromLTRB(8.0, 3.0, 8.0, 3.0),
+                                                                    decoration: BoxDecoration(
+                                                                        border: Border.all(
+                                                                            color: Color(0x99999999),
+                                                                        ),
+                                                                        borderRadius: BorderRadius.circular(5.0)
+                                                                    ),
+                                                                    child: InkWell(
+                                                                        onTap: () => this.openSelectPer(),
+                                                                        child: Container(
+                                                                            padding: EdgeInsets.all(5.0),
+                                                                            child: Text(
+                                                                                this.selectedPer,
+                                                                                textAlign: TextAlign.center,
+                                                                                overflow: TextOverflow.ellipsis,
+                                                                                style: TextStyle(
+                                                                                    fontSize: 15.0
+                                                                                )
+                                                                            ),
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                                        child: Text("Item Quantity :"),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0),
+                                                        child: TextFormField(
+                                                            controller: _itemQuantityCtrl,
+                                                            autofocus: false,
+                                                            keyboardType: TextInputType.numberWithOptions(signed: false, decimal: false),
+                                                            style: TextStyle(
+                                                                fontSize: 17.0,
+                                                                color: Colors.black
+                                                            ),
+                                                            decoration: InputDecoration(
+                                                                hintText: 'Enter Item Quantity',
+                                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(5.0)
+                                                                )
+                                                            ),
+                                                        ),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                                        child: Text("Item Description :"),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0),
+                                                        child: TextFormField(
+                                                            controller: _itemDescriptionCtrl,
+                                                            autofocus: false,
+                                                            maxLines: 10,
+                                                            style: TextStyle(
+                                                                fontSize: 17.0,
+                                                                color: Colors.black
+                                                            ),
+                                                            decoration: InputDecoration(
+                                                                hintText: 'Enter Item Description',
+                                                                contentPadding: EdgeInsets.fromLTRB(15.0, 8.0, 15.0, 8.0),
+                                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(5.0)
+                                                                )
+                                                            ),
+                                                        ),
+                                                    ),
+                                                    Container(
+                                                        child: CheckboxListTile(
+                                                            value: this.isAvailable,
+                                                            title: Text("Is Available"),
+                                                            onChanged: (x) => onIsAvailableChanged(x),
+                                                        )
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
+                                                        child: Text("Item Images :"),
+                                                    ),
+                                                    Container(
+                                                        padding: EdgeInsets.only(bottom: 10.0),
+                                                        child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: <Widget>[
+                                                                itemImages.length <= 0 ? Container() : SizedBox(
+                                                                    width: 400.0,
+                                                                    height: 200.0,
+                                                                    child: ListView.builder(
+                                                                        scrollDirection: Axis.horizontal,
+                                                                        itemBuilder: (BuildContext context, int index) =>
+                                                                            InkWell(
+                                                                                onLongPress: () => this.deleteItemImage(itemImages[index], index),
+                                                                                child: Padding(
+                                                                                    padding: EdgeInsets.all(5.0),
+                                                                                    child: Image.network(itemImages[index].imageUrl)
+                                                                                ),
+                                                                            ),
+                                                                        itemCount: itemImages.length,
+                                                                    ),
+                                                                ),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                    Container(
+                                                        child: Column(
+                                                            mainAxisAlignment: MainAxisAlignment.center,
+                                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                                            children: <Widget>[
+                                                                images.length <= 0 ? Container() : SizedBox(
+                                                                    width: 400.0,
+                                                                    height: 200.0,
+                                                                    child: ListView.builder(
+                                                                        scrollDirection: Axis.horizontal,
+                                                                        itemBuilder: (BuildContext context, int index) =>
+                                                                            Padding(
+                                                                                padding: EdgeInsets.all(5.0),
+                                                                                child: Image.file(images[index])
+                                                                            ),
+                                                                        itemCount: images.length,
+                                                                    ),
+                                                                ),
+                                                                Container(
+                                                                    padding: EdgeInsets.only(top: 8.0),
+                                                                    child: Row(
+                                                                        children: <Widget>[
+                                                                            Expanded(
+                                                                                child: RaisedButton.icon(
+                                                                                    onPressed: pickImages,
+                                                                                    icon: Icon(Icons.image),
+                                                                                    label: Text("Add Item Images".toUpperCase()),
+                                                                                ),
+                                                                            ),
+                                                                        ],
+                                                                    ),
+                                                                ),
+                                                            ],
+                                                        ),
+                                                    ),
+                                                ],
+                                            )
                                         )
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 8.0, top: 8.0),
-                                        child: Text("Item Images :"),
-                                    ),
-                                    Container(
-                                        padding: EdgeInsets.only(bottom: 10.0),
-                                        child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: <Widget>[
-                                                itemImages.length <= 0 ? Container() : SizedBox(
-                                                    width: 400.0,
-                                                    height: 200.0,
-                                                    child: ListView.builder(
-                                                        scrollDirection: Axis.horizontal,
-                                                        itemBuilder: (BuildContext context, int index) =>
-                                                            InkWell(
-                                                                onLongPress: () => this.deleteItemImage(itemImages[index], index),
-                                                                child: Padding(
-                                                                    padding: EdgeInsets.all(5.0),
-                                                                    child: Image.network(itemImages[index].imageUrl)
-                                                                ),
-                                                            ),
-                                                        itemCount: itemImages.length,
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                    Container(
-                                        child: Column(
-                                            mainAxisAlignment: MainAxisAlignment.center,
-                                            crossAxisAlignment: CrossAxisAlignment.center,
-                                            children: <Widget>[
-                                                images.length <= 0 ? Container() : SizedBox(
-                                                    width: 400.0,
-                                                    height: 200.0,
-                                                    child: ListView.builder(
-                                                        scrollDirection: Axis.horizontal,
-                                                        itemBuilder: (BuildContext context, int index) =>
-                                                            Padding(
-                                                                padding: EdgeInsets.all(5.0),
-                                                                child: Image.file(images[index])
-                                                            ),
-                                                        itemCount: images.length,
-                                                    ),
-                                                ),
-                                                Container(
-                                                    padding: EdgeInsets.only(top: 8.0),
-                                                    child: Row(
-                                                        children: <Widget>[
-                                                            Expanded(
-                                                                child: RaisedButton.icon(
-                                                                    onPressed: pickImages,
-                                                                    icon: Icon(Icons.image),
-                                                                    label: Text("Add Item Images".toUpperCase()),
-                                                                ),
-                                                            ),
-                                                        ],
-                                                    ),
-                                                ),
-                                            ],
-                                        ),
-                                    ),
-                                ],
+                                    ]
+                                )
                             )
-                        ),
+                        ],
                     ),
-                    (this.showCategories == true) ? CategoriesSelectList(categories: this.categoriesRadio(), onClose: (){
-                        setState(() {
-                            this.showCategories = false;
-                            this.showSubcategories = true;
-                        });
-                    }) : Container(),
-                    (this.showSubcategories == true) ? SubcategoriesSelectList(subcategories: this.subcategoriesRadio(), onClose: (){
-                        setState(() {
-                            this.showSubcategories = false;
-                        });
-                    }) : Container(),
-                    (this.showCurrencies == true) ? CurrenciesSelectList(currencies: this.currenciesRadio(), onClose: (){
-                        setState(() {
-                            this.showCurrencies = false;
-                            this.showPers = true;
-                        });
-                    }) : Container(),
-                    (this.showPers == true) ? PersSelectList(pers: this.persRadio(), onClose: (){
-                        setState(() {
-                            this.showPers = false;
-                        });
-                    }) : Container(),
-                    (isOverlayVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){ setState(() { this.isOverlayVisible = false; }); }) : Container(),
-                    (isSaveLoadingVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){
-                        setState(() { this.isSaveLoadingVisible = false;});
-                        if(this._type == "success") Navigator.of(context).pop();
-                    }) : Container(),
-                    (isLoadingVisible == true) ? LoadingOverlay() : Container()
-                ],
-            )
+                ),
+                (this.showCategories == true) ? CategoriesSelectList(categories: this.categoriesRadio(), onClose: (){
+                    setState(() {
+                        this.showCategories = false;
+                        this.showSubcategories = true;
+                    });
+                }) : Container(),
+                (this.showSubcategories == true) ? SubcategoriesSelectList(subcategories: this.subcategoriesRadio(), onClose: (){
+                    setState(() {
+                        this.showSubcategories = false;
+                    });
+                }) : Container(),
+                (this.showCurrencies == true) ? CurrenciesSelectList(currencies: this.currenciesRadio(), onClose: (){
+                    setState(() {
+                        this.showCurrencies = false;
+                        this.showPers = true;
+                    });
+                }) : Container(),
+                (this.showPers == true) ? PersSelectList(pers: this.persRadio(), onClose: (){
+                    setState(() {
+                        this.showPers = false;
+                    });
+                }) : Container(),
+                (isOverlayVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){ setState(() { this.isOverlayVisible = false; }); }) : Container(),
+                (isSaveLoadingVisible == true) ? PopupOverlay(message: this._message, type: this._type, onTap: (){
+                    setState(() { this.isSaveLoadingVisible = false;});
+                    if(this._type == "success") Navigator.of(context).pop();
+                }) : Container(),
+                (isLoadingVisible == true) ? LoadingOverlay() : Container()
+            ],
         );
     }
 }

@@ -29,7 +29,7 @@ class _ConfirmationPopupState extends State<ConfirmationPopup>{
 
     @override
     Widget build(BuildContext context) {
-        return new Material(
+        return Material(
             color: Color.fromRGBO(0, 0, 0, 0.7),
             child: (this.widget.message != null) ? Hero(
                 tag: "confirmpopup",

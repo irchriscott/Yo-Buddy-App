@@ -37,7 +37,7 @@ class _DrawerContentState extends State<DrawerContent>{
         Authentication().getUserToken().then((value) => _setUserToken(value));
     }
 
-    void updateUserData(){
+    Future<void> updateUserData() async{
         Authentication().updateUserData(this.sessionToken).then((_){
             Authentication().getSessionUser().then((value) => _setValue(value));
         });

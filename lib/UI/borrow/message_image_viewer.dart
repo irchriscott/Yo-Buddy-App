@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buddyapp/models/item.dart';
+import 'package:buddyapp/models/borrow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:buddyapp/providers/app.dart';
 import 'package:buddyapp/libraries/carousel.dart';
@@ -7,28 +7,26 @@ import 'package:flutter_advanced_networkimage/flutter_advanced_networkimage.dart
 import 'package:flutter_advanced_networkimage/zoomable_widget.dart';
 import 'package:flutter_advanced_networkimage/transition_to_image.dart';
 
-class ImageViewPage extends StatefulWidget{
+class MessageImageViewPage extends StatefulWidget{
 
-    ImageViewPage({
+    MessageImageViewPage({
         Key key,
         @required this.images,
         @required this.onImageViewClose,
-        @required this.name,
-        @required this.isLiked
-    }):super(key:key);
+        @required this.sender
+    }) : super(key:key);
 
-    final List<ItemImage> images;
+    final List<BorrowMessageImage> images;
     final VoidCallback onImageViewClose;
-    final String name;
-    final bool isLiked;
+    final String sender;
 
     @override
-    _ImageViewPageState createState() => _ImageViewPageState();
+    _MessageImageViewPage createState() => _MessageImageViewPage();
 }
 
-class _ImageViewPageState extends State<ImageViewPage>{
+class _MessageImageViewPage extends State<MessageImageViewPage>{
 
-    List<ItemImage> images;
+    List<BorrowMessageImage> images;
     List<SingleImagePage> imagesViewer = [];
 
     @override
@@ -53,17 +51,17 @@ class _ImageViewPageState extends State<ImageViewPage>{
                     Center(
                         child: CarouselSlider(
                             items: imagesViewer.map((i) {
-                              return new Builder(
-                                builder: (BuildContext context) {
-                                  return Hero(
-                                      tag: widget.images[imagesViewer.indexOf(i)].image.path,
-                                      child: Container(
-                                          width: MediaQuery.of(context).size.width,
-                                          child: i
-                                      ),
-                                  );
-                                },
-                              );
+                                return Builder(
+                                    builder: (BuildContext context) {
+                                        return Hero(
+                                            tag: this.images[this.imagesViewer.indexOf(i)].image.path,
+                                            child: Container(
+                                                width: MediaQuery.of(context).size.width,
+                                                child: i
+                                            ),
+                                        );
+                                    },
+                                );
                             }).toList(),
                             viewportFraction: 1.0,
                             aspectRatio: 1.0,
@@ -73,17 +71,15 @@ class _ImageViewPageState extends State<ImageViewPage>{
                     ),
                     Positioned(
                         child: Container(
-                          child: IconButton(
-                            icon: Icon(Icons.close),
-                            color: Colors.white,
-                            onPressed: () {
-                                Navigator.of(context).pop();
-                            },
-                          ),
-                          decoration: BoxDecoration(
-                              color: Color.fromRGBO(0,0,0,.4),
-                              shape: BoxShape.circle
-                          ),
+                            child: IconButton(
+                                icon: Icon(Icons.close),
+                                color: Colors.white,
+                                onPressed: () => widget.onImageViewClose(),
+                            ),
+                            decoration: BoxDecoration(
+                                color: Color.fromRGBO(0,0,0,.4),
+                                shape: BoxShape.circle
+                            ),
                         ),
                         top: 10.0,
                         right: 10.0
@@ -105,7 +101,7 @@ class _ImageViewPageState extends State<ImageViewPage>{
                                 children: <Widget>[
                                     Expanded(
                                         child: Text(
-                                            this.widget.name,
+                                            this.widget.sender,
                                             style: TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 20.0
@@ -115,10 +111,10 @@ class _ImageViewPageState extends State<ImageViewPage>{
                                     ),
                                     Container(
                                         child: IconButton(
-                                          onPressed: () {},
-                                          icon: (this.widget.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon'), color: Colors.white),
-                                          iconSize: 35.0,
-                                          color: Color(0xFF333333),
+                                            onPressed: () {},
+                                            icon: Icon(IconData(0xf41f, fontFamily: 'ionicon'), color: Colors.white),
+                                            iconSize: 35.0,
+                                            color: Color(0xFF333333),
                                         )
                                     )
                                 ],
@@ -133,28 +129,28 @@ class _ImageViewPageState extends State<ImageViewPage>{
 
 class SingleImagePage extends Container{
 
-  SingleImagePage({Key key, @required this.image});
+    SingleImagePage({Key key, @required this.image});
 
-  final ItemImage image;
+    final BorrowMessageImage image;
 
-  @override
-  Widget build(BuildContext context) {
-      TransitionToImage imageTransition = TransitionToImage(
-          AdvancedNetworkImage(AppProvider().baseURL + image.image.path, useDiskCache: true),
-          placeholder: CircularProgressIndicator(),
-          reloadWidget: Icon(Icons.replay)
-      );
-      return Container(
-          child: ZoomableWidget(
-              minScale: 0.3,
-              maxScale: 2.0,
-              child: Image(
-                  image: AdvancedNetworkImage(AppProvider().baseURL + image.image.path),
-                  fit: BoxFit.fitWidth
-              ),
-              //child: imageTransition,
-              tapCallback: imageTransition.reloadImage()
-          )
-      );
-  }
+    @override
+    Widget build(BuildContext context) {
+        TransitionToImage imageTransition = TransitionToImage(
+            AdvancedNetworkImage(AppProvider().baseURL + image.image.path, useDiskCache: true),
+            placeholder: CircularProgressIndicator(),
+            reloadWidget: Icon(Icons.replay)
+        );
+        return Container(
+            child: ZoomableWidget(
+                minScale: 0.3,
+                maxScale: 2.0,
+                child: Image(
+                    image: AdvancedNetworkImage(AppProvider().baseURL + image.image.path),
+                    fit: BoxFit.fitWidth
+                ),
+                //child: imageTransition,
+                tapCallback: imageTransition.reloadImage()
+            )
+        );
+    }
 }

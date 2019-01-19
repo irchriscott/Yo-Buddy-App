@@ -86,17 +86,19 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
     @override
     Widget build(BuildContext context){
 
-        return new Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-                Scaffold(
-                    backgroundColor: Colors.white,
-                    body: Container(
-                        child: ListView(
+        return Material(
+            color: Colors.white,
+            child: Stack(
+                fit: StackFit.expand,
+                children: <Widget>[
+                    Scaffold(
+                        resizeToAvoidBottomPadding: true,
+                        backgroundColor: Colors.white,
+                        body: ListView(
                             shrinkWrap: true,
                             children: <Widget>[
                                 Hero(
-                                    tag: 'hero',
+                                    tag: 'splash',
                                     child: Container(
                                         height: 250.0,
                                         decoration: BoxDecoration(
@@ -265,15 +267,15 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
                             ],
                         ),
                     ),
-                ),
-                isOverlayVisible == true ? PopupOverlay(
-                    message: this._message,
-                    type: this._type,
-                    onTap: (){
-                        this.isOverlayVisible = false;
-                        Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new TabsPage()));
-                    }) : Container(),
-            ],
+                    isOverlayVisible == true ? PopupOverlay(
+                        message: this._message,
+                        type: this._type,
+                        onTap: (){
+                            this.isOverlayVisible = false;
+                            Navigator.of(context).push(new MaterialPageRoute(builder: (BuildContext context) => new TabsPage()));
+                        }) : Container(),
+                ],
+            )
         );
     }
 }

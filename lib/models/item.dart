@@ -50,8 +50,8 @@ class Item{
     List<UploadFileInfo> getImagesInfo(){
         List<UploadFileInfo> images = [];
         this.imageFiles.forEach((image){
-            UploadFileInfo imageInfo = UploadFileInfo(image, "my_item_image.png");
-            imageInfo.contentType = ContentType("image", "png");
+            UploadFileInfo imageInfo = UploadFileInfo(image, image.path.split("/").last);
+            imageInfo.contentType = ContentType("image", image.path.split(".").last);
             images.add(imageInfo);
         });
         return images;

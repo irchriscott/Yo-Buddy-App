@@ -64,7 +64,7 @@ class _ItemsAvailableState extends State<ItemsAvailable>{
 
     @override
     Widget build(BuildContext context) {
-        return new Material(
+        return Material(
             color: Color.fromRGBO(0,0,0,0.7),
             child: (this.itemAvailable.length > 0) ? Hero(
                 tag: "showavails",
@@ -93,7 +93,7 @@ class _ItemsAvailableState extends State<ItemsAvailable>{
                                     )
                                 ),
                                 Container(
-                                    padding: EdgeInsets.only(top: 30.0, bottom: 30.0),
+                                    padding: EdgeInsets.only(top: 20.0, bottom: 30.0),
                                     child: ListView(
                                         children: <Widget>[
                                             Table(children: this.availableWidgets)

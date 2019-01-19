@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'user.dart';
 import 'item.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +9,8 @@ import 'package:buddyapp/models/response.dart';
 import 'package:buddyapp/providers/net.dart' as net;
 import 'package:buddyapp/providers/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+final JsonDecoder _decoder = new JsonDecoder();
 
 class Borrow{
 
@@ -74,7 +78,7 @@ class Borrow{
             createdAt: json['created_at'],
             updatedAt: json['updated_at'],
             code: json['code'],
-            total: json['total'],
+            total: json['borrow_total'],
             penalties: json['penalties'].toDouble(),
             deadline: json['deadline'],
             expiration: json['expiration'],
@@ -124,6 +128,30 @@ class Borrow{
         return ResponseService(text: "Fill all Fiels With Right Data !!!", type: "error");
     }
 
+    Future<ResponseService> updateBorrow(String sessionToken) async{
+        if(this.price > 0 && this.numbers > 0 && this.count > 0 && this.fromDate != "") {
+            return net.NetworkUtil().post(
+                Uri.encodeFull(AppProvider().baseURL + "/items/${this.item.id.toString()}/item_borrow_user/${this.id.toString()}.json?token=$sessionToken"),
+                body: {
+                    "item_borrow[item_id]": this.item.id.toString(),
+                    "item_borrow[price]": this.price.toString(),
+                    "item_borrow[currency]": this.currency,
+                    "item_borrow[per]": this.per,
+                    "item_borrow[numbers]": this.numbers.toString(),
+                    "item_borrow[conditions]": this.conditions,
+                    "item_borrow[count]": this.count.toString(),
+                    "item_borrow[from_date]": this.fromDate,
+                    "item_borrow[status]": this.status,
+                    "item_borrow[last_update_user_id]": this.lastUpdateBy.id.toString(),
+                    "_method": "patch"
+                }
+            ).then((response) {
+                return ResponseService.fromJson(response);
+            });
+        }
+        return ResponseService(text: "Fill all Fiels With Right Data !!!", type: "error");
+    }
+
     Future<ResponseService> updateBorrowStatus(int index, String status, String sessionToken) async{
         if(index > 0 && status != null){
             return net.NetworkUtil().get(
@@ -142,7 +170,7 @@ class Borrow{
 
     Future<Borrow> getBorrow(String sessionToken) async{
         return net.NetworkUtil().get(
-            Uri.encodeFull(AppProvider().baseURL + "/item/enc-dt-${this.item.uuid}-${this.item.id.toString()}-${this.id.toString()}/borrow?token=$sessionToken")
+            Uri.encodeFull(AppProvider().baseURL + "/item/enc-dt-${this.item.uuid}-${this.item.id.toString()}-${this.id.toString()}/borrow.json?token=$sessionToken")
         ).then((response){
             this.saveBorrowInSharedPreferences(this.id, json.encode(response));
             return Borrow.fromJson(response);
@@ -172,10 +200,22 @@ class BorrowMessage{
     final String createdAt;
     final List<BorrowMessageImage> images;
 
+    final List<File> imageFiles;
+
     BorrowMessage({
-        this.id, this.sender, this.receiver, this.type, this.message,
+        this.id, this.sender, this.receiver, this.type, this.message, this.imageFiles,
         this.status, this.isDeleted, this.hasImages, this.createdAt, this.images
     });
+
+    List<UploadFileInfo> getImagesInfo(){
+        List<UploadFileInfo> images = [];
+        this.imageFiles.forEach((image){
+            UploadFileInfo imageInfo = UploadFileInfo(image, image.path.split("/").last);
+            imageInfo.contentType = ContentType("image", image.path.split(".").last);
+            images.add(imageInfo);
+        });
+        return images;
+    }
 
     String get messageText => (this.type == "admin") ? this.message.replaceRange(0, 1, this.message[0].toUpperCase()) : this.message;
     String get adminMessage => (this.message == "data") ? "Borrow Item Updated" : "Borrow Status Updated To ${this.messageText}";
@@ -204,6 +244,33 @@ class BorrowMessage{
         }).then((response){
             return ResponseService.fromJson(response);
         });
+    }
+
+    Future<ResponseService> sendImageMessage(String sessionToken, int item, int borrow) async{
+
+        var uri = Uri.encodeFull(AppProvider().baseURL + "/items/${item.toString()}/borrow_item_user/${borrow.toString()}/borrow_messages/images/send?token=$sessionToken");
+        Dio request = Dio();
+
+        FormData message = new FormData.from(
+            {
+                "message[message]": this.message,
+                "message[receiver_id]": this.receiver.id.toString(),
+                "message[status]": this.status,
+                "message[is_deleted]": this.isDeleted.toString(),
+                "message[images][]": this.getImagesInfo()
+            }
+        );
+
+        try {
+            var response = await request.post(uri, data: message);
+            if (response.statusCode < 200 || response.statusCode > 400 || json == null) {
+                return ResponseService.fromJson(_decoder.convert('{"type":"error", "text":"An error has occured, Sorry!"}'));
+            }
+            return ResponseService.fromJson(response.data);
+        } on DioError catch (_) {
+            return ResponseService.fromJson(_decoder.convert(
+                '{"type":"error", "text":"An error has occured, Sorry!"}'));
+        }
     }
 }
 

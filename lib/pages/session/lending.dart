@@ -108,102 +108,89 @@ class _SessionLendingState extends State<SessionLending>{
     @override
     Widget build(BuildContext context) {
         return Scaffold(
-            appBar: AppBar(
-                title: Text("Lending For ${this.widget.item.name}", overflow: TextOverflow.ellipsis),
-                actions: <Widget>[
-                    IconButton(icon: Icon(IconData(0xf4a4, fontFamily: 'ionicon')), onPressed: (){})
-                ],
-            ),
-            body: ListView(
-                children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.only(bottom: 15.0, top: 15.0),
-                        decoration: BoxDecoration(
-                            border: Border(bottom: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD), width: 0.5))
-                        ),
-                        child: Container(
-                            child: Column(
+            body: CustomScrollView(
+                slivers: <Widget>[
+                    SliverAppBar(
+                        expandedHeight: 200.0,
+                        pinned: true,
+                        floating: false,
+                        snap: false,
+                        flexibleSpace: FlexibleSpaceBar(
+                            title: Text(this.widget.item.name),
+                            background: Stack(
+                                fit: StackFit.expand,
                                 children: <Widget>[
-                                    Center(
-                                        child: Container(
-                                            width: 150.0,
-                                            height: 150.0,
-                                            padding: EdgeInsets.only(right: 10.0),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    style: BorderStyle.solid,
-                                                    width: 2.0,
-                                                    color: Color(0xFFDDDDDD)
-                                                ),
-                                                shape: BoxShape.circle,
-                                                color: Color(0xFFDDDDDD),
-                                                image: DecorationImage(
-                                                    image: NetworkImage(AppProvider().baseURL + widget.item.images[0].image.path),
-                                                    fit: BoxFit.fitWidth
-                                                )
-                                            )
-                                        ),
+                                    Image(
+                                        image: NetworkImage(AppProvider().baseURL + this.widget.item.images[0].image.path),
+                                        fit: BoxFit.fitWidth,
+                                        height: 200.0,
                                     ),
-                                    Center(
-                                        child: Container(
-                                            padding: EdgeInsets.only(top: 12.0),
-                                            child: Text(
-                                                widget.item.name,
-                                                style: TextStyle(
-                                                    fontSize: 17.0,
-                                                    fontWeight: FontWeight.bold
-                                                ),
+                                    DecoratedBox(
+                                        decoration: BoxDecoration(
+                                            gradient: LinearGradient(
+                                                begin: Alignment(0.0, -1.0),
+                                                end: Alignment(0.0, -0.4),
+                                                colors: <Color>[const Color(0x90000000), const Color(0x00000000)],
                                             ),
                                         ),
-                                    )
+                                    ),
                                 ],
                             ),
-                        )
+                        ),
+                        actions: <Widget>[
+                            IconButton(icon: Icon(IconData(0xf4a4, fontFamily: 'ionicon')), onPressed: (){})
+                        ],
                     ),
-                    Container(
-                        child: ( this.lending != null) ? Container(
-                            child: (this.canShowLending == true) ? Container(
-                                child: (this.lending.length > 0) ? Column(children: this.getLendingList()) : Container(
-                                    child: Center(
-                                        child: (this.showProgress == true) ? Container(
-                                            padding: EdgeInsets.only(top: 100.0),
-                                            width: 25.0,
-                                            height: 25.0,
-                                            child: CircularProgressIndicator(
-                                                backgroundColor: Color(0xFFCC8400),
-                                                strokeWidth: 2.0,
-                                            ),
+                    SliverList(
+                        delegate: SliverChildListDelegate(
+                            <Widget>[
+                                Container(
+                                    child: ( this.lending != null) ? Container(
+                                        child: (this.canShowLending == true) ? Container(
+                                            child: (this.lending.length > 0) ? Column(children: this.getLendingList()) : Container(
+                                                child: Center(
+                                                    child: (this.showProgress == true) ? Container(
+                                                        padding: EdgeInsets.only(top: 100.0),
+                                                        width: 25.0,
+                                                        height: 25.0,
+                                                        child: CircularProgressIndicator(
+                                                            backgroundColor: Color(0xFFCC8400),
+                                                            strokeWidth: 2.0,
+                                                        ),
+                                                    ) : Container(
+                                                        padding: EdgeInsets.only(top: 100.0),
+                                                        child: Text("No Lendings", style: TextStyle(fontSize: 27.0))
+                                                    )
+                                                )
+                                            )
                                         ) : Container(
                                             padding: EdgeInsets.only(top: 100.0),
-                                            child: Text("No Lendings", style: TextStyle(fontSize: 27.0))
+                                            child: Center(
+                                                child: Container(
+                                                    width: 25.0,
+                                                    height: 25.0,
+                                                    child: CircularProgressIndicator(
+                                                        backgroundColor: Color(0xFFCC8400),
+                                                        strokeWidth: 2.0,
+                                                    ),
+                                                )
+                                            ),
                                         )
-                                    )
-                                )
-                            ) : Container(
-                                padding: EdgeInsets.only(top: 100.0),
-                                child: Center(
-                                    child: Container(
-                                        width: 25.0,
-                                        height: 25.0,
-                                        child: CircularProgressIndicator(
-                                            backgroundColor: Color(0xFFCC8400),
-                                            strokeWidth: 2.0,
+                                    ) : Container(
+                                        padding: EdgeInsets.only(top: 100.0),
+                                        child: Center(
+                                            child: Container(
+                                                width: 25.0,
+                                                height: 25.0,
+                                                child: CircularProgressIndicator(
+                                                    backgroundColor: Color(0xFFCC8400),
+                                                    strokeWidth: 2.0,
+                                                ),
+                                            )
                                         ),
                                     )
-                                ),
-                            )
-                        ) : Container(
-                            padding: EdgeInsets.only(top: 100.0),
-                            child: Center(
-                                child: Container(
-                                    width: 25.0,
-                                    height: 25.0,
-                                    child: CircularProgressIndicator(
-                                        backgroundColor: Color(0xFFCC8400),
-                                        strokeWidth: 2.0,
-                                    ),
                                 )
-                            ),
+                            ]
                         )
                     )
                 ],

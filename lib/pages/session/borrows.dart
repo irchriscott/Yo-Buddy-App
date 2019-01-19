@@ -93,13 +93,12 @@ class _SessionBorrowsState extends State<SessionBorrows>{
         });
     }
 
-    void _loadSessionBorrowings(){
+    void _loadSessionBorrowings() async{
         YoBuddyService().getBorrowingsInPreferences().then((data) => this._setSessionBorrowings(data));
     }
 
-    Future<Null> loadSessionBorrowings() async{
+    Future<void> loadSessionBorrowings() async{
         YoBuddyService().getBorrowing(this.sessionToken).then((data) => _setSessionBorrowings(data));
-        return null;
     }
 
     void _setSessionLendingItems(List<Item> _items){
@@ -113,13 +112,12 @@ class _SessionBorrowsState extends State<SessionBorrows>{
         });
     }
 
-    void _loadSessionLendingItems(){
+    void _loadSessionLendingItems() async{
         YoBuddyService().getLendingItemsInPreferences().then((data) => this._setSessionLendingItems(data));
     }
 
-    Future<Null> loadSessionLendingItems() async{
+    Future<void> loadSessionLendingItems() async{
         YoBuddyService().getLendingItems(this.sessionToken).then((data) => _setSessionLendingItems(data));
-        return null;
     }
 
     @override

@@ -1,6 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'package:buddyapp/UI/borrow/message_image_viewer.dart';
+import 'package:buddyapp/pages/borrow/description.dart';
+import 'package:buddyapp/pages/borrow/image_message.dart';
+import 'package:buddyapp/pages/borrow/qrcode.dart';
+import 'package:buddyapp/pages/borrow/update.dart';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/borrow.dart';
 import 'package:buddyapp/models/user.dart';
@@ -14,6 +20,9 @@ import 'package:buddyapp/UI/loading_popup.dart';
 import 'package:buddyapp/providers/notification.dart';
 import 'package:flutter_socket_io/flutter_socket_io.dart';
 import 'package:flutter_socket_io/socket_io_manager.dart';
+import 'package:dio/dio.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:camera/camera.dart';
 
 class BorrowMessages extends StatefulWidget{
     BorrowMessages({Key key, @required this.borrow}) : super(key : key);
@@ -31,6 +40,8 @@ class _BorrowMessagesState extends State<BorrowMessages>{
 
     bool canShowPopup = false;
     bool canShowLoading = false;
+    bool canShowQrCode = false;
+    bool canViewImages = false;
     String _message;
     String _type;
 
@@ -38,20 +49,26 @@ class _BorrowMessagesState extends State<BorrowMessages>{
     List<PopupMenuItem<String>> menuItemList = [];
 
     List<BorrowMessage> borrowMessages = [];
+    List<BorrowMessageImage> messageImages = [];
+    String messageSender = "";
+
     bool canShowMessages = false;
     TextEditingController message = TextEditingController();
 
-    List<String> menuList = ["update", "accept", "reject", "renew", "extend", "followup", "description", "review", "report"];
+    List<String> menuList = ["update", "accept", "reject", "renew", "extend", "followup", "description", "review", "report", "code"];
 
     SocketIO socketIO;
     Widget appBarStatus;
     PushNotification pushNotification;
 
+    List<CameraDescription> cameras;
+
     @override
     void initState() {
-        setState((){ this.getUserData();});
+        setState((){ this.getUserData(); this.getCameras(); });
         this.borrow = this.widget.borrow;
         this._loadBorrowingMessages();
+        this.loadBorrowData();
 
         Timer(Duration(seconds: 1), (){ setState((){ this.canShowProfileImage = true; }); });
         Timer(Duration(seconds: 2), (){
@@ -92,9 +109,15 @@ class _BorrowMessagesState extends State<BorrowMessages>{
         this.message.dispose();
         userIsTyping();
         this.pushNotification.dispose();
-        this.socketIO.disconnect();
-        this.socketIO.destroy();
         super.dispose();
+    }
+
+    Future<void> getCameras() async{
+        try {
+            cameras = await availableCameras();
+        } on CameraException catch (e) {
+            logError(e.code, e.description);
+        }
     }
 
     void _setUser(User user){ this.sessionUser = user; }
@@ -125,18 +148,18 @@ class _BorrowMessagesState extends State<BorrowMessages>{
     Future<Null> loadBorrowingMessages() async{
         YoBuddyService().getBorrowMessages(this.borrow.id, this.borrow.messagesURL, this.sessionToken).then((data) {
             this._setBorrowingMessages(data);
-            this.loadBorrowData().then((_){
+            setState((){
+                this.loadBorrowData();
                 this.setMenuItemList();
             });
         });
         return null;
     }
 
-    Future<Null> loadBorrowData() async{
+    void loadBorrowData() async{
         this.borrow.getBorrow(this.sessionToken).then((response){
-            setState(() { this.borrow = response; });
+            setState(() { this.borrow = response; this.setMenuItemList(); });
         });
-        return null;
     }
 
     void menuItemSelected(String value){
@@ -148,6 +171,23 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                 case "reject":
                     this.updateBorrowStatus(borrow, "rejected", 2);
                     break;
+                case "description":
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) => BorrowDescription(borrow: this.borrow, sessionToken: this.sessionToken, session: this.sessionUser))
+                    );
+                    break;
+                case "update":
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (BuildContext context) => UpdateBorrowItemForm(borrow: this.borrow, onUpdateSuccess: (){
+                            Navigator.of(context).pop();
+                            this.loadBorrowingMessages();
+                        }))
+                    );
+                    break;
+                case "code":
+                    setState((){ this.canShowQrCode = true; });
             }
         }
     }
@@ -361,7 +401,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
     void sendNotificationSocket() async{
         if(this.socketIO != null){
             String data = (this.sessionUser.id == this.borrow.user.id) ? "${this.borrow.item.user.id.toString()}" : "${this.borrow.user.id.toString()}";
-            this.socketIO.sendMessage("setNotification", data, null);
+            this.socketIO.sendMessage("setNotification", data);
         }
     }
 
@@ -425,7 +465,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
         }
     }
 
-    Future<void> updateBorrowStatus(Borrow borrow, String status, int index){
+    Future<void> updateBorrowStatus(Borrow borrow, String status, int index) async{
         showDialog<Null>(
             context: context,
             barrierDismissible: false, // user must tap button!
@@ -452,7 +492,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                                         this.canShowLoading = false;
                                         this.canShowPopup = true;
                                     });
-                                    this.sendMessageSocket(" has updated borrow item status to " + status.toUpperCase() + " !!!");
+                                    this.sendMessageSocket("Borrow Item Status To " + status.toUpperCase() + " !!!");
                                     this.sendNotificationSocket();
                                     this.loadBorrowingMessages();
                                 });
@@ -466,7 +506,46 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                 );
             },
         );
-        return null;
+    }
+
+    Future<void> downloadBorrowCodePdf() async{
+        Dio dio = Dio();
+        try{
+            setState(() { this.canShowLoading = true; });
+            var dir = await getApplicationDocumentsDirectory();
+            final String dirPath = "${dir.path}/pdf";
+            await Directory(dirPath).create(recursive: true);
+            final String filePath = "$dirPath/borrow_no_${this.borrow.code.toString()}.pdf";
+            await dio.download(
+                Uri.encodeFull(AppProvider().baseURL + "/item/enc-dt-${this.borrow.uuid}-${this.borrow.item.id.toString()}-${this.borrow.id.toString()}/borrow/description/download.pdf?token=${this.sessionToken}"),
+                filePath,
+                onProgress: (rec, total){
+                    var progressValue = ((rec / total) * 100).toStringAsFixed(0) + "%";
+                });
+        } catch(e){
+            setState(() {
+                this._type = "error";
+                this._message = e.toString(); //An Error Has Occurred !!!
+                this.canShowLoading = false;
+                this.canShowPopup = true;
+            });
+        }
+        setState((){
+            this._type = "success";
+            this._message = "Download Completed !!!";
+            this.canShowLoading = false;
+            this.canShowPopup = true;
+        });
+    }
+
+    void onOpenImages(int i){
+        setState((){
+            if(this.borrowMessages[i].hasImages){
+                this.messageImages = this.borrowMessages[i].images;
+                this.messageSender = this.borrowMessages[i].sender.name;
+                this.canViewImages = true;
+            }
+        });
     }
 
     @override
@@ -549,7 +628,7 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                                     Container(
                                         child: (this.canShowMessages == true) ? Container(
                                             child: (this.borrowMessages != null) ? Container(
-                                                padding: EdgeInsets.only(bottom: 70.0),
+                                                padding: EdgeInsets.only(bottom: 60.0),
                                                 child: (this.borrowMessages.length > 0) ? ListView.builder(
                                                     reverse: true,
                                                     itemCount: this.borrowMessages.length,
@@ -557,7 +636,22 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                                                         return BorrowMessageLayout(
                                                             borrow: this.borrow,
                                                             message: this.borrowMessages[i],
-                                                            session: this.sessionUser
+                                                            session: this.sessionUser,
+                                                            onViewImages: (){
+                                                                //this.onOpenImages(i);
+                                                                Navigator.push(
+                                                                    context,
+                                                                    MaterialPageRoute(builder: (BuildContext context) =>
+                                                                        MessageImageViewPage(
+                                                                            images: this.borrowMessages[i].images,
+                                                                            sender: this.borrowMessages[i].sender.name,
+                                                                            onImageViewClose: (){
+                                                                                Navigator.of(context).pop();
+                                                                            },
+                                                                        )
+                                                                    )
+                                                                );
+                                                            },
                                                         );
                                                     }
                                                 ) : Center(
@@ -590,22 +684,22 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                                                 border: Border(top: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD))),
                                                 color: Colors.white,
                                             ),
-                                            padding: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0),
+                                            padding: EdgeInsets.only(top: 5.0, bottom: 5.0, left: 10.0),
                                             child: Row(
                                                 children: <Widget>[
                                                     Expanded(
                                                         child: Container(
-                                                            padding: EdgeInsets.only(left: 57.0),
+                                                            padding: EdgeInsets.only(left: 52.0),
                                                             child: TextFormField(
                                                                 autofocus: false,
                                                                 controller: this.message,
                                                                 style: TextStyle(
-                                                                    fontSize: 20.0,
+                                                                    fontSize: 16.0,
                                                                     color: Colors.black
                                                                 ),
                                                                 decoration: InputDecoration(
                                                                     hintText: 'Enter Message',
-                                                                    contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                                                                    contentPadding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
                                                                     hintStyle: TextStyle(color: Color(0x99999999)),
                                                                     border: OutlineInputBorder(
                                                                         borderRadius: BorderRadius.circular(20.0)
@@ -630,26 +724,43 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                                         ),
                                     ),
                                     Positioned(
-                                        bottom: 12.0,
+                                        bottom: 9.0,
                                         left: 10.0,
-                                        child: Container(
-                                            width: 45.0,
-                                            height: 45.0,
-                                            padding: EdgeInsets.only(right: 10.0),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    style: BorderStyle.solid,
-                                                    width: 2.0,
-                                                    color: Color(0xFF999999)
-                                                ),
-                                                shape: BoxShape.circle,
-                                                color: Color(0xFF999999),
-                                                image: DecorationImage(
-                                                    image: (this.canShowProfileImage == false) ? NetworkImage(AppProvider().defaultImage) : NetworkImage(this.sessionUser.getImageURL),
-                                                    fit: BoxFit.fill
+                                        child: InkWell(
+                                            onTap: (){
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(builder: (BuildContext context) => ImageMessage(
+                                                        borrow: this.borrow,
+                                                        sessionToken: this.sessionToken,
+                                                        session: this.sessionUser,
+                                                        cameras: this.cameras,
+                                                        onSendImages: (){
+                                                            Navigator.of(context).pop();
+                                                            this.loadBorrowingMessages();
+                                                        }
+                                                    ))
+                                                );
+                                            },
+                                            child: Container(
+                                                width: 40.0,
+                                                height: 40.0,
+                                                padding: EdgeInsets.only(right: 10.0),
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        style: BorderStyle.solid,
+                                                        width: 2.0,
+                                                        color: Color(0xFF999999)
+                                                    ),
+                                                    shape: BoxShape.circle,
+                                                    color: Color(0xFF999999),
+                                                    image: DecorationImage(
+                                                        image: (this.canShowProfileImage == false) ? NetworkImage(AppProvider().defaultImage) : NetworkImage(this.sessionUser.getImageURL),
+                                                        fit: BoxFit.fill
+                                                    )
                                                 )
-                                            )
-                                        ),
+                                            ),
+                                        )
                                     )
                                 ],
                             ),
@@ -660,7 +771,22 @@ class _BorrowMessagesState extends State<BorrowMessages>{
                         message: this._message,
                         onTap: (){ setState((){ this.canShowPopup = false; }); },
                     ) : Container(),
-                    (this.canShowLoading == true) ? LoadingOverlay() : Container()
+                    (this.canShowLoading == true) ? LoadingOverlay() : Container(),
+                    (this.canShowQrCode == true) ? BorrowQrCode(borrow: this.borrow, session: this.sessionUser, onCancel: (){
+                        setState((){ this.canShowQrCode = false; });
+                    }, onDownload: (){
+                        setState((){ this.canShowQrCode = false; });
+                        this.downloadBorrowCodePdf();
+                    }) : Container(),
+                    (this.canViewImages == true) ? MessageImageViewPage(
+                        images: this.messageImages,
+                        sender: this.messageSender,
+                        onImageViewClose: (){
+                            setState((){
+                                this.canViewImages = false;
+                            });
+                        },
+                    ) : Container()
                 ]
             )
         );

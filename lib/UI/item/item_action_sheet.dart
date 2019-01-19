@@ -1,3 +1,6 @@
+import 'package:buddyapp/models/user.dart';
+import 'package:buddyapp/pages/borrow/borrow_item.dart';
+import 'package:buddyapp/pages/item/available.dart';
 import 'package:flutter/material.dart';
 import 'package:buddyapp/models/item.dart';
 import 'package:flutter/foundation.dart';
@@ -7,11 +10,13 @@ import 'package:buddyapp/pages/item/edit_item.dart';
 
 class ItemActionSheet extends StatefulWidget{
 
-    const ItemActionSheet({Key key, @required this.item, @required this.scaffoldContext, @required this.context}):super(key: key);
+    const ItemActionSheet({Key key, @required this.item, @required this.scaffoldContext, @required this.context, @required this.session, @required this.sessionToken}):super(key: key);
 
     final Item item;
     final BuildContext scaffoldContext;
     final context;
+    final User session;
+    final String sessionToken;
 
     @override
     _ItemActionSheetState createState() => _ItemActionSheetState();
@@ -51,17 +56,25 @@ class _ItemActionSheetState extends State<ItemActionSheet>{
 
     void showAvailable(){
         Navigator.of(context).pop();
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Available Shown"));
+        Navigator.push(
+            widget.context,
+            MaterialPageRoute(builder: (BuildContext context) => ItemsAvailablePage(item:  this.item))
+        );
     }
 
     void borrowItem(){
         Navigator.of(context).pop();
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Borrowed"));
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => BorrowItemForm(item:  this.item))
+        );
     }
 
-    void favouriteItem(){
+    void favouriteItem() async{
         Navigator.of(context).pop();
-        Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar("Item Favourited"));
+        this.item.favouriteItem(this.widget.sessionToken, this.widget.session.id.toString()).then((response){
+            Scaffold.of(widget.scaffoldContext).showSnackBar(AppProvider().showSnackBar(response.text));
+        });
     }
 
     void reportItem(){

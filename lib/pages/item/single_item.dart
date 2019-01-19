@@ -25,6 +25,7 @@ import 'package:buddyapp/UI/loading_popup.dart';
 import 'package:buddyapp/UI/comment/edit_comment.dart';
 import 'package:buddyapp/UI/confirmation_popup.dart';
 
+
 // ignore: must_be_immutable
 class SingleItemPage extends StatefulWidget{
     
@@ -67,15 +68,26 @@ class _SingleItemPageState extends State<SingleItemPage>{
     int selectedCommentIndex;
 
     TextEditingController comment = TextEditingController();
+    FocusNode _commentFocusNode = FocusNode();
     TextEditingController editableCommentCtrl = TextEditingController();
     Random random = Random();
 
     BuildContext scaffoldContext;
+    GlobalKey<RefreshIndicatorState> _refreshKey = GlobalKey<RefreshIndicatorState>();
+
     Color disabledColor = Color.fromRGBO(0, 0, 0, 0.2);
     Color enabledColor = Colors.black;
     PushNotification pushNotification;
 
     SocketIO socketIO;
+
+    Future<Null> _focusNodeListener() async {
+        if (_commentFocusNode.hasFocus){
+            print('TextField got the focus');
+        } else {
+            print('TextField lost the focus');
+        }
+    }
 
     @override
     void initState() {
@@ -109,6 +121,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this.socketIO.subscribe("getComment", _onItemCommentSocket);
         this.socketIO.connect();
 
+        _commentFocusNode.addListener(_focusNodeListener);
+
         super.initState();
     }
 
@@ -122,9 +136,8 @@ class _SingleItemPageState extends State<SingleItemPage>{
         this.canEditComment = false;
         this.comment.dispose();
         this.editableCommentCtrl.dispose();
+        this._commentFocusNode.removeListener(_focusNodeListener);
         this.pushNotification.dispose();
-        this.socketIO.disconnect();
-        this.socketIO.destroy();
         super.dispose();
     }
 
@@ -195,7 +208,13 @@ class _SingleItemPageState extends State<SingleItemPage>{
         }
     }
 
-    void onImageViewOpen(){ setState((){ this.canViewImages = true; }); }
+    void onImageViewOpen(){
+        //setState((){ this.canViewImages = true; });
+        Navigator.push(
+            context,
+            MaterialPageRoute(builder: (BuildContext context) => ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClosed, name: this.item.name, isLiked: this.isLiked))
+        );
+    }
 
     void onImageViewClosed(){ setState((){ this.canViewImages = false; }); }
 
@@ -217,7 +236,12 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 }
             });
         });
-        return null;
+    }
+
+    Future<Null> reloadItemPage() async{
+        await Future.delayed(Duration(seconds: 3));
+        _refreshKey.currentState?.show(atTop: false);
+        this.getSingleItem().then((_) => this.loadItemComments(this.item.id));
     }
 
     void likeItem(){
@@ -282,7 +306,6 @@ class _SingleItemPageState extends State<SingleItemPage>{
 
     Future<Null> loadItemComments(int itemID) async{
         YoBuddyService().getItemComments(itemID).then((data) => _setItemComments(data));
-        return null;
     }
 
     void submitItemComment(){
@@ -325,7 +348,7 @@ class _SingleItemPageState extends State<SingleItemPage>{
         }
     }
 
-    Future<void> updateComment(Comment comment, int index){
+    Future<Null> updateComment(Comment comment, int index) async{
         comment.comment = editableCommentCtrl.text;
         comment.updateComment(this.userID.toString(), this.sessionToken).then((response){
             setState((){
@@ -339,10 +362,9 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 this.loadItemComments(this.item.id);
             });
         });
-        return null;
     }
 
-    Future<void> deleteComment(Comment comment, int index){
+    Future<Null> deleteComment(Comment comment, int index) async{
         showDialog<Null>(
             context: context,
             barrierDismissible: false, // user must tap button!
@@ -381,460 +403,850 @@ class _SingleItemPageState extends State<SingleItemPage>{
                 );
             },
         );
-        return null;
+    }
+
+    List<Widget> getCommentList(){
+        List<Widget> commentList = [];
+        if(this.comments.isNotEmpty && this.comments != null){
+            this.comments.forEach((comment){
+                commentList.add(
+                    CommentListItem(
+                        comment: comment,
+                        userID: this.userID,
+                        scaffoldContext: this.scaffoldContext,
+                        onDelete: () {
+                            setState(() {
+                                this.selectedComment =  comment;
+                                this.selectedCommentIndex = this.comments.indexOf(comment);
+                                this.canShowConfirmation = true;
+                            });
+                        },
+                        onEdit: (){
+                            setState(() {
+                                this.selectedComment = comment;
+                                this.selectedCommentIndex = this.comments.indexOf(comment);
+                                this.canEditComment = true;
+                            });
+                        },
+                    )
+                );
+            });
+        }
+        return commentList;
     }
 
     @override
     Widget build(BuildContext context){
-        Widget body = PageView(
-            children: <Widget>[
-                Container(
-                    color: Colors.white,
-                    child: ListView(
-                        children: <Widget>[
-                            InkWell(
-                                onTap: () => this.onImageViewOpen(),
-                                onDoubleTap: (){},
-                                onLongPress: (){},
-                                child: Container(
-                                    child: Column(
-                                        children: <Widget>[
-                                            Container(
-                                                width: MediaQuery.of(context).size.width,
-                                                child: Image.network(AppProvider().baseURL + this.item.images[0].image.path, fit: BoxFit.fill)
-                                            )
-                                        ],
-                                    ),
-                                ),
-                            ),
-                            Container(
-                                padding: EdgeInsets.all(10.0),
-                                child: Row(
-                                    children: <Widget>[
-                                        Container(
-                                            width: 45.0,
-                                            height: 45.0,
-                                            padding: EdgeInsets.only(right: 10.0),
-                                            decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    style: BorderStyle.solid,
-                                                    width: 2.0,
-                                                    color: Color(0xFF999999)
-                                                ),
-                                                shape: BoxShape.circle,
-                                                color: Color(0xFF999999),
-                                                image: DecorationImage(
-                                                    image: NetworkImage(this.item.user.getImageURL),
-                                                    fit: BoxFit.fill
-                                                )
-                                            )
-                                        ),
-                                        Expanded(
+        Widget body = RefreshIndicator(
+            onRefresh: () => this.reloadItemPage(),
+            key: _refreshKey,
+            child: PageView(
+                children: <Widget>[
+                    Container(
+                        color: Colors.white,
+                        child: ListView(
+                            children: <Widget>[
+                                InkWell(
+                                    onTap: () => this.onImageViewOpen(),
+                                    onDoubleTap: () => this.likeItem(),
+                                    onLongPress: (){},
+                                    child: Hero(
+                                        tag: this.item.images[0].image.path,
+                                        child: Container(
                                             child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                textDirection: TextDirection.ltr,
-                                                crossAxisAlignment: CrossAxisAlignment.start,
                                                 children: <Widget>[
                                                     Container(
-                                                        padding: EdgeInsets.only(left: 10.0),
-                                                        child: Text(
-                                                            this.item.name,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                                color: Color(0xFF333333),
-                                                                fontSize: 18.0,
-                                                                fontWeight: FontWeight.bold,
-                                                            ),
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        padding: EdgeInsets.only(left: 10.0),
-                                                        child: Text(
-                                                            this.item.category.name + " - " + this.item.subcategory.name,
-                                                            overflow: TextOverflow.ellipsis,
-                                                            style: TextStyle(
-                                                                color: Color(0xFF666666),
-                                                                fontSize: 15.0
-                                                            )
-                                                        ),
-                                                    ),
-                                                    Container(
-                                                        padding: EdgeInsets.only(left: 10.0),
-                                                        child: Text(
-                                                            "by " + this.item.user.name + "  -  " + HelperProvider().formatDateTime(this.item.createdAt.toString()),
-                                                            style: TextStyle(
-                                                                color: Color(0xFF999999),
-                                                                fontSize: 13.0
-                                                            ),
-                                                            overflow: TextOverflow.clip
-                                                        ),
+                                                        width: MediaQuery.of(context).size.width,
+                                                        child: Image(
+                                                            image: NetworkImage(AppProvider().baseURL + this.item.images[0].image.path),
+                                                            fit: BoxFit.fill
+                                                        )
                                                     )
                                                 ],
                                             ),
                                         ),
-                                        Container(
-                                            child: IconButton(
-                                                onPressed: () => this.followUser(),
-                                                icon: (this.isFollowed == true) ? Icon(IconData(0xf213, fontFamily: 'ionicon'), color: Color(0xFFCC8400)) : Icon(IconData(0xf211, fontFamily: 'ionicon'), color: Color(0xFF999999)),
-                                                iconSize: 35.0,
-                                                color: Color(0xFF333333),
-                                            )
-                                        )
-                                    ],
-                                )
-                            ),
-                            Divider(),
-                            Container(
-                                child: Container(
-                                    padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                                    decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(4.0),
-                                        color: Colors.black45,
-                                    ),
+                                    )
+                                ),
+                                Container(
+                                    padding: EdgeInsets.all(10.0),
                                     child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
                                         children: <Widget>[
-                                            Icon(
-                                                Icons.local_offer,
-                                                color: Colors.white
+                                            Container(
+                                                width: 45.0,
+                                                height: 45.0,
+                                                padding: EdgeInsets.only(right: 10.0),
+                                                decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        style: BorderStyle.solid,
+                                                        width: 2.0,
+                                                        color: Color(0xFF999999)
+                                                    ),
+                                                    shape: BoxShape.circle,
+                                                    color: Color(0xFF999999),
+                                                    image: DecorationImage(
+                                                        image: NetworkImage(this.item.user.getImageURL),
+                                                        fit: BoxFit.fill
+                                                    )
+                                                )
                                             ),
-                                            Padding(padding: EdgeInsets.only(left: 8.0)),
-                                            Text(HelperProvider().formatPrice(this.item.price.toInt()), style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                            Padding(padding: EdgeInsets.only(left: 8.0)),
-                                            Text(this.item.currency, style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                            Padding(padding: EdgeInsets.only(left: 8.0)),
-                                            Text("/", style: TextStyle(color: Colors.white, fontSize: 18.0)),
-                                            Padding(padding: EdgeInsets.only(left: 8.0)),
-                                            Text(this.item.per, style: TextStyle(color: Colors.white, fontSize: 18.0))
+                                            Expanded(
+                                                child: Column(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    textDirection: TextDirection.ltr,
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            padding: EdgeInsets.only(left: 10.0),
+                                                            child: Text(
+                                                                this.item.name,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(
+                                                                    color: Color(0xFF333333),
+                                                                    fontSize: 18.0,
+                                                                    fontWeight: FontWeight.bold,
+                                                                ),
+                                                            ),
+                                                        ),
+                                                        Container(
+                                                            padding: EdgeInsets.only(left: 10.0),
+                                                            child: Text(
+                                                                this.item.category.name + " - " + this.item.subcategory.name,
+                                                                overflow: TextOverflow.ellipsis,
+                                                                style: TextStyle(
+                                                                    color: Color(0xFF666666),
+                                                                    fontSize: 15.0
+                                                                )
+                                                            ),
+                                                        ),
+                                                        Container(
+                                                            padding: EdgeInsets.only(left: 10.0),
+                                                            child: Text(
+                                                                "by " + this.item.user.name + "  -  " + HelperProvider().formatDateTime(this.item.createdAt.toString()),
+                                                                style: TextStyle(
+                                                                    color: Color(0xFF999999),
+                                                                    fontSize: 13.0
+                                                                ),
+                                                                overflow: TextOverflow.clip
+                                                            ),
+                                                        )
+                                                    ],
+                                                ),
+                                            ),
+                                            Container(
+                                                child: IconButton(
+                                                    onPressed: () => this.followUser(),
+                                                    icon: (this.isFollowed == true) ? Icon(IconData(0xf213, fontFamily: 'ionicon'), color: Color(0xFFCC8400)) : Icon(IconData(0xf211, fontFamily: 'ionicon'), color: Color(0xFF999999)),
+                                                    iconSize: 35.0,
+                                                    color: Color(0xFF333333),
+                                                )
+                                            )
                                         ],
                                     )
                                 ),
-                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                            ),
-                            Divider(),
-                            Container(
-                                padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
-                                child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: <Widget>[
-                                        Container(
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                    Container(
-                                                        child: IconButton(
-                                                            icon: (this.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon')),
-                                                            iconSize: 30.0,
-                                                            color: Color(0xFF333333),
-                                                            onPressed: () => this.likeItem(),
-                                                        )
-                                                    ),
-                                                    Text(
-                                                        this.itemLikes.toString(),
-                                                        style: TextStyle(
-                                                            fontSize: 20.0,
-                                                            color: Color(0xFF333333)
-                                                        )
-                                                    )
-                                                ],
-                                            )
+                                Divider(),
+                                Container(
+                                    child: Container(
+                                        padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                        decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.circular(4.0),
+                                            color: Colors.black45,
                                         ),
-                                        Container(
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                    Container(
-                                                        child: Icon(IconData(0xf3fc, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
-                                                        padding: EdgeInsets.only(left: 12.0, right: 12.0),
-                                                    ),
-                                                    Text(
-                                                        this.item.comments.toString(),
-                                                        style: TextStyle(
-                                                            fontSize: 20.0,
-                                                            color: Color(0xFF333333)
-                                                        )
-                                                    )
-                                                ],
-                                            )
-                                        ),
-                                        Container(
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                    Container(
-                                                        child: Icon(IconData(0xf3f8, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
-                                                        padding: EdgeInsets.only(left: 12.0, right: 12.0),
-                                                    ),
-                                                    Text(
-                                                        this.item.borrow.toString(),
-                                                        style: TextStyle(
-                                                            fontSize: 20.0,
-                                                            color: Color(0xFF333333)
-                                                        )
-                                                    )
-                                                ],
-                                            )
-                                        ),
-                                        Container(
-                                            child: Row(
-                                                mainAxisAlignment: MainAxisAlignment.start,
-                                                children: <Widget>[
-                                                    Container(
-                                                        child: (this.isFavourite == true) ? IconButton(icon: Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)), onPressed: () => this.favouriteItem()) : Container(),
-                                                        padding: EdgeInsets.only(left: 10.0, right: 8.0),
-                                                    ),
-                                                ],
-                                            )
-                                        ),
-                                    ],
+                                        child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: <Widget>[
+                                                Icon(
+                                                    Icons.local_offer,
+                                                    color: Colors.white
+                                                ),
+                                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                Text(HelperProvider().formatPrice(this.item.price.toInt()), style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                Text(this.item.currency, style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                Text("/", style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                                Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                Text(this.item.per, style: TextStyle(color: Colors.white, fontSize: 18.0))
+                                            ],
+                                        )
+                                    ),
+                                    padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
                                 ),
-                            ),
-                            Divider(),
-                            Container(
-                                padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 15.0),
-                                child: MarkdownBody(data: html2md.convert(this.item.description))
-                            )
-                        ],
-                    )
-                ),
+                                Divider(),
+                                Container(
+                                    padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                                    child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.start,
+                                        children: <Widget>[
+                                            Container(
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            child: IconButton(
+                                                                icon: (this.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon')),
+                                                                iconSize: 30.0,
+                                                                color: Color(0xFF333333),
+                                                                onPressed: () => this.likeItem(),
+                                                            )
+                                                        ),
+                                                        Text(
+                                                            this.itemLikes.toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 20.0,
+                                                                color: Color(0xFF333333)
+                                                            )
+                                                        )
+                                                    ],
+                                                )
+                                            ),
+                                            Container(
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            child: Icon(IconData(0xf3fc, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
+                                                            padding: EdgeInsets.only(left: 12.0, right: 12.0),
+                                                        ),
+                                                        Text(
+                                                            this.item.comments.toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 20.0,
+                                                                color: Color(0xFF333333)
+                                                            )
+                                                        )
+                                                    ],
+                                                )
+                                            ),
+                                            Container(
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            child: Icon(IconData(0xf3f8, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
+                                                            padding: EdgeInsets.only(left: 12.0, right: 12.0),
+                                                        ),
+                                                        Text(
+                                                            this.item.borrow.toString(),
+                                                            style: TextStyle(
+                                                                fontSize: 20.0,
+                                                                color: Color(0xFF333333)
+                                                            )
+                                                        )
+                                                    ],
+                                                )
+                                            ),
+                                            Container(
+                                                child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.start,
+                                                    children: <Widget>[
+                                                        Container(
+                                                            child: (this.isFavourite == true) ? IconButton(icon: Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)), onPressed: () => this.favouriteItem()) : Container(),
+                                                            padding: EdgeInsets.only(left: 10.0, right: 8.0),
+                                                        ),
+                                                    ],
+                                                )
+                                            ),
+                                        ],
+                                    ),
+                                ),
+                                Divider(),
+                                Container(
+                                    padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 15.0),
+                                    child: MarkdownBody(data: html2md.convert(this.item.description))
+                                )
+                            ],
+                        )
+                    ),
 
-                //Comments Page
+                    //Comments Page
 
-                Container(
-                    color: Colors.white,
-                    child: Stack(
-                        fit: StackFit.expand,
-                        children: <Widget>[
-                            Container(
-                                child: (this.canShowComments == true) ? Container(
-                                    child: (this.comments != null) ? Container(
-                                        padding: EdgeInsets.only(bottom: 70.0),
-                                        child: (this.comments.length > 0) ? ListView.builder(
-                                            itemCount: this.comments.length,
-                                            itemBuilder: (BuildContext context, int i){
-                                                return CommentListItem(
-                                                    comment: this.comments[i],
-                                                    userID: this.userID,
-                                                    scaffoldContext: this.scaffoldContext,
-                                                    onDelete: () {
-                                                        setState(() {
-                                                            this.selectedComment = this.comments[i];
-                                                            this.selectedCommentIndex = i;
-                                                            this.canShowConfirmation = true;
-                                                        });
-                                                    },
-                                                    onEdit: (){
-                                                        setState(() {
-                                                            this.selectedComment = this.comments[i];
-                                                            this.selectedCommentIndex = i;
-                                                            this.canEditComment = true;
-                                                        });
-                                                    },
-                                                );
-                                            }
+                    Container(
+                        color: Colors.white,
+                        child: Stack(
+                            fit: StackFit.expand,
+                            children: <Widget>[
+                                Container(
+                                    child: (this.canShowComments == true) ? Container(
+                                        child: (this.comments != null) ? Container(
+                                            padding: EdgeInsets.only(bottom: 60.0),
+                                            child: (this.comments.length > 0) ? ListView.builder(
+                                                itemCount: this.comments.length,
+                                                itemBuilder: (BuildContext context, int i){
+                                                    return CommentListItem(
+                                                        comment: this.comments[i],
+                                                        userID: this.userID,
+                                                        scaffoldContext: this.scaffoldContext,
+                                                        onDelete: () {
+                                                            setState(() {
+                                                                this.selectedComment = this.comments[i];
+                                                                this.selectedCommentIndex = i;
+                                                                this.canShowConfirmation = true;
+                                                            });
+                                                        },
+                                                        onEdit: (){
+                                                            setState(() {
+                                                                this.selectedComment = this.comments[i];
+                                                                this.selectedCommentIndex = i;
+                                                                this.canEditComment = true;
+                                                            });
+                                                        },
+                                                    );
+                                                }
+                                            ) : Center(
+                                                child: Container(
+                                                    child: Text("No Comment", style: TextStyle(fontSize: 27.0))
+                                                )
+                                            )
                                         ) : Center(
                                             child: Container(
                                                 child: Text("No Comment", style: TextStyle(fontSize: 27.0))
-                                            )
+                                            ),
                                         )
                                     ) : Center(
                                         child: Container(
-                                            child: Text("No Comment", style: TextStyle(fontSize: 27.0))
-                                        ),
-                                    )
-                                ) : Center(
-                                    child: Container(
-                                        width: 25.0,
-                                        height: 25.0,
-                                        child: CircularProgressIndicator(
-                                            backgroundColor: Color(0xFFCC8400),
-                                            strokeWidth: 2.0,
-                                        ),
-                                    )
-                                )
-                            ),
-                            Positioned(
-                                bottom: 0.0,
-                                left: 0.0,
-                                right: 0.0,
-                                child: Container(
-                                    decoration: BoxDecoration(
-                                        border: Border(top: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD))),
-                                        color: Colors.white,
-                                    ),
-                                    padding: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 10.0),
-                                    child: Row(
-                                        children: <Widget>[
-                                            Expanded(
-                                                child: Container(
-                                                    padding: EdgeInsets.only(left: 57.0),
-                                                    child: TextFormField(
-                                                        autofocus: true,
-                                                        controller: this.comment,
-                                                        style: TextStyle(
-                                                            fontSize: 20.0,
-                                                            color: Colors.black
-                                                        ),
-                                                        decoration: InputDecoration(
-                                                            hintText: 'Enter Comment',
-                                                            contentPadding: EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                                                            hintStyle: TextStyle(color: Color(0x99999999)),
-                                                            border: OutlineInputBorder(
-                                                                borderRadius: BorderRadius.circular(20.0)
-                                                            )
-                                                        ),
-                                                        maxLines: null,
-                                                        keyboardType: TextInputType.multiline,
-                                                        autovalidate: true,
-                                                        autocorrect: true
-                                                    )
-                                                ),
+                                            width: 25.0,
+                                            height: 25.0,
+                                            child: CircularProgressIndicator(
+                                                backgroundColor: Color(0xFFCC8400),
+                                                strokeWidth: 2.0,
                                             ),
-                                            IconButton(
-                                                onPressed: () => this.submitItemComment(),
-                                                icon: Icon(Icons.send),
-                                                iconSize: 30.0,
-                                                color: Color(0xFF666666),
-                                                disabledColor: Color(0xFFDDDDDD),
-                                            )
-                                        ],
-                                    ),
-                                ),
-                            ),
-                            Positioned(
-                                bottom: 12.0,
-                                left: 10.0,
-                                child: Container(
-                                    width: 45.0,
-                                    height: 45.0,
-                                    padding: EdgeInsets.only(right: 10.0),
-                                    decoration: BoxDecoration(
-                                        border: Border.all(
-                                            style: BorderStyle.solid,
-                                            width: 2.0,
-                                            color: Color(0xFF999999)
-                                        ),
-                                        shape: BoxShape.circle,
-                                        color: Color(0xFF999999),
-                                        image: DecorationImage(
-                                            image: (this.canShowProfileImage == false) ? NetworkImage(AppProvider().defaultImage) : NetworkImage(this.sessionUser.getImageURL),
-                                            fit: BoxFit.fill
                                         )
                                     )
                                 ),
-                            )
-                        ],
-                    ),
-                )
-            ],
+                                Positioned(
+                                    bottom: 0.0,
+                                    left: 0.0,
+                                    right: 0.0,
+                                    child: Container(
+                                        decoration: BoxDecoration(
+                                            border: Border(top: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD))),
+                                            color: Colors.white,
+                                        ),
+                                        padding: EdgeInsets.only(top: 5.0, bottom: 5.0, left: 10.0),
+                                        child: Row(
+                                            children: <Widget>[
+                                                Expanded(
+                                                    child: Container(
+                                                        padding: EdgeInsets.only(left: 52.0),
+                                                        child: TextFormField(
+                                                            autofocus: true,
+                                                            controller: this.comment,
+                                                            style: TextStyle(
+                                                                fontSize: 16.0,
+                                                                color: Colors.black
+                                                            ),
+                                                            decoration: InputDecoration(
+                                                                hintText: 'Enter Comment',
+                                                                contentPadding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                                                                hintStyle: TextStyle(color: Color(0x99999999)),
+                                                                border: OutlineInputBorder(
+                                                                    borderRadius: BorderRadius.circular(20.0)
+                                                                )
+                                                            ),
+                                                            maxLines: null,
+                                                            keyboardType: TextInputType.multiline,
+                                                            autovalidate: true,
+                                                            autocorrect: true
+                                                        )
+                                                    ),
+                                                ),
+                                                IconButton(
+                                                    onPressed: () => this.submitItemComment(),
+                                                    icon: Icon(Icons.send),
+                                                    iconSize: 30.0,
+                                                    color: Color(0xFF666666),
+                                                    disabledColor: Color(0xFFDDDDDD),
+                                                )
+                                            ],
+                                        ),
+                                    ),
+                                ),
+                                Positioned(
+                                    bottom: 9.0,
+                                    left: 10.0,
+                                    child: Container(
+                                        width: 40.0,
+                                        height: 40.0,
+                                        padding: EdgeInsets.only(right: 10.0),
+                                        decoration: BoxDecoration(
+                                            border: Border.all(
+                                                style: BorderStyle.solid,
+                                                width: 2.0,
+                                                color: Color(0xFF999999)
+                                            ),
+                                            shape: BoxShape.circle,
+                                            color: Color(0xFF999999),
+                                            image: DecorationImage(
+                                                image: (this.canShowProfileImage == false) ? NetworkImage(AppProvider().defaultImage) : NetworkImage(this.sessionUser.getImageURL),
+                                                fit: BoxFit.fill
+                                            )
+                                        )
+                                    ),
+                                )
+                            ],
+                        ),
+                    )
+                ],
+            ),
         );
 
-        return Stack(
-            fit: StackFit.expand,
-            children: <Widget>[
-                Scaffold(
-                    appBar: AppBar(
-                        title: Text(this.item.name),
-                        actions: <Widget>[
-                            PopupMenuButton<String>(
-                                padding: EdgeInsets.zero,
-                                onSelected: menuItemSelected,
-                                itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                    PopupMenuItem<String>(
-                                        value: editVal,
-                                        enabled: isOwner,
-                                        child: ListTile(
-                                            leading: Icon(Icons.edit),
-                                            title: Text(editVal, style: TextStyle(color: isOwner ? enabledColor : disabledColor))
-                                        )
-                                    ),
-                                    PopupMenuItem<String>(
-                                        value: deleteVal,
-                                        enabled: isOwner,
-                                        child: ListTile(
-                                            leading: Icon(Icons.delete),
-                                            title: Text(deleteVal, style: TextStyle(color: isOwner ? enabledColor : disabledColor))
-                                        )
-                                    ),
-                                    PopupMenuItem<String>(
-                                        value: availVal,
-                                        child: ListTile(
-                                            leading: Icon(Icons.assignment),
-                                            title: Text(availVal)
-                                        )
-                                    ),
-                                    PopupMenuItem<String>(
-                                        value: borrowVal,
-                                        enabled: !isOwner,
-                                        child: ListTile(
-                                            leading: Icon(Icons.add),
-                                            title: Text(borrowVal, style: TextStyle(color: !isOwner ? enabledColor : disabledColor))
-                                        )
-                                    ),
-                                    PopupMenuItem<String>(
-                                        value: favVal,
-                                        child: ListTile(
-                                            leading: Icon(Icons.star_border),
-                                            title: Text(favVal)
-                                        )
-                                    ),
-                                    PopupMenuItem<String>(
-                                        value: reportVal,
-                                        child: ListTile(
-                                            leading: Icon(Icons.info_outline),
-                                            title: Text(reportVal)
-                                        )
-                                    )
-                                ],
-                            )
-                        ],
-                    ),
-                    body: Builder(
-                        builder: (BuildContext context){
-                            scaffoldContext = context;
-                            return body;
-                        }
-                    ),
-                ),
-                (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClosed, name: this.item.name, isLiked: this.isLiked) : Container(),
-                (this.canViewAvailable == true) ? ItemsAvailable(item: this.item, onClose: this.onAvailableClosed) : Container(),
-                (this.canShowPopup == true) ? PopupOverlay(type: this.type, message: this.message, onTap: (){
-                    setState(() { this.canShowPopup = false; });
-                }) : Container(),
-                (this.isLoadingVisible == true) ? LoadingOverlay() : Container(),
-                (this.canEditComment == true) ? EditComment(
-                    comment: this.selectedComment,
-                    onClose: (){ setState(() { this.canEditComment = false; this.selectedComment = null; this.selectedCommentIndex = null; });},
-                    onUpdate: (){
-                        setState(() {
-                            this.canEditComment = false;
-                            this.isLoadingVisible = true;
-                        });
-                        this.updateComment(selectedComment, selectedCommentIndex);
-                    },
-                    commentCtrl: this.editableCommentCtrl
-                ) : Container(),
-                (this.canShowConfirmation == true) ? ConfirmationPopup(
-                    title: "Delete Comment",
-                    message: "Do you really want to delete this comment ?",
-                    onAccept: (){
-                        setState((){ this.canShowConfirmation = false; this.isLoadingVisible = false; });
-                        this.selectedComment.deleteComment(this.item.id.toString(), this.sessionToken).then((response){
-                            setState(() {
-                                this.message = response.text;
-                                this.type = response.type;
-                                this.isLoadingVisible = false;
-                                this.canShowPopup = true;
-                                this.comments.removeAt(this.selectedCommentIndex);
-                                this.selectedComment = null;
-                                this.selectedCommentIndex = null;
-                            });
-                        });
-                    },
-                    onDecline: (){ setState(() { this.canShowConfirmation = false; this.selectedComment = null; this.selectedCommentIndex = null; }); },
-                ) : Container()
-            ],
+        return Material(
+          child: Stack(
+              fit: StackFit.expand,
+              children: <Widget>[
+                  Scaffold(
+                      resizeToAvoidBottomPadding: true,
+                      body: Builder(
+                          builder: (BuildContext context){
+                              scaffoldContext = context;
+                              return CustomScrollView(
+                                  slivers: <Widget>[
+                                      SliverAppBar(
+                                          expandedHeight: 200.0,
+                                          pinned: true,
+                                          floating: false,
+                                          snap: false,
+                                          flexibleSpace: FlexibleSpaceBar(
+                                              title: Text(this.item.name, overflow: TextOverflow.ellipsis),
+                                              background: Container(
+                                                  padding: EdgeInsets.only(left: 68.0, top: 65.0),
+                                                  child: Row(
+                                                      children: <Widget>[
+                                                          Icon(Icons.location_on, color: Colors.white),
+                                                          Expanded(
+                                                              child: Container(
+                                                                  child: Text(
+                                                                      "${this.item.user.town}, ${this.item.user.country}",
+                                                                      style: TextStyle(
+                                                                          color: Colors.white,
+                                                                          fontSize: 15.0
+                                                                      ),
+                                                                  )
+                                                              )
+                                                          ),
+                                                      ],
+                                                  ),
+                                              )
+                                          ),
+                                          actions: <Widget>[
+                                              PopupMenuButton<String>(
+                                                  padding: EdgeInsets.zero,
+                                                  onSelected: menuItemSelected,
+                                                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                                      PopupMenuItem<String>(
+                                                          value: editVal,
+                                                          enabled: isOwner,
+                                                          child: ListTile(
+                                                              leading: Icon(Icons.edit),
+                                                              title: Text(editVal, style: TextStyle(color: isOwner ? enabledColor : disabledColor))
+                                                          )
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                          value: deleteVal,
+                                                          enabled: isOwner,
+                                                          child: ListTile(
+                                                              leading: Icon(Icons.delete),
+                                                              title: Text(deleteVal, style: TextStyle(color: isOwner ? enabledColor : disabledColor))
+                                                          )
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                          value: availVal,
+                                                          child: ListTile(
+                                                              leading: Icon(Icons.assignment),
+                                                              title: Text(availVal)
+                                                          )
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                          value: borrowVal,
+                                                          enabled: !isOwner,
+                                                          child: ListTile(
+                                                              leading: Icon(Icons.add),
+                                                              title: Text(borrowVal, style: TextStyle(color: !isOwner ? enabledColor : disabledColor))
+                                                          )
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                          value: favVal,
+                                                          child: ListTile(
+                                                              leading: Icon(Icons.star_border),
+                                                              title: Text(favVal)
+                                                          )
+                                                      ),
+                                                      PopupMenuItem<String>(
+                                                          value: reportVal,
+                                                          child: ListTile(
+                                                              leading: Icon(Icons.info_outline),
+                                                              title: Text(reportVal)
+                                                          )
+                                                      )
+                                                  ],
+                                              )
+                                          ],
+                                      ),
+                                      SliverList(
+                                          delegate: SliverChildListDelegate(
+                                              <Widget>[
+                                                  InkWell(
+                                                      onTap: () => this.onImageViewOpen(),
+                                                      onDoubleTap: (){},
+                                                      onLongPress: (){},
+                                                      child: Hero(
+                                                          tag: this.item.images[0].image.path,
+                                                          child: Container(
+                                                              child: Column(
+                                                                  children: <Widget>[
+                                                                      Container(
+                                                                          width: MediaQuery.of(context).size.width,
+                                                                          child: Image(
+                                                                              image: NetworkImage(AppProvider().baseURL + this.item.images[0].image.path),
+                                                                              fit: BoxFit.fill
+                                                                          )
+                                                                      )
+                                                                  ],
+                                                              ),
+                                                          ),
+                                                      )
+                                                  ),
+                                                  Container(
+                                                      padding: EdgeInsets.all(10.0),
+                                                      child: Row(
+                                                          children: <Widget>[
+                                                              Container(
+                                                                  width: 45.0,
+                                                                  height: 45.0,
+                                                                  padding: EdgeInsets.only(right: 10.0),
+                                                                  decoration: BoxDecoration(
+                                                                      border: Border.all(
+                                                                          style: BorderStyle.solid,
+                                                                          width: 2.0,
+                                                                          color: Color(0xFF999999)
+                                                                      ),
+                                                                      shape: BoxShape.circle,
+                                                                      color: Color(0xFF999999),
+                                                                      image: DecorationImage(
+                                                                          image: NetworkImage(this.item.user.getImageURL),
+                                                                          fit: BoxFit.fill
+                                                                      )
+                                                                  )
+                                                              ),
+                                                              Expanded(
+                                                                  child: Column(
+                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                      textDirection: TextDirection.ltr,
+                                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                                      children: <Widget>[
+                                                                          Container(
+                                                                              padding: EdgeInsets.only(left: 10.0),
+                                                                              child: Text(
+                                                                                  this.item.name,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: TextStyle(
+                                                                                      color: Color(0xFF333333),
+                                                                                      fontSize: 18.0,
+                                                                                      fontWeight: FontWeight.bold,
+                                                                                  ),
+                                                                              ),
+                                                                          ),
+                                                                          Container(
+                                                                              padding: EdgeInsets.only(left: 10.0),
+                                                                              child: Text(
+                                                                                  this.item.category.name + " - " + this.item.subcategory.name,
+                                                                                  overflow: TextOverflow.ellipsis,
+                                                                                  style: TextStyle(
+                                                                                      color: Color(0xFF666666),
+                                                                                      fontSize: 15.0
+                                                                                  )
+                                                                              ),
+                                                                          ),
+                                                                          Container(
+                                                                              padding: EdgeInsets.only(left: 10.0),
+                                                                              child: Text(
+                                                                                  "by " + this.item.user.name + "  -  " + HelperProvider().formatDateTime(this.item.createdAt.toString()),
+                                                                                  style: TextStyle(
+                                                                                      color: Color(0xFF999999),
+                                                                                      fontSize: 13.0
+                                                                                  ),
+                                                                                  overflow: TextOverflow.clip
+                                                                              ),
+                                                                          )
+                                                                      ],
+                                                                  ),
+                                                              ),
+                                                              Container(
+                                                                  child: IconButton(
+                                                                      onPressed: () => this.followUser(),
+                                                                      icon: (this.isFollowed == true) ? Icon(IconData(0xf213, fontFamily: 'ionicon'), color: Color(0xFFCC8400)) : Icon(IconData(0xf211, fontFamily: 'ionicon'), color: Color(0xFF999999)),
+                                                                      iconSize: 35.0,
+                                                                      color: Color(0xFF333333),
+                                                                  )
+                                                              )
+                                                          ],
+                                                      )
+                                                  ),
+                                                  Divider(),
+                                                  Container(
+                                                      child: Container(
+                                                          padding: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                                                          decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(4.0),
+                                                              color: Colors.black45,
+                                                          ),
+                                                          child: Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: <Widget>[
+                                                                  Icon(
+                                                                      Icons.local_offer,
+                                                                      color: Colors.white
+                                                                  ),
+                                                                  Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                                  Text(HelperProvider().formatPrice(this.item.price.toInt()), style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                                                  Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                                  Text(this.item.currency, style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                                                  Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                                  Text("/", style: TextStyle(color: Colors.white, fontSize: 18.0)),
+                                                                  Padding(padding: EdgeInsets.only(left: 8.0)),
+                                                                  Text(this.item.per, style: TextStyle(color: Colors.white, fontSize: 18.0))
+                                                              ],
+                                                          )
+                                                      ),
+                                                      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
+                                                  ),
+                                                  Divider(),
+                                                  Container(
+                                                      padding: EdgeInsets.fromLTRB(0.0, 0.0, 10.0, 0.0),
+                                                      child: Row(
+                                                          mainAxisAlignment: MainAxisAlignment.start,
+                                                          children: <Widget>[
+                                                              Container(
+                                                                  child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                      children: <Widget>[
+                                                                          Container(
+                                                                              child: IconButton(
+                                                                                  icon: (this.isLiked == true) ? Icon(IconData(0xf443, fontFamily: 'ionicon'), color: Colors.red) : Icon(IconData(0xf442, fontFamily: 'ionicon')),
+                                                                                  iconSize: 30.0,
+                                                                                  color: Color(0xFF333333),
+                                                                                  onPressed: () => this.likeItem(),
+                                                                              )
+                                                                          ),
+                                                                          Text(
+                                                                              this.itemLikes.toString(),
+                                                                              style: TextStyle(
+                                                                                  fontSize: 20.0,
+                                                                                  color: Color(0xFF333333)
+                                                                              )
+                                                                          )
+                                                                      ],
+                                                                  )
+                                                              ),
+                                                              Container(
+                                                                  child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                      children: <Widget>[
+                                                                          Container(
+                                                                              child: Icon(IconData(0xf3fc, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
+                                                                              padding: EdgeInsets.only(left: 12.0, right: 12.0),
+                                                                          ),
+                                                                          Text(
+                                                                              this.item.comments.toString(),
+                                                                              style: TextStyle(
+                                                                                  fontSize: 20.0,
+                                                                                  color: Color(0xFF333333)
+                                                                              )
+                                                                          )
+                                                                      ],
+                                                                  )
+                                                              ),
+                                                              Container(
+                                                                  child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                      children: <Widget>[
+                                                                          Container(
+                                                                              child: Icon(IconData(0xf3f8, fontFamily: 'ionicon'), size: 30.0, color: Color(0xFF333333)),
+                                                                              padding: EdgeInsets.only(left: 12.0, right: 12.0),
+                                                                          ),
+                                                                          Text(
+                                                                              this.item.borrow.toString(),
+                                                                              style: TextStyle(
+                                                                                  fontSize: 20.0,
+                                                                                  color: Color(0xFF333333)
+                                                                              )
+                                                                          )
+                                                                      ],
+                                                                  )
+                                                              ),
+                                                              Container(
+                                                                  child: Row(
+                                                                      mainAxisAlignment: MainAxisAlignment.start,
+                                                                      children: <Widget>[
+                                                                          Container(
+                                                                              child: (this.isFavourite == true) ? IconButton(icon: Icon(Icons.star, size: 35.0, color: Color(0xFFCC8400)), onPressed: () => this.favouriteItem()) : Container(),
+                                                                              padding: EdgeInsets.only(left: 10.0, right: 8.0),
+                                                                          ),
+                                                                      ],
+                                                                  )
+                                                              ),
+                                                          ],
+                                                      ),
+                                                  ),
+                                                  Divider(),
+                                                  Container(
+                                                      padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 15.0),
+                                                      child: MarkdownBody(data: html2md.convert(this.item.description))
+                                                  ),
+                                                  Divider(),
+                                                  Container(
+                                                      child: (this.canShowComments == true) ? Container(
+                                                          child: (this.comments != null) ? Container(
+                                                              padding: EdgeInsets.only(bottom: 60.0),
+                                                              child: (this.comments.length > 0) ? Column(
+                                                                  children: this.getCommentList(),
+                                                              ) : Center(
+                                                                  child: Container(
+                                                                      padding: EdgeInsets.only(top: 70.0, bottom: 70.0),
+                                                                      child: Text("No Comment", style: TextStyle(fontSize: 27.0))
+                                                                  )
+                                                              )
+                                                          ) : Center(
+                                                              child: Container(
+                                                                  padding: EdgeInsets.only(top: 70.0, bottom: 130.0),
+                                                                  child: Text("No Comment", style: TextStyle(fontSize: 27.0))
+                                                              ),
+                                                          )
+                                                      ) : Center(
+                                                          child: Container(
+                                                              width: 25.0,
+                                                              height: 25.0,
+                                                              padding: EdgeInsets.only(top: 70.0, bottom: 130.0),
+                                                              child: CircularProgressIndicator(
+                                                                  backgroundColor: Color(0xFFCC8400),
+                                                                  strokeWidth: 2.0,
+                                                              ),
+                                                          )
+                                                      )
+                                                  ),
+                                              ]
+                                          )
+                                      )
+                                  ],
+                              );
+                          }
+                      ),
+                  ),
+                  Container(
+                      child: Stack(
+                          children: <Widget>[
+                              Positioned(
+                                  bottom: 0.0,
+                                  left: 0.0,
+                                  right: 0.0,
+                                  child: Container(
+                                      decoration: BoxDecoration(
+                                          border: Border(top: BorderSide(style: BorderStyle.solid, color: Color(0xFFDDDDDD))),
+                                          color: Colors.white,
+                                      ),
+                                      padding: EdgeInsets.only(top: 5.0, bottom: 5.0, left: 10.0),
+                                      child: Row(
+                                          children: <Widget>[
+                                              Expanded(
+                                                  child: Container(
+                                                      padding: EdgeInsets.only(left: 52.0),
+                                                      child: TextFormField(
+                                                          controller: this.comment,
+                                                          focusNode: _commentFocusNode,
+                                                          style: TextStyle(
+                                                              fontSize: 16.0,
+                                                              color: Colors.black
+                                                          ),
+                                                          decoration: InputDecoration(
+                                                              hintText: 'Enter Comment',
+                                                              contentPadding: EdgeInsets.fromLTRB(15.0, 10.0, 15.0, 10.0),
+                                                              hintStyle: TextStyle(color: Color(0x99999999)),
+                                                              border: OutlineInputBorder(
+                                                                  borderRadius: BorderRadius.circular(20.0)
+                                                              )
+                                                          ),
+                                                          maxLines: null,
+                                                          keyboardType: TextInputType.multiline,
+                                                          autovalidate: true,
+                                                          autocorrect: true
+                                                      )
+                                                  ),
+                                              ),
+                                              IconButton(
+                                                  onPressed: () => this.submitItemComment(),
+                                                  icon: Icon(Icons.send),
+                                                  iconSize: 30.0,
+                                                  color: Color(0xFF666666),
+                                                  disabledColor: Color(0xFFDDDDDD),
+                                              )
+                                          ],
+                                      ),
+                                  ),
+                              ),
+                              Positioned(
+                                  bottom: 9.0,
+                                  left: 10.0,
+                                  child: Container(
+                                      width: 40.0,
+                                      height: 40.0,
+                                      padding: EdgeInsets.only(right: 10.0),
+                                      decoration: BoxDecoration(
+                                          border: Border.all(
+                                              style: BorderStyle.solid,
+                                              width: 2.0,
+                                              color: Color(0xFF999999)
+                                          ),
+                                          shape: BoxShape.circle,
+                                          color: Color(0xFF999999),
+                                          image: DecorationImage(
+                                              image: (this.canShowProfileImage == false) ? NetworkImage(AppProvider().defaultImage) : NetworkImage(this.sessionUser.getImageURL),
+                                              fit: BoxFit.fill
+                                          )
+                                      )
+                                  ),
+                              ),
+                          ],
+                      )
+                  ),
+                  (this.canViewImages == true) ? ImageViewPage(images: this.item.images, onImageViewClose: this.onImageViewClosed, name: this.item.name, isLiked: this.isLiked) : Container(),
+                  (this.canViewAvailable == true) ? ItemsAvailable(item: this.item, onClose: this.onAvailableClosed) : Container(),
+                  (this.canShowPopup == true) ? PopupOverlay(type: this.type, message: this.message, onTap: (){
+                      setState(() { this.canShowPopup = false; });
+                  }) : Container(),
+                  (this.isLoadingVisible == true) ? LoadingOverlay() : Container(),
+                  (this.canEditComment == true) ? EditComment(
+                      comment: this.selectedComment,
+                      onClose: (){ setState(() { this.canEditComment = false; this.selectedComment = null; this.selectedCommentIndex = null; });},
+                      onUpdate: (){
+                          setState(() {
+                              this.canEditComment = false;
+                              this.isLoadingVisible = true;
+                          });
+                          this.updateComment(selectedComment, selectedCommentIndex);
+                      },
+                      commentCtrl: this.editableCommentCtrl
+                  ) : Container(),
+                  (this.canShowConfirmation == true) ? ConfirmationPopup(
+                      title: "Delete Comment",
+                      message: "Do you really want to delete this comment ?",
+                      onAccept: (){
+                          setState((){ this.canShowConfirmation = false; this.isLoadingVisible = false; });
+                          this.selectedComment.deleteComment(this.item.id.toString(), this.sessionToken).then((response){
+                              setState(() {
+                                  this.message = response.text;
+                                  this.type = response.type;
+                                  this.isLoadingVisible = false;
+                                  this.canShowPopup = true;
+                                  this.comments.removeAt(this.selectedCommentIndex);
+                                  this.selectedComment = null;
+                                  this.selectedCommentIndex = null;
+                              });
+                          });
+                      },
+                      onDecline: (){ setState(() { this.canShowConfirmation = false; this.selectedComment = null; this.selectedCommentIndex = null; }); },
+                  ) : Container()
+              ],
+          ),
         );
     }
 }
-

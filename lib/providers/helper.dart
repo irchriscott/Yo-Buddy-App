@@ -1,9 +1,10 @@
+import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:timeago/timeago.dart';
 
 class HelperProvider{
 
-    String formatPrice(int value){
+    String formatPriceNumber(int value){
         return NumberFormat.compact().format(value);
     }
 
@@ -16,6 +17,20 @@ class HelperProvider{
         return timeAgo.format(ago);
     }
 
+    String formatPrice(int value){
+        if(value > 1000000000000){
+            return "${(value / 1000000000000).roundToDouble()} Tn";
+        } else if(value > 1000000000){
+            return "${(value / 1000000000).roundToDouble()} Bn";
+        } else if(value > 1000000){
+            return "${(value / 1000000).roundToDouble()} M";
+        } else if(value > 1000){
+            return "${(value / 1000).roundToDouble()} K";
+        } else{
+            return value.toString();
+        }
+    }
+
     String formatDateTimeString(dynamic datetime){
         return DateFormat("EE, MMM d, yyyy 'at' h:mma").format(DateTime.parse(datetime));
     }
@@ -23,5 +38,12 @@ class HelperProvider{
     String checkJsonURL(String url){
         if(url.endsWith(".json")){ return url; }
         else { return url + ".json"; }
+    }
+
+    String randomString(int length){
+        var chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        var result = '';
+        for (var i = length; i > 0; --i) result += chars[(Random().nextInt(chars.length))];
+        return result;
     }
 }

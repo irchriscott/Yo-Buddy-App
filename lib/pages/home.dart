@@ -6,6 +6,7 @@ import 'package:buddyapp/providers/auth.dart';
 import 'package:buddyapp/models/item.dart';
 import 'package:buddyapp/UI/item/item.dart';
 import 'package:buddyapp/models/user.dart';
+import 'package:sticky_headers/sticky_headers.dart';
 
 class HomePage extends StatefulWidget {
     HomePage({Key key, this.title}) : super(key: key);
@@ -77,7 +78,6 @@ class _HomePageState extends State<HomePage> {
       await Future.delayed(Duration(seconds: 3));
       _refreshKey.currentState?.show(atTop: false);
       YoBuddyService().getHomeItems().then((data) => _setItems(data.toList()));
-      return null;
   }
 
   @override
@@ -89,7 +89,10 @@ class _HomePageState extends State<HomePage> {
               child: this.canShowItems == true ? ListView.builder(
                   itemCount: this.items.length,
                   itemBuilder: (BuildContext context, int i){
-                      return ItemPage(item: this.items[i], scaffoldContext: scaffoldContext);
+                      return StickyHeader(
+                          header: Container(),
+                          content: ItemPage(item: this.items[i], scaffoldContext: scaffoldContext)
+                      );
                   },
               ) : Center(
                   child: Container(
@@ -103,7 +106,7 @@ class _HomePageState extends State<HomePage> {
               )
           ),
       );
-      return new Scaffold(
+      return Scaffold(
           body: Builder(
               builder: (BuildContext context){
                   scaffoldContext = context;

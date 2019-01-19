@@ -63,7 +63,7 @@ class _ItemPageState extends State<ItemPage>{
         showModalBottomSheet(
             context: context,
             builder: (builder){
-                return ItemActionSheet(item: this.item, scaffoldContext: widget.scaffoldContext, context: context);
+                return ItemActionSheet(item: this.item, scaffoldContext: widget.scaffoldContext, context: context, session: this.sessionUser, sessionToken: this.sessionToken);
             }
         );
     }
@@ -102,11 +102,10 @@ class _ItemPageState extends State<ItemPage>{
         }
     }
 
-    Future<Null> getSingleItem() async{
+    Future<void> getSingleItem() async{
         YoBuddyService().getSingleItem(this.item.user.username, this.item.uuid, this.item.id).then((value){
             setState((){ if(value != null) { this.item = value; this.checkUserLike(); } });
         });
-        return null;
     }
 
     void navigateSingleItem(){
