@@ -101,6 +101,11 @@ class _NewItemFormState extends State<NewItemForm> {
 
     @override
     void dispose(){
+        this._itemNameCtrl.dispose();
+        this._itemPriceCtrl.dispose();
+        this._itemQuantityCtrl.dispose();
+        this._itemDescriptionCtrl.dispose();
+        this._itemSaleValueCtrl.dispose();
         this.pushNotification.dispose();
         super.dispose();
     }
@@ -300,7 +305,6 @@ class _NewItemFormState extends State<NewItemForm> {
             fit: StackFit.expand,
             children: <Widget>[
                 Scaffold(
-                    resizeToAvoidBottomPadding: true,
                     backgroundColor: Colors.white,
                     body: CustomScrollView(
                         slivers: <Widget>[

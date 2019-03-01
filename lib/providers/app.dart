@@ -3,9 +3,9 @@ import 'dart:async';
 
 class AppProvider{
 
-    final String baseURL = "http://10.0.2.2:3000";
-    final String defaultImage = "http://10.0.2.2:3000/assets/default.jpg";
-    final String socketURL = "http://10.0.2.2:5000";
+    final String baseURL = "http://192.168.43.214:3000";
+    final String defaultImage = "http://192.168.43.214:3000/assets/default.jpg";
+    final String socketURL = "http://192.168.43.214:5000";
 
     Future<Null> alert(BuildContext context, String type, String message) async {
         return showDialog<Null>(

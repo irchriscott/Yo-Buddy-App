@@ -363,7 +363,6 @@ class _EditItemFormState extends State<EditItemForm> {
             fit: StackFit.expand,
             children: <Widget>[
                 Scaffold(
-                    resizeToAvoidBottomPadding: true,
                     backgroundColor: Colors.white,
                     body: CustomScrollView(
                         slivers: <Widget>[

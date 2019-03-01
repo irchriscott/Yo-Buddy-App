@@ -224,7 +224,6 @@ class _BorrowItemState extends State<BorrowItemForm>{
             fit: StackFit.expand,
             children: <Widget>[
                 Scaffold(
-                    resizeToAvoidBottomPadding: true,
                     body: CustomScrollView(
                         slivers: <Widget>[
                             SliverAppBar(

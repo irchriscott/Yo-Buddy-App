@@ -19,7 +19,7 @@ class TabsPage extends StatefulWidget{
 
 class _TabsPageState extends State<TabsPage> with SingleTickerProviderStateMixin{
 
-    final String title = "yo  buddy !";
+    final String title = "yo  buddy";
     final GlobalKey<ScaffoldState> _this = new GlobalKey<ScaffoldState>();
 
     TabController _tabController;

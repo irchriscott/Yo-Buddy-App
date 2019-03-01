@@ -149,9 +149,7 @@ class _ImageMessageState extends State<ImageMessage> {
 
         setState(() {
             images = resultList;
-            if(images.length > 0){
-
-            }
+            this.canViewTakenPictures = true;
             if (error == null) _platformMessage = 'No Error Dectected';
         });
     }
@@ -445,7 +443,7 @@ class _ImageMessageState extends State<ImageMessage> {
                 });
                 if (filePath != null) {
                     this.images.add(File(filePath));
-                    setState((){ imageFrom = 1; this.canViewTakenPictures = true; });
+                    setState((){ imageFrom = 0; this.canViewTakenPictures = true; });
                     showInSnackBar('Picture Saved !!!');
                 }
             }
@@ -508,7 +506,7 @@ class _ImageMessageState extends State<ImageMessage> {
     }
 
     Future<void> _startVideoPlayer() async {
-        final VideoPlayerController vcontroller =
+        final VideoPlayerController vController =
         VideoPlayerController.file(File(videoPath));
         videoPlayerListener = () {
             if (videoController != null && videoController.value.size != null) {
@@ -517,17 +515,17 @@ class _ImageMessageState extends State<ImageMessage> {
                 videoController.removeListener(videoPlayerListener);
             }
         };
-        vcontroller.addListener(videoPlayerListener);
-        await vcontroller.setLooping(true);
-        await vcontroller.initialize();
+        vController.addListener(videoPlayerListener);
+        await vController.setLooping(true);
+        await vController.initialize();
         await videoController?.dispose();
         if (mounted) {
             setState(() {
                 imagePath = null;
-                videoController = vcontroller;
+                videoController = vController;
             });
         }
-        await vcontroller.play();
+        await vController.play();
     }
 
     Future<String> takePicture() async {

@@ -92,7 +92,6 @@ class _LoginPageState extends State<LoginPage> with TickerProviderStateMixin{
                 fit: StackFit.expand,
                 children: <Widget>[
                     Scaffold(
-                        resizeToAvoidBottomPadding: true,
                         backgroundColor: Colors.white,
                         body: ListView(
                             shrinkWrap: true,

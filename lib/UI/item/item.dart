@@ -104,7 +104,7 @@ class _ItemPageState extends State<ItemPage>{
 
     Future<void> getSingleItem() async{
         YoBuddyService().getSingleItem(this.item.user.username, this.item.uuid, this.item.id).then((value){
-            setState((){ if(value != null) { this.item = value; this.checkUserLike(); } });
+            if(mounted){ setState((){ if(value != null) { this.item = value; this.checkUserLike(); } }); }
         });
     }
 
